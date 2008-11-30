@@ -1,0 +1,8 @@
+APD bias from run2202-2949 for 1523 channels.
+Assumption: 2GeV/c = 290ch HG ADC at -16deg.
+
+Hamamatsu (-60V) for other channels.
+
+Please use me for middle part of module.
+
+

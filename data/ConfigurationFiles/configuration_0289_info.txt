@@ -1,0 +1,4 @@
+Module 2:
+Gain 50 at room temperature
+from Hamamatsu data
+(P. T Hille)

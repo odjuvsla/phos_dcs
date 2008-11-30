@@ -1,0 +1,4 @@
+all DAC values for RCU 4 set
+to 200. Readoutregion
+ Z 28-34
+ x 46-52

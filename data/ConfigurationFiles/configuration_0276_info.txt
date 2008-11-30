@@ -1,0 +1,4 @@
+Update of configuration 255, 
+The APD values was modified
+for som channels with too high
+settings

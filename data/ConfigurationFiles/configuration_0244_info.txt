@@ -1,0 +1,7 @@
+all DAC values for RC) 3
+set to 300. readoutregion
+z 28-34
+x 46-52
+nsamples 50
+presamples15
+

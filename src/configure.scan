@@ -1,0 +1,73 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.57)
+AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+AC_CONFIG_SRCDIR([PhosDcsBase.cxx])
+AC_CONFIG_HEADER([config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_AWK
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-lCint':
+AC_CHECK_LIB([Cint], [main])
+# FIXME: Replace `main' with a function in `-lCore':
+AC_CHECK_LIB([Core], [main])
+# FIXME: Replace `main' with a function in `-lFeeClient':
+AC_CHECK_LIB([FeeClient], [main])
+# FIXME: Replace `main' with a function in `-lGpad':
+AC_CHECK_LIB([Gpad], [main])
+# FIXME: Replace `main' with a function in `-lGraf':
+AC_CHECK_LIB([Graf], [main])
+# FIXME: Replace `main' with a function in `-lGraf3d':
+AC_CHECK_LIB([Graf3d], [main])
+# FIXME: Replace `main' with a function in `-lGui':
+AC_CHECK_LIB([Gui], [main])
+# FIXME: Replace `main' with a function in `-lHist':
+AC_CHECK_LIB([Hist], [main])
+# FIXME: Replace `main' with a function in `-lMatrix':
+AC_CHECK_LIB([Matrix], [main])
+# FIXME: Replace `main' with a function in `-lPhysics':
+AC_CHECK_LIB([Physics], [main])
+# FIXME: Replace `main' with a function in `-lPostscript':
+AC_CHECK_LIB([Postscript], [main])
+# FIXME: Replace `main' with a function in `-lRint':
+AC_CHECK_LIB([Rint], [main])
+# FIXME: Replace `main' with a function in `-lThread':
+AC_CHECK_LIB([Thread], [main])
+# FIXME: Replace `main' with a function in `-lTree':
+AC_CHECK_LIB([Tree], [main])
+# FIXME: Replace `main' with a function in `-lc':
+AC_CHECK_LIB([c], [main])
+# FIXME: Replace `main' with a function in `-ldim':
+AC_CHECK_LIB([dim], [main])
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
+# FIXME: Replace `main' with a function in `-lm':
+AC_CHECK_LIB([m], [main])
+# FIXME: Replace `main' with a function in `-lpthread':
+AC_CHECK_LIB([pthread], [main])
+
+# Checks for header files.
+AC_CHECK_HEADERS([unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_SIZE_T
+
+# Checks for library functions.
+AC_CHECK_FUNCS([strtol])
+
+AC_CONFIG_FILES([Makefile
+                 data/Makefile
+                 old/Makefile])
+AC_OUTPUT

@@ -1,0 +1,4 @@
+all DAC values of RCU 3
+set to 400. readouregion
+same as before
+DATE run 1977

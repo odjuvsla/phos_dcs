@@ -1,0 +1,2 @@
+Edge effect corrected, max 850 counts
+Otherwise same as 249

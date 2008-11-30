@@ -1,0 +1,2 @@
+all apd dac values for RCU 4
+set to 0

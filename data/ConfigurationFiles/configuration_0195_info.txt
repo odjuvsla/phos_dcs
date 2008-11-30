@@ -1,0 +1,2 @@
+Run 774, all DACs for RCU-4
+card A14 set to 100

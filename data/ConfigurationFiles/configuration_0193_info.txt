@@ -1,0 +1,3 @@
+RUN 771: all APDS RCU-4
+branch A card 14 set to 
+DAC 256

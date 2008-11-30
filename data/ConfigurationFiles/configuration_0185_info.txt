@@ -1,0 +1,2 @@
+Now it was really set to 102
+after bug fix

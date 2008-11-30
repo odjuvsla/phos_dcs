@@ -1,0 +1,4 @@
+Testcalibration of card A14
+at RCU-4. Upper 2x5 matrix is
+calibrated wit LEDs
+

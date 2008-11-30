@@ -1,0 +1,5 @@
+New Hamamatsu HV
+
+'0' dac corresponds to 210Volt.
+0.2 Volt/1dac
+

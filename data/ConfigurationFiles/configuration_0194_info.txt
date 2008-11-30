@@ -1,0 +1,2 @@
+Run 772: all DACS for RCU-4
+card A14 set to 0
