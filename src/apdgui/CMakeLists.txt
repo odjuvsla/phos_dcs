@@ -2,17 +2,32 @@ PROJECT(APDGUI)
 
 # Adding libraries 
 
-LINK_DIRECTORIES(${ROOTSYS}/lib)
+LINK_DIRECTORIES(${ROOTSYS}/lib $ENV{FEECLIENT}/lib)
 
 FIND_LIBRARY(PHOSDCSLIB PhosDcs ../PhosDcs)
 
-SET(RLIBS Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint 
+SET(DINCLUDEPATH -I${CMAKE_CURRENT_SOURCE_DIR}/ -I${CMAKE_CURRENT_SOURCE_DIR}/../phosdcs/)
+
+SET(DHEADERS AltroMenu.h ApdInput.h 
+  ElectronicsMenu.h  ElectronicsMenuApply.h  ElectronicsMenuRCU.h   
+  ElectronicsMenuReadout.h  ElectronicsMenuGetUserData.h  FeeCardButton.h 
+  FeeCardOnOffButton.h LogViewer.h  PhosDcsWidget.h PhosHexNumberEntry.h 
+  PhosMenuButton.h PhosNumberEntry.h  RcuManager.h  MainGui.h MainMenu.h 
+  RcuButton.h SandboxMenu.h TruMenu.h LinkDef.h)
+
+SET(DHEADERS PhosConst.h PhosDcsBase.h PhosDcsBase.cxx ${DHEADERS})
+
+ADD_CUSTOM_COMMAND(
+   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/PhosDcsDICT.cxx
+   COMMAND rootcint -f PhosDcsDICT.cxx -c ${DINCLUDEPATH} ${DHEADERS}
+   )
+
+SET(RLIBS Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Gui
 	  Postscript Matrix Physics MathCore Thread VMC Geom 
 	  EG dl pthread TreePlayer ProofPlayer Proof Minuit)
 
 # Adding sources
 SET(SRCS PhosDcsDICT.cxx PhosDcsWidget.cxx AltroMenu.cxx 
-#SET(SRCS PhosDcsWidget.cxx AltroMenu.cxx 
   ElectronicsMenu.cxx ElectronicsMenuApply.cxx ElectronicsMenuRCU.cxx
   ElectronicsMenuReadout.cxx ElectronicsMenuGetUserData.cxx SandboxMenu.cxx
   LogViewer.cxx RcuButton.cxx RcuManager.cxx MainMenu.cxx TruMenu.cxx
@@ -21,4 +36,4 @@ SET(SRCS PhosDcsDICT.cxx PhosDcsWidget.cxx AltroMenu.cxx
 
 ADD_LIBRARY(ApdGui SHARED ${SRCS})
 ADD_EXECUTABLE(apdgui apdgui.cxx)
-TARGET_LINK_LIBRARIES(PHOSDCSLIB)
+TARGET_LINK_LIBRARIES(apdgui PhosDcs ApdGui dim FeeClient ${RLIBS})

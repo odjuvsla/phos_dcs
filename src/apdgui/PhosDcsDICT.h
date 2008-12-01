@@ -14,7 +14,8 @@
 #include <string.h>
 #define G__ANSIHEADER
 #define G__DICTIONARY
-#include "G__ci.h"
+#define G__PRIVATE_GVALUE
+#include "cint/G__ci.h"
 extern "C" {
 extern void G__cpp_setup_tagtablePhosDcsDICT();
 extern void G__cpp_setup_inheritancePhosDcsDICT();
@@ -27,7 +28,7 @@ extern void G__set_cpp_environmentPhosDcsDICT();
 }
 
 
-#include "TROOT.h"
+#include "TObject.h"
 #include "TMemberInspector.h"
 #include "PhosConst.h"
 #include "PhosDcsBase.h"
@@ -64,25 +65,25 @@ extern G__linked_taginfo G__PhosDcsDICTLN_TClass;
 extern G__linked_taginfo G__PhosDcsDICTLN_TBuffer;
 extern G__linked_taginfo G__PhosDcsDICTLN_TMemberInspector;
 extern G__linked_taginfo G__PhosDcsDICTLN_TObject;
+extern G__linked_taginfo G__PhosDcsDICTLN_vectorlEROOTcLcLTSchemaHelpercOallocatorlEROOTcLcLTSchemaHelpergRsPgR;
+extern G__linked_taginfo G__PhosDcsDICTLN_reverse_iteratorlEvectorlEROOTcLcLTSchemaHelpercOallocatorlEROOTcLcLTSchemaHelpergRsPgRcLcLiteratorgR;
 extern G__linked_taginfo G__PhosDcsDICTLN_TList;
-extern G__linked_taginfo G__PhosDcsDICTLN_vectorlETStreamerInfomUcOallocatorlETStreamerInfomUgRsPgR;
-extern G__linked_taginfo G__PhosDcsDICTLN_reverse_iteratorlEvectorlETStreamerInfomUcOallocatorlETStreamerInfomUgRsPgRcLcLiteratorgR;
 extern G__linked_taginfo G__PhosDcsDICTLN_PhosDcsBase;
 extern G__linked_taginfo G__PhosDcsDICTLN_Event_t;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGObject;
-extern G__linked_taginfo G__PhosDcsDICTLN_TGWindow;
-extern G__linked_taginfo G__PhosDcsDICTLN_maplEvoidmUcOshortcOlesslEvoidmUgRcOallocatorlEpairlEvoidmUsPconstcOshortgRsPgRsPgR;
 extern G__linked_taginfo G__PhosDcsDICTLN_TQObject;
 extern G__linked_taginfo G__PhosDcsDICTLN_TQObjSender;
+extern G__linked_taginfo G__PhosDcsDICTLN_TGWindow;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGFrame;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGCompositeFrame;
+extern G__linked_taginfo G__PhosDcsDICTLN_iteratorlEbidirectional_iterator_tagcOTObjectmUcOlongcOconstsPTObjectmUmUcOconstsPTObjectmUaNgR;
+extern G__linked_taginfo G__PhosDcsDICTLN_TGTextButton;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGMainFrame;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGTransientFrame;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGGroupFrame;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGLabel;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGWidget;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGButton;
-extern G__linked_taginfo G__PhosDcsDICTLN_TGTextButton;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGNumberFormat;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGNumberFormatcLcLEStyle;
 extern G__linked_taginfo G__PhosDcsDICTLN_TGNumberFormatcLcLEAttribute;
