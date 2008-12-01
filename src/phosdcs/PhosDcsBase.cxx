@@ -1,6 +1,8 @@
 #include "PhosDcsBase.h"
 #include "unistd.h"
 #include "PhosConst.h"
+#include <cstdlib>
+#include <cstring>
 
 
 using namespace std;

@@ -17,7 +17,9 @@
  **************************************************************************/
 
 #include "Mapper.h"
-
+#include <cassert>
+#include <cstring>
+#include <cstdlib>
 
 
 Mapper::Mapper() : PhosDcsBase()

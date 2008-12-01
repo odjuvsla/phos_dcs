@@ -441,7 +441,7 @@ class TRURegister_t
 {
  public:
   TRURegister_t();
-  TRURegister_t::TRURegister_t(const unsigned long address, const unsigned long value, const char *name);
+  TRURegister_t(const unsigned long address, const unsigned long value, const char *name);
   ~TRURegister_t();
   const char* GetName() const{ return fName;};
   const unsigned long GetAddress() const {return fAddress;}; 
