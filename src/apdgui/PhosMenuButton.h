@@ -30,8 +30,8 @@ class PhosMenuButton: public TGTextButton
   RQ_OBJECT("PhosMenuButton") 
 
 public:
-  PhosMenuButton(TGGroupFrame *gfPtr, char *name);
-  PhosMenuButton(TGMainFrame *framePtr, char *name);
+  PhosMenuButton(TGGroupFrame *gfPtr, const char *name);
+  PhosMenuButton(TGMainFrame *framePtr, const char *name);
   virtual Bool_t HandleButton(Event_t* event);
 
  private:

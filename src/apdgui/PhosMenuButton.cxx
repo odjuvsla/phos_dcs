@@ -27,14 +27,14 @@ PhosMenuButton::PhosMenuButton()
 }
 
 
-PhosMenuButton::PhosMenuButton(TGGroupFrame *gfPtr, char *name)
+PhosMenuButton::PhosMenuButton(TGGroupFrame *gfPtr, const char *name)
   : TGTextButton(gfPtr, name)
 {
 
 }
 
 
-PhosMenuButton::PhosMenuButton(TGMainFrame *framePtr, char *name)
+PhosMenuButton::PhosMenuButton(TGMainFrame *framePtr, const char *name)
  : TGTextButton(framePtr, name)
 {
 

@@ -18,5 +18,3 @@ INCLUDE_DIRECTORIES(src/phosdcs src/apdgui ${FEECLIENT}/include ${ROOTSYS}/inclu
 
 ADD_SUBDIRECTORY(src/phosdcs)
 ADD_SUBDIRECTORY(src/apdgui)
-
-
