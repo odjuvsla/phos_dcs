@@ -79,6 +79,8 @@ class  RcuManager
   void HandleSetAllApdModuleSlot(Int_t val);
   void HandleTurnOffAllFeeSlot(); 
   void HandleTurnOnAllFeeSlot();
+  void HandleTurnOffAllTruSlot(); 
+  void HandleTurnOnAllTruSlot();
   
   
 

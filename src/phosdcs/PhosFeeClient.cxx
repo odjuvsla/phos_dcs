@@ -88,36 +88,21 @@ PhosFeeClient::WriteReadRegisters(const int regType, const char *feeServerName, 
 
   if( (regType == REGTYPE_BC) || (regType ==  REGTYPE_ALTRO) || (regType == REGTYPE_TRU))
     {
-      //cout << "PhosFeeClient::WriteReadRegister N = "<< N  << " - reg[0] = " << regs[0] << " - regType = " << regType << endl;
-      //scriptCompilerPtr->MakeWriteReadRegisterScript(regType, fScriptFilename, regs, values, verify, N, branch, card);
-      //ExecuteScript(fScriptFilename, feeServerName, resultBuffer, tmpBufferSize); 
+
       int tmpN = N*2 + 10;
       
       vector<unsigned long> binaryData;
-      //      binaryData.resize(2);
-
+     
       vector<unsigned long> tmpResultValues;
-      //      tmpResultValues.resize(2);
-      
+           
       const int htsize = binaryCompilerPtr->MakeWriteReadRegisterBinary(regType, binaryData, regs, values, verify, N, branch, card, true);
       int size = ExecuteBinary(feeServerName, binaryData, tmpResultValues, tmpN, htsize); 
 
-      //      int res = GetExecutionResult(feeServerName, tmpN-10);
-
-      // if(res == 1)
-      //{
-	  ExecuteInstruction(feeServerName);
-	  int res = GetExecutionResult(feeServerName, 2);
-	  //}
-      
-      
+      ExecuteInstruction(feeServerName);
+      int res = GetExecutionResult(feeServerName, 2);
       
       //ReadExecutionResult(feeServerName, tmpResultValues, N);
       
-// 	  //const int htsize_res = binaryCompilerPtr->MakeReadResultMemoryBinary(tmpBinData, N);
-// 	  cout << "PhosFeeClient::WriteReadRegisters: Executing binary_MEM" << endl;
-// 	  //size = ExecuteBinary(feeServerName, tmpBinData, tmpBinResultBuffer, 1, htsize_res);
-// 	  cout << "PhosFeeClient::WriteReadRegisters: Executing binary_MEM...Done! Size = " << size << endl;
 // 	  for(int i = 0; i < size/4; i++)
 // 	    {
 // 	      tmpScannedValues[i] = tmpBinResultBuffer[i];
@@ -478,17 +463,6 @@ PhosFeeClient::ExecuteInstruction(const char* feeServerName)
   short errorCode      = 0;
   short status         = 0;
   
-  
-
-//   data[0] = RcuRegisterMap::RCU_WRITE_MEMBLOCK|1;
-//   data[1] = RcuRegisterMap::EXEC;
-//   data[2] = RcuRegisterMap::Instruction_MEM;
-//   data[3] = RcuRegisterMap::CE_CMD_TRAILER;
-//   cout << "PhosFeeClient::ExecuteInstruction: data[0]: " << hex << data[0] << endl;
-//   cout << "PhosFeeClient::ExecuteInstruction: data[1]: " << data[1] << endl;
-//   cout << "PhosFeeClient::ExecuteInstruction: data[2]: " << data[2] << endl;
-//   cout << "PhosFeeClient::ExecuteInstruction: data[3]: " << data[3] << dec << endl;
-
   data.clear();
   data.push_back(RcuRegisterMap::RCU_WRITE_MEMBLOCK|1);
   data.push_back(RcuRegisterMap::EXEC);
@@ -515,7 +489,7 @@ PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const 
   
   if(pcmv != 0)
     {
-      *pcmv = pcmversion;
+      *pcmv = pcmversion; 
     }
 
   if(pcmversion == 0xffff)
@@ -596,42 +570,7 @@ PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const u
   vector<unsigned int> data;
   std::string serverName = feeServerName;
 
-//   size = 4*4;
-
-//   data[0] = RcuRegisterMap::RCU_WRITE_MEMBLOCK|1;
-//   data[1] = RcuRegisterMap::AFL;
-//   data[2] = activeFeeList;
-//   data[3] = RcuRegisterMap::CE_CMD_TRAILER;  
-
-//   size = 2*4;
-//   data[0] = RcuRegisterMap::RCU_RESET|1;
-//   data[1] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-  
-//   SendWaitCommand(4000, feeServerName);
-  
-//   size = 2*4;
-//   data[0] = RcuRegisterMap::RCU_RESET|1;
-//   data[1] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-  
-//   SendWaitCommand(4000, feeServerName);
-
   WriteAFL(activeFeeList, feeServerName);
-
-//   SendWaitCommand(4000, feeServerName);
-
-//   Reset(feeServerName, RcuRegisterMap::FEC_RESET);
-
-//   SendWaitCommand(4000, feeServerName);
-
-//   Reset(feeServerName, RcuRegisterMap::FEC_RESET);
-
-//   SendWaitCommand(4000, feeServerName);
-
-//   Reset(feeServerName, RcuRegisterMap::RCU_RESET);
-
-//   SendWaitCommand(4000, feeServerName);
 
   SendWaitCommand(4000, feeServerName);
 
@@ -674,54 +613,19 @@ PhosFeeClient::ActivateFeeByBranch(unsigned long afl, const char* feeServerName,
      printf("\nERROR in activating card, branch has invalid value:%d\n", branch);
     }
   tmpFeeList = 0x7ffe<<shift;
-  cout << "PhosFeeClient::ActiveFeeList: " << hex << activeFeeList << dec << endl;
+
   if(onOff == 0)
    {
      if(activeFeeList & tmpFeeList)
        {
 	 activeFeeList = (activeFeeList ^ tmpFeeList);  
        }
-    
-     printf("\nPhosFeeClien::acticefrontendlist = 0x%x\n", activeFeeList);
-     cout << "Turning off branch" << endl;
    }
   
   else if(onOff == 1)
     {
       activeFeeList = (activeFeeList | tmpFeeList);
-      cout << "Turning on branch" << endl;
     }
-
-  cout << "PhosFeeClient::ActiveFeeList: " << hex << activeFeeList << dec << endl;
-
-//   vector<unsigned int> data;
-// //   data.resize(100);
-//   std::string serverName = feeServerName;
-
-//   size = 4*4;
-
-//   data[0] = RcuRegisterMap::RCU_WRITE_MEMBLOCK|1;
-//   data[1] = RcuRegisterMap::AFL;
-//   data[2] = activeFeeList;
-//   data[3] = RcuRegisterMap::CE_CMD_TRAILER;  
-
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-  
-//   SendWaitCommand(4000, feeServerName);
-  
-//   size = 2*4;
-//   data[0] = RcuRegisterMap::RCU_RESET|1;
-//   data[1] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-  
-//   SendWaitCommand(4000, feeServerName);
-  
-//   size = 2*4;
-//   data[0] = RcuRegisterMap::RCU_RESET|1;
-//   data[1] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-  
-//   SendWaitCommand(4000, feeServerName);
 
   status = WriteAFL(activeFeeList, feeServerName);
 
@@ -745,7 +649,6 @@ PhosFeeClient::ActivateAllFee(unsigned long afl, const char* feeServerName, cons
   short errorCode      = 0;
   short status         = 0;
 
-
   tmpFeeList = 0x7ffe7ffe;
 
   cout << "PhosFeeClient::ActiveFeeList: " << hex << activeFeeList << dec << endl;
@@ -753,58 +656,22 @@ PhosFeeClient::ActivateAllFee(unsigned long afl, const char* feeServerName, cons
   if(onOff == 0)
    {
      activeFeeList = 0x0;
-     //     printf("\nPhosFeeClient::Activefrontendlist = 0x%x\n", activeFeeList);
    }
-  
-  
+    
   else if(onOff == 1)
     {
-      activeFeeList = (activeFeeList | tmpFeeList);
+      while(activeFeeList != 0x7ffe7ffe || activeFeeList != 0x7fff7fff)
+	{
+	  
+	  activeFeeList = (activeFeeList | tmpFeeList);
+	}
+      
     }
-
-  cout << "PhosFeeClient::ActiveFeeList: " << hex << activeFeeList << dec << endl;
-
-//   vector<unsigned int> data;
-//   //data.resize(100);
-//   std::string serverName = feeServerName;
-
-//   size = 4*4;
-
-//   data[0] = RcuRegisterMap::RCU_WRITE_MEMBLOCK|1;
-//   data[1] = RcuRegisterMap::AFL;
-//   data[2] = activeFeeList;
-//   data[3] = RcuRegisterMap::CE_CMD_TRAILER;  
-
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-
-//   SendWaitCommand(4000, feeServerName);
-
-//   size = 2*4;
-//   data[0] = RcuRegisterMap::RCU_RESET|1;
-//   data[1] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-  
-//   SendWaitCommand(4000, feeServerName);
-  
-//   size = 2*4;
-//   data[0] = RcuRegisterMap::RCU_RESET|1;
-//   data[1] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-  
-//   SendWaitCommand(4000, feeServerName);
-
-// //   size = 2*4;
-// //   data[0] = RcuRegisterMap::RCU_READ_RESULT|1;
-// //   data[1] = RcuRegisterMap::CE_CMD_TRAILER;  
-
-//   //  writeReadData(serverName, size, data, flags, errorCode, status);  
-
 
   status = WriteAFL(activeFeeList, feeServerName);
 
   if(status != 0)
     return false;
-
 
   return true;
 
@@ -830,7 +697,7 @@ PhosFeeClient::ActivateAllTru(unsigned long afl, const char* feeServerName, cons
 
   if(onOff == 0)
    {
-     activeFeeList = 0x0;
+     activeFeeList = activeFeeList ^ 0x10001;
      //     printf("\nPhosFeeClient::Activefrontendlist = 0x%x\n", activeFeeList);
    }
   

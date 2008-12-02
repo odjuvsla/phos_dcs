@@ -107,6 +107,10 @@ MainGui::InitSignalSlotConnections()
  			   fRcuManagerPtr, "HandleTurnOnAllFeeSlot()");
   allFeeOffButtPtr->Connect("HandleButton(Event_t*)", "RcuManager", 
  			    fRcuManagerPtr, "HandleTurnOffAllFeeSlot()"); 
+  allTruOnButtPtr->Connect("HandleButton(Event_t*)", "RcuManager", 
+ 			   fRcuManagerPtr, "HandleTurnOnAllTruSlot()");
+  allTruOffButtPtr->Connect("HandleButton(Event_t*)", "RcuManager", 
+ 			    fRcuManagerPtr, "HandleTurnOffAllTruSlot()"); 
   sandboxMenuPtr->Connect("EmitSetAllApdFeeSignal(Int_t)",    "RcuManager",  
  			  fRcuManagerPtr,  "HandleSetAllApdFeeSlot(Int_t)");
   sandboxMenuPtr->Connect("EmitSetAllApdRcuSignal(Int_t)",    "RcuManager",  

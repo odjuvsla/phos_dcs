@@ -69,40 +69,40 @@ of crystals   |     CSP/APDs          |   Controller adresses
 #define FEESRV_RCUSH_SCRIPT   0xf7040000
 
 
-/*
- * Mnemnoics for RCU_FW2
- */
+// /*
+//  * Mnemnoics for RCU_FW2
+//  */
 
-#define FEC_RD   0 
+// #define FEC_RD   0 
 
-//#define FEC_RD   0xf 
+// //#define FEC_RD   0xf 
 
-#define FEC_CMD  1
-#define FEC_WR   2
-#define RCU_CMND 3
+// #define FEC_CMD  1
+// #define FEC_WR   2
+// #define RCU_CMND 3
 
-#define OTHER_CMD 0xf
+// #define OTHER_CMD 0xf
 
 
-#define CMD_TYPE        20   //20=Position of the Commmand type LS bit 
-//#define RW              21   //21=Position of the RW bit, Write=1, Read=0
-//#define POS             20   //20=Position of the position bit 0=most sign. 20 bit, 1=least sign. 20 bits
-#define PAR             19   //19=Position of the parity but
-#define BCAST           18   //18=Position of the broadcast register bit. Broadacst=1, no broadcast=0 (ms 20 bits) 
-#define BC_AL           17   //17=Position of command type bit. Boarcontroller=1, Altro=0
-#define BRANCH          16   //Branch A=0, Branch B=1 
-#define FAD             12   //Poistion of least significant bit of FEE adress register (most significant 20 bits)
+// #define CMD_TYPE        20   //20=Position of the Commmand type LS bit 
+// //#define RW              21   //21=Position of the RW bit, Write=1, Read=0
+// //#define POS             20   //20=Position of the position bit 0=most sign. 20 bit, 1=least sign. 20 bits
+// #define PAR             19   //19=Position of the parity but
+// #define BCAST           18   //18=Position of the broadcast register bit. Broadacst=1, no broadcast=0 (ms 20 bits) 
+// #define BC_AL           17   //17=Position of command type bit. Boarcontroller=1, Altro=0
+// #define BRANCH          16   //Branch A=0, Branch B=1 
+//#define FAD             12   //Poistion of least significant bit of FEE adress register (most significant 20 bits)
 
 //#define REGAD           9     //Position of least significant bit of CSP adress register (most significant 20 bits)
 //#define REGAD           5     //Position of least significant bit of CSP adress register (most significant 20 bits)
-#define REGAD           8     //Position of least significant bit of CSP adress register (most significant 20 bits)
+// #define REGAD           8     //Position of least significant bit of CSP adress register (most significant 20 bits)
 
-#define CAD             5    //Position of least significant bit of CSP adress register (most significant 20 bits)
-#define CSPVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)  
+// #define CAD             5    //Position of least significant bit of CSP adress register (most significant 20 bits)
+// #define CSPVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)  
 
-  //#define REGAD           0    //Position of least significant bit of CSP adress register (most significant 20 bits)
-  //#define REGAD           9     //Position of least significant bit of CSP adress register (most significant 20 bits)
-#define REGVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)  
+//   //#define REGAD           0    //Position of least significant bit of CSP adress register (most significant 20 bits)
+//   //#define REGAD           9     //Position of least significant bit of CSP adress register (most significant 20 bits)
+// #define REGVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)  
 
 
 /*
@@ -164,7 +164,7 @@ class ScriptCompiler : public PhosDcsBase
    *@param read if true its is a read command, if false it is a write command
    */
 
-  /** changed for RCU_fw2 (maybe incomplete/incorrect) */
+   /** changed for RCU_fw2 (maybe incomplete/incorrect) */
   static unsigned long  MakeMS20Instruction(const int registerType, const bool read,
 					    const unsigned long reg, const unsigned long  branch = 0, 
 					    const unsigned long card = 0, const unsigned long chip = 0, const unsigned long channel = 0); 

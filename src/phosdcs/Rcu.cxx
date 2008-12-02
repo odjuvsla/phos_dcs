@@ -103,8 +103,6 @@ Rcu::ActivateFee(const int branch, const int cardIndex)
 
   unsigned long tmpAddr = RcuRegisterMap::AFL;
 
-  cout << "Rcu::fActiveFeeList: " << fActiveFeeList << endl;
-  fFeeClientPtr->SetScripFileName("s_readactivefeelist.txt");
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList, 1); 
   unsigned long  pcmversion = 0;
   //                                 BCVERSION
@@ -112,11 +110,6 @@ Rcu::ActivateFee(const int branch, const int cardIndex)
   char resultBuffer[100];
 
   //fActiveFeeList = 0;
-
-  cout << "Rcu::fActiveFeeList: " << fActiveFeeList << endl;
-  //ScriptCompiler::MakeActivateFeeScript("s_activateFee.txt", fActiveFeeList, branch, cardIndex, TURN_ON);
-  //fFeeClientPtr->ExecuteScript("s_activateFee.txt", fFeeServerName, resultBuffer, 70);
-  
   if(cardIndex == -1)
     {
       fFeeClientPtr->ActivateFeeByBranch(fActiveFeeList, fFeeServerName, branch, TURN_ON);
@@ -131,10 +124,7 @@ Rcu::ActivateFee(const int branch, const int cardIndex)
   //  fFeeClientPtr->SetScripFileName("s_readpcmversion.txt");
   fFeeClientPtr->ReadRegisters(REGTYPE_BC, fFeeServerName, &pcmversionReg, &pcmversion, 1, branch, cardIndex +1);
   
-
-  fFeeClientPtr->SetScripFileName("s_readactivefeelist.txt");
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1); 
-  cout << "Rcu::fActiveFeeList: " << fActiveFeeList << endl;
 
   if(pcmversion == 0xdead)
     {
@@ -172,8 +162,7 @@ Rcu::DeActivateFee(const int branch, const int cardIndex)
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1); 
   char resultBuffer[100];
-  //ScriptCompiler::MakeActivateFeeScript("s_activateFee.txt", fActiveFeeList, branch, cardIndex, TURN_OFF);
-  //fFeeClientPtr->ExecuteScript("s_activateFee.txt", fFeeServerName, resultBuffer, 70);
+
   if(cardIndex == -1)
     {
       fFeeClientPtr->ActivateFeeByBranch(fActiveFeeList, fFeeServerName, branch, TURN_OFF);     
@@ -270,92 +259,62 @@ void
 Rcu::TurnOnAllFee()
 {
   int tmpState;
-  //  unsigned long tmpAddr = 0x8000;
  
   unsigned long tmpAddr = RcuRegisterMap::AFL;
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1);
 
-  bool allOn = fFeeClientPtr->ActivateAllFee(fActiveFeeList, fFeeServerName, 1);
-  allOn = fFeeClientPtr->ActivateAllFee(fActiveFeeList, fFeeServerName, 1);
+//   bool allOn = fFeeClientPtr->ActivateAllFee(fActiveFeeList, fFeeServerName, 1);
+//   allOn = fFeeClientPtr->ActivateAllFee(fActiveFeeList, fFeeServerName, 1);
 
-  for(int i =0; i<CARDS_PER_RCU; i++)
-    {
-      *fFeeState[i] = FEE_STATE_ON;
-    } 
-  cout << "Rcu: All on!" << endl;
-    
-
-
-//   bool allOn = fFeeClientPtr->ActivateFeeByBranch(fActiveFeeList, fFeeServerName, BRANCH_B, 1);  
-  
-//   //  if(allOn == true)
-//   if(1)
+//   for(int i =0; i<CARDS_PER_RCU; i++)
 //     {
-//       for(int i =16; i<CARDS_PER_BRANCH; i++)
-// 	{
-// 	  *fFeeState[i] = FEE_STATE_ON;
-// 	} 
-//       cout << "Rcu: All on branch b" << endl;
-      
-//     }
-//   //  fFeeClientPtr->SendWaitCommand(40000000, fFeeServerName);
+//       *fFeeState[i] = FEE_STATE_ON;
+//     } 
 
-//   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1);
-//   allOn = fFeeClientPtr->ActivateFeeByBranch(fActiveFeeList, fFeeServerName, BRANCH_A, 1);
 
-//   //  if(allOn == true)
-//   if(1)
-//     {
-//       for(int i =0; i<CARDS_PER_BRANCH; i++)
-// 	{
-// 	  *fFeeState[i] = FEE_STATE_ON;
-// 	} 
-//       cout << "Rcu: All on branch a" << endl;
-//     }
-
-//   unsigned long int one = 1;
-//   unsigned long int two = 2;
+  unsigned long int one = 1;
+  unsigned long int two = 2;
  
-//   for(unsigned long int i = 0; i<14; i++)
-//     {
-//       if(i == 0 || i == 1)
-// 	{
-// 	  if((fActiveFeeList & (one<<(i+(unsigned long int)12)+one)) == 0)
-// 	    {
-// 	      printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_A, 12+i+1);
-// 	      *fFeeState[12+i] =  ActivateFee(BRANCH_A, 12+i);
-// 	      printf(", state = %d ", *fFeeState[12+i]);
-// 	    } 
-// 	}
+  for(unsigned long int i = 0; i<14; i++)
+    {
+      if(i == 0 || i == 1)
+	{
+	  if((fActiveFeeList & (one<<(i+(unsigned long int)12)+one)) == 0)
+	    {
+	      printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_A, 12+i+1);
+	      *fFeeState[12+i] =  ActivateFee(BRANCH_A, 12+i);
+	      printf(", state = %d ", *fFeeState[12+i]);
+	    } 
+	}
 
-//       if((fActiveFeeList & (one<<(i + one))) == 0)
-// 	{     
-// 	  printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_A, i+1);
-// 	  *fFeeState[i] =  ActivateFee(BRANCH_A, i);
-// 	  printf(", state = %d ", *fFeeState[i]);
-// 	}
-//     }
+      if((fActiveFeeList & (one<<(i + one))) == 0)
+	{     
+	  printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_A, i+1);
+	  *fFeeState[i] =  ActivateFee(BRANCH_A, i);
+	  printf(", state = %d ", *fFeeState[i]);
+	}
+    }
   
-//   for(unsigned long int i = 14; i<28; i++)
-//     {
-//       if(i == 14 || i == 15)
-// 	{
-// 	  if((fActiveFeeList & (one << (i+(unsigned long int)12+two+one))) == 0)
-// 	    {
-// 	      printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_B, i - CARDS_PER_BRANCH +1);
-// 	      *fFeeState[12 + i] = ActivateFee(BRANCH_B, i+12-CARDS_PER_BRANCH);
-// 	      printf(", state = %d ", *fFeeState[12+i]); 
-// 	    }
-// 	} 
+  for(unsigned long int i = 14; i<28; i++)
+    {
+      if(i == 14 || i == 15)
+	{
+	  if((fActiveFeeList & (one << (i+(unsigned long int)12+two+one))) == 0)
+	    {
+	      printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_B, i - CARDS_PER_BRANCH +1);
+	      *fFeeState[12 + i] = ActivateFee(BRANCH_B, i+12-CARDS_PER_BRANCH);
+	      printf(", state = %d ", *fFeeState[12+i]); 
+	    }
+	} 
       
-//       if((fActiveFeeList & (one << (i+two+one))) == 0)
-// 	{
-// 	  printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_B, i+1); 
-// 	  *fFeeState[i] = ActivateFee(BRANCH_B, i - CARDS_PER_BRANCH);
-// 	  printf(", state = %d ", *fFeeState[i]); 
-// 	}
-//     }
+      if((fActiveFeeList & (one << (i+two+one))) == 0)
+	{
+	  printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_B, i+1); 
+	  *fFeeState[i] = ActivateFee(BRANCH_B, i - CARDS_PER_BRANCH);
+	  printf(", state = %d ", *fFeeState[i]); 
+	}
+    }
 }
 
 
@@ -373,12 +332,10 @@ Rcu::TurnOnAllTru()
   bool allOn = fFeeClientPtr->ActivateAllTru(fActiveFeeList, fFeeServerName, 1);
   allOn = fFeeClientPtr->ActivateAllTru(fActiveFeeList, fFeeServerName, 1);
 
-
   for(int i =0; i<CARDS_PER_RCU; i++)
     {
       //    *fFeeState[i] = FEE_STATE_ON;
     } 
-  cout << "Rcu: All TRU on!" << endl;
 }
 
 

@@ -18,7 +18,7 @@
 
 #include "BinaryCompiler.h"
 #include "RcuRegisterMap.h"
-#include "ScriptCompiler.h"
+#include "InstructionMaker.h"
 
 BinaryCompiler::BinaryCompiler() : PhosDcsBase()
 {
@@ -36,7 +36,6 @@ BinaryCompiler::MakeWriteReadRegisterBinary(const unsigned int regType, vector<u
 					    const int branch ,  const int card , 
 					    const bool writeZeroes )
 {
-
   int ret = 0;
   if(regType == REGTYPE_RCU_MEM)
     {
@@ -80,29 +79,16 @@ BinaryCompiler::MakeWriteReadRcuMemoryBlockBinary(vector<unsigned long> & binDat
 						  const int N)
 {
   binData.push_back(RcuRegisterMap::RCU_WRITE_MEMBLOCK|(N));
-  //cout << "BinaryCompiler::MakeWriteReadRcuMemoryBlockBinary: binData[0] =  0x";
-  //  cout << hex << binData[0] << dec << endl;
 
   binData.push_back(baseReg);
-  //cout << "BinaryCompiler::MakeWriteReadRcuMemoryBlockBinary: binData[1] =  0x";
-  //cout << hex << binData[1] << dec << endl;
 
-  //  for(int i = 0; i < N-1; i++) 
   for(int i = 0; i < N; i++) 
     {
       binData.push_back(value[i]);
 
     }
-  for(int i = 0; i < binData.size()-2; i++) 
-    {
-      //  cout << "BinaryCompiler::MakeWriteReadRcuMemoryBlockBinary: binData[" << i + 2 <<"] =  0x";
-      //  cout << hex << binData[i+2] << dec << endl;
-    }
 
-  //  binData[N-1] = RcuRegisterMap::CE_CMD_TRAILER;
   binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
-  //cout << "BinaryCompiler::MakeWriteReadRcuMemoryBlockBinary: binData[" << binData.size() - 1<< "] =  0x";
-  //  cout << hex << binData[binData.size()-1] << dec << endl;
   
   return 0; 
 }
@@ -113,47 +99,37 @@ BinaryCompiler::MakeWriteReadFeeRegisterBinary(const unsigned int registerType, 
 					       const unsigned long *reg, const unsigned long *value, const bool *verify, 
 					       const int N, const int branch , const int card , 
 					       const int chip , const int channel , const bool writeZeroes )
-{
-  
-
+{ 
   if( (registerType == REGTYPE_BC) || (registerType ==  REGTYPE_ALTRO) || (registerType == REGTYPE_TRU) )
     {
       
       int tmpN = N;
       binData.push_back((RcuRegisterMap::RCU_WRITE_MEMBLOCK | (tmpN*2+2)));
-      //      cout << "BinaryCompiler::MakeWriteReadFeeRegisterBinary: binData[0] =  0x";
-      //cout << hex << binData[0] << dec << endl;
-      
+
       binData.push_back(RcuRegisterMap::Instruction_MEM);
-      //cout << "BinaryCompiler::MakeWriteReadFeeRegisterBinary: binData[1] =  0x";
-      //cout << hex << binData[1] << dec << endl;
-      
       
       int j = 0;
+
       for(int i=0; i<tmpN; i++)
 	{
 	  
-	  binData.push_back(ScriptCompiler::MakeMS20Instruction(registerType, false, reg[j], branch, card));
-	  //cout << "BinaryCompiler::MakeWriteReadFeeRegisterBinary: binData[" << binData.size() - 1 <<"] =  0x";
-	  //cout << hex << binData.back() << dec << endl;
-	  binData.push_back(ScriptCompiler::MakeLS20Instruction(false, value[j]));
-	  //cout << "BinaryCompiler::MakeWriteReadFeeRegisterBinary: binData[" << binData.size() - 1 <<"] =  0x";
-	  //cout << hex << binData.back() << dec << endl;
+	  binData.push_back(InstructionMaker::MakeMS20Instruction(registerType, false, reg[j], branch, card));
+	  binData.push_back(InstructionMaker::MakeLS20Instruction(false, value[j]));
 	  j++;
 	}  
       binData.push_back(RcuRegisterMap::END);
-      //cout << "BinaryCompiler::MakeWriteReadFeeRegisterBinary: binData[" << tmpN + 2<<"] =  0x";
-      //cout << hex << binData[tmpN+2] << dec << endl;
-      binData.push_back(RcuRegisterMap::ENDMEM);
-      //cout << "BinaryCompiler::MakeWriteReadFeeRegisterBinary: binData[" << tmpN + 3<<"] =  0x";
-      //cout << hex << binData[tmpN+3] << dec << endl;
-      binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
-      //cout << "BinaryCompiler::MakeWriteReadFeeRegisterBinary: binData[" << tmpN + 4<<"] =  0x";
-      //cout << hex << binData[tmpN+4] << dec << endl;
+      if(*verify == true)
+	{
+	  MakeReadFeeRegisterBinary(registerType, binData, reg, N, branch, card, chip, channel);
+	}
+      else
+	{
+	  binData.push_back(RcuRegisterMap::ENDMEM);
+	  binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
+	}
     }
 
   return 0; 
-
 }
 
 int
@@ -165,10 +141,6 @@ BinaryCompiler::MakeReadRcuRegisterBinary(const int registerType, vector<unsigne
   binData.push_back(baseAddress);
 
   binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
-
-  //cout << "BinaryCompiler::MakeReadRcuRegisterBinary: data = 0x" << hex << binData[0] << dec << endl;
-  //cout << "BinaryCompiler::MakeReadRcuRegisterBinary: data = 0x" << hex << binData[1] << dec << endl;
-  //cout << "BinaryCompiler::MakeReadRcuRegisterBinary: data = 0x" << hex << binData[2] << dec << endl;
 
   return 0; 
 }
@@ -184,17 +156,13 @@ BinaryCompiler::MakeReadFeeRegisterBinary(const int registerType, vector<unsigne
 
   for(int i=0; i<N;i++)
     {
-      binData.push_back(ScriptCompiler::MakeMS20Instruction(registerType, true, reg[i], branch, card));
-      //cout << "BinaryCompiler::MakerReadFeeRegisterBinary: binData["<<i+2<<"]: " << hex << binData[i+2] << dec<< endl;
+      binData.push_back(InstructionMaker::MakeMS20Instruction(registerType, true, reg[i], branch, card));
     }
 
   binData.push_back(RcuRegisterMap::END);
-  //cout << "BinaryCompiler::MakerReadFeeRegisterBinary: binData[N+2] " << hex << binData[N+2] << dec << " N: " << N << endl;
   binData.push_back(RcuRegisterMap::ENDMEM);
-  //cout << "BinaryCompiler::MakerReadFeeRegisterBinary: binData[N+3] " << hex << binData[N+3] << dec << " N: " << N << endl;
   binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
-  //cout << "BinaryCompiler::MakerReadFeeRegisterBinary: binData[N+4] " << hex << binData[N+4] << dec << " N: " << N << endl;
-
+ 
   return 0; 
 }
 

@@ -43,21 +43,6 @@ ScriptCompiler::MakeTriggerConfigScript(const char *filename,  TriggerMode_t tri
   fp=fopen(filename, "w");
   // int tmp;
 
-  //  int IS_pos = 0;  //intruction pointer relative too the basd address of the instruction memeory
-  /*
-   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM     ,MakeMS20Instruction(REGTYPE_ALTRO, false, AltroRegisterMap::TRCFG));
-   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM + 1 ,MakeLS20Instruction(false, (altroconfig.GetNSamples()).GetIntValue()));
-   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM + 2, MakeMS20Instruction(REGTYPE_ALTRO, false, AltroRegisterMap::DPCFG));
-   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM + 3, MakeLS20Instruction(false, (altroconfig.GetReadoutMode().GetIntValue())));
-   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM + 4, MakeMS20Instruction(REGTYPE_ALTRO, false, AltroRegisterMap::DPCFG2));
-   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM + 5, MakeLS20Instruction(false, (altroconfig.GetNPreSamples()).GetIntValue()));
-   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM + 6, RcuRegisterMap::END);
-   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM + 7, RcuRegisterMap::ENDMEM);
-
-   fprintf(fp, "w 0x%x  0x0\n",  RcuRegisterMap::EXEC);
-   fprintf(fp, "wait 200 us\n");
-  */
-
   //fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROIF, (altroconfig.GetNSamples()).GetIntValue() | 1<<10 | 3<<14); 
   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROIF, 501 | 1<<10 | 3<<14); 
   

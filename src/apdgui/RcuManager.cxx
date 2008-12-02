@@ -123,7 +123,7 @@ RcuManager::EmitConfigInfo(ConfigInfo_t *t)  //*SIGNAL*
     }
 }
 
-
+ 
 void 
 RcuManager::EmitMessage(const char *text)  //*SIGNAL*
 {
@@ -584,7 +584,7 @@ RcuManager::HandleTurnOnAllFeeSlot()
     }
   
   sprintf(tmpMessage,"All FFFECs for module %d was turned of", fCurrentModule->GetIntValue());
-  EmitMessage(tmpMessage); http://start.fedoraproject.org/
+  EmitMessage(tmpMessage); 
 
   if(fIsSelectedRcu == true)
     {
@@ -594,6 +594,47 @@ RcuManager::HandleTurnOnAllFeeSlot()
       sprintf(tmpMessage,"Finnsihed Probing FEE status for currently selected Module %d, rcu %d ", fCurrentModule->GetIntValue(), fCurrentRcu);
       EmitMessage(tmpMessage);   
     } 
+}
+
+void 
+RcuManager::HandleTurnOffAllTruSlot()
+{
+  char tmpMessage[256];
+  Rcu *tmpRcuPtr;
+
+  for(int rcuId = 0; rcuId < RCUS_PER_MODULE; rcuId ++)
+    {
+      tmpRcuPtr = fDcsInterfacePtr->GetRcuPtr(fCurrentModule->GetIntValue(), rcuId);
+      sprintf(tmpMessage,"Turning off all TRUs for %s",tmpRcuPtr-> GetFeeServerName());  
+      EmitMessage(tmpMessage);
+      fDcsInterfacePtr-> TurnOffAllTru(fCurrentModule->GetIntValue(), rcuId);
+      sprintf(tmpMessage,"Done turning off all TRUs for %s",tmpRcuPtr-> GetFeeServerName());  
+      EmitMessage(tmpMessage);
+    }
+
+  sprintf(tmpMessage,"All TRUs for module %d was turned of", fCurrentModule->GetIntValue());
+  EmitMessage(tmpMessage); 
+}
+
+
+void 
+RcuManager::HandleTurnOnAllTruSlot()
+{
+  char tmpMessage[256];
+  Rcu *tmpRcuPtr;
+
+  for(int rcuId = 0; rcuId < RCUS_PER_MODULE; rcuId ++)
+    {
+      tmpRcuPtr = fDcsInterfacePtr->GetRcuPtr(fCurrentModule->GetIntValue(), rcuId);   
+      sprintf(tmpMessage,"Turning on all TRUs for %s, pleae wait ",tmpRcuPtr-> GetFeeServerName()); 
+      EmitMessage(tmpMessage);
+      fDcsInterfacePtr->TurnOnAllTru(fCurrentModule->GetIntValue(), rcuId);
+      sprintf(tmpMessage,"Done turning on all TRUs for %s",tmpRcuPtr-> GetFeeServerName());   
+      EmitMessage(tmpMessage); 
+    }
+  
+  sprintf(tmpMessage,"All TRUs for module %d was turned on", fCurrentModule->GetIntValue());
+  EmitMessage(tmpMessage); 
 }
 
 

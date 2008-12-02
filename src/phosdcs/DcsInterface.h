@@ -76,11 +76,11 @@ class  DcsInterface : public PhosDcsBase
 
   unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
   void            TurnOnAllFee(const int  modID, const int rcuId) const ;
-  void            TurnOnAllTru( const int  modID, const int rcuId, char *message) const; 
+  void            TurnOnAllTru( const int  modID, const int rcuId, char *message = 0) const; 
   unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
   unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
   void            TurnOffAllFee(const int modID, const int rcuId) const;
-  void            TurnOffAllTru(const int  modID, const int rcuId, char *message) const; 
+  void            TurnOffAllTru(const int  modID, const int rcuId, char *message = 0) const; 
   unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
   unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
   void            UpdateAFL(const int mod, const int rcu) const;
