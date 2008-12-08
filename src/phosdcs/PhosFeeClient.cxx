@@ -96,7 +96,7 @@ PhosFeeClient::WriteReadRegisters(const int regType, const char *feeServerName, 
       vector<unsigned long> tmpResultValues;
            
       const int htsize = binaryCompilerPtr->MakeWriteReadRegisterBinary(regType, binaryData, regs, values, verify, N, branch, card, true);
-      int size = ExecuteBinary(feeServerName, binaryData, tmpResultValues, tmpN, htsize); 
+      int size = ExecuteBinary(feeServerName, binaryData, tmpResultValues, tmpN); 
 
       ExecuteInstruction(feeServerName);
       int res = GetExecutionResult(feeServerName, 2);
@@ -130,7 +130,7 @@ PhosFeeClient::WriteReadRegisters(const int regType, const char *feeServerName, 
 	  vector<unsigned long> tmpResultValues;
 	  //	  tmpResultValues.resize(2);
 
-	  ExecuteBinary(feeServerName, binaryData, tmpResultValues, N, htsize);
+	  ExecuteBinary(feeServerName, binaryData, tmpResultValues, N);
 	  //	      ExecuteACLBinary(feeServerName, values, tmpResultValues, N);
 	  //	  iRet = VerifyValues(tmpResultValues, values, verify, N);
 	  //  delete [] binaryData;	      
@@ -171,7 +171,7 @@ PhosFeeClient::ReadRegisters(const int regType, const char *feeServerName, const
       const int htsize = binaryCompilerPtr->MakeReadRegisterBinary(regType, tmpBinData, regs, N, branch, card);
       
       //cout << "PhosFeeClient::ReadRegisters: Executing binary, size:" << N + htsize << endl;
-      int size = ExecuteBinary(feeServerName, tmpBinData, tmpBinResultBuffer, N, htsize);
+      int size = ExecuteBinary(feeServerName, tmpBinData, tmpBinResultBuffer, N);
       //cout << "PhosFeeClient::ReadRegisters: Executing binary...Done! Size = " << size << endl;
       for(int i = 0; i < size/4; i++)
 	{
@@ -189,7 +189,7 @@ PhosFeeClient::ReadRegisters(const int regType, const char *feeServerName, const
 
 	  const int htsize_res = binaryCompilerPtr->MakeReadResultMemoryBinary(tmpBinReadData, N*2);
 	  //cout << "PhosFeeClient::ReadRegisters: Executing binary_MEM" << endl;
-	  size = ExecuteBinary(feeServerName, tmpBinReadData, tmpBinReadResultBuffer, 1, htsize_res);
+	  size = ExecuteBinary(feeServerName, tmpBinReadData, tmpBinReadResultBuffer, 1);
 	  //cout << "PhosFeeClient::ReadRegisters: Executing binary_MEM...Done! Size = " << size << endl;
 	  //	  for(int i = 0; i < size/4; i++)
 	  int j = 0;
@@ -414,7 +414,7 @@ PhosFeeClient::ExecuteScript(const char *scriptFilename, const char *feeServerNa
 }
 
 int
-PhosFeeClient::ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> &  resultBuffer, const int N, const int headerTrailersize)
+PhosFeeClient::ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> &  resultBuffer, const int N)
 {
 
   vector<unsigned int> data;

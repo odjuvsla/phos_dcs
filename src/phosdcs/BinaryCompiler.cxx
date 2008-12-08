@@ -87,9 +87,8 @@ BinaryCompiler::MakeWriteReadRcuMemoryBlockBinary(vector<unsigned long> & binDat
       binData.push_back(value[i]);
 
     }
-
   binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
-  
+
   return 0; 
 }
 
