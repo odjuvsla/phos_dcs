@@ -540,8 +540,8 @@ Rcu::EnableTrigger() const
 {
   char resultBuffer[50];
   char tmpFileName[1024];  
-  //  sprintf(tmpFileName,"%s/s_enabletrigger.txt" ,fPhosDcsScriptDir ); 
-  sprintf(tmpFileName,"s_enabletrigger.txt"); 
+  sprintf(tmpFileName,"%s/s_enabletrigger.txt" ,fPhosDcsScriptDir ); 
+  //sprintf(tmpFileName,"s_enabletrigger.txt"); 
   fFeeClientPtr->ExecuteScript(tmpFileName, fFeeServerName, resultBuffer, 50);
   //  cout <<   "Enabeling external RCU trigger for : %s  ...... Done ! "  << endl;
   printf("Enabeling external RCU trigger for : %s  ...... Done ! ", fFeeServerName);
@@ -553,8 +553,8 @@ Rcu::EnableTrigger_ttcrx() const
 {
   char resultBuffer[50];
   char tmpFileName[1024];  
-  // sprintf(tmpFileName,"%s/s_enabletrigger_ttcrx.txt" ,fPhosDcsScriptDir );  
-  sprintf(tmpFileName,"s_enabletrigger_ttcrx.txt");  
+  sprintf(tmpFileName,"%s/s_enabletrigger_ttcrx.txt" ,fPhosDcsScriptDir );  
+  //sprintf(tmpFileName,"s_enabletrigger_ttcrx.txt");  
   fFeeClientPtr->ExecuteScript( tmpFileName, fFeeServerName, resultBuffer, 50);
   printf("Enabeling ttcrx trigger for : %s  ...... Done ! ", fFeeServerName);
   //  cout <<  "Enabeling trigger over TTCRx for: %s  ...... Done ! " << endl;
@@ -566,8 +566,8 @@ Rcu::DisArmTrigger() const
 {
   char tmpFileName[1024];
   char resultBuffer[50];
-  // sprintf(tmpFileName,"%s/s_disarmtrigger.txt" ,fPhosDcsScriptDir );
-  sprintf(tmpFileName,"s_disarmtrigger.txt");
+  sprintf(tmpFileName,"%s/s_disarmtrigger.txt" ,fPhosDcsScriptDir );
+  //sprintf(tmpFileName,"s_disarmtrigger.txt");
   fFeeClientPtr->ExecuteScript(tmpFileName,  fFeeServerName, resultBuffer, 50);
 }
 

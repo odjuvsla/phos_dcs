@@ -97,7 +97,7 @@ public:
   static char fDatabaseFolder[1024];
   static char fSandboxFolder[1024];
   static char fPhosDcsDir[1024]; 
-  //  static char fPhosDcsScriptDir[1024];
+  static char fPhosDcsScriptDir[1024];
   //  static char fPhosDcsBinDir[1024];
   // static char fPhosDcsLibDir[1024];
   //  static char fPhosDcsSourceDir[1024];

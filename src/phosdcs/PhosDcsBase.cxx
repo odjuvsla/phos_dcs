@@ -12,7 +12,7 @@ char PhosDcsBase::fDatabaseFolder[1024];
 char PhosDcsBase::fSandboxFolder[1024];
 char PhosDcsBase::fPhosDcsDir[1024];
 
-//char PhosDcsBase::fPhosDcsScriptDir[1024];
+char PhosDcsBase::fPhosDcsScriptDir[1024];
 
 
 PhosDcsBase::PhosDcsBase()
@@ -24,7 +24,8 @@ PhosDcsBase::PhosDcsBase()
 
       if(tmpDcsDir != 0)
 	{
-	  sprintf(fPhosDcsDir, "%s", tmpDcsDir);
+	  //	  sprintf(fPhosDcsDir, "%s", tmpDcsDir);
+	  sprintf(fPhosDcsDir, "../../");
 	}
       else
 	{
@@ -39,7 +40,8 @@ PhosDcsBase::PhosDcsBase()
 	}
       else
 	{
-	  sprintf(fDatabaseFolder, "%s/data/",getenv("PWD"));
+	  //	  sprintf(fDatabaseFolder, "%s/data/",getenv("PWD"));
+	  sprintf(fDatabaseFolder, "../../data/");
 	  cout <<"WARNING: environment variable PHOS_DCS_CONFIGDATA not set "<< endl;
 	  cout <<"assuming the data is contained in directory"<< fDatabaseFolder <<endl; 
 	}
@@ -47,7 +49,7 @@ PhosDcsBase::PhosDcsBase()
       sprintf(fSandboxFolder,"%s/APD_settings/", fDatabaseFolder);
       strcat(fDatabaseFolder,  "/ConfigurationFiles/");
 
-      //      sprintf(fPhosDcsScriptDir, "%s/scripts/",fPhosDcsDir);
+      sprintf(fPhosDcsScriptDir, "%s/",fPhosDcsDir);
 
       fParamIsSet = true;  
     }
@@ -60,15 +62,15 @@ PhosDcsBase::~PhosDcsBase()
 
 }
 
-/*
-void
-PhosDcsBase::SetScriptDir(char *dir)
-{
-  sprintf(fPhosDcsScriptDir, getenv("PWD"));
-  printf("\nPhosDcsBase::SetScriptDir,fPhosDcsScriptDir set to %s\n", fPhosDcsScriptDir);
 
-}
- */
+// void
+// PhosDcsBase::SetScriptDir(char *dir)
+// {
+//   sprintf(fPhosDcsScriptDir, getenv("PWD"));
+//   printf("\nPhosDcsBase::SetScriptDir,fPhosDcsScriptDir set to %s\n", fPhosDcsScriptDir);
+
+// }
+
 
 int
 PhosDcsBase::ScanTextFromFile(const char *fileName, char *description, const int maxSize)

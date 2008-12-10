@@ -55,7 +55,7 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
 
   void ExecuteScript(const char *scriptFilename, const char *feeServerName, char *resultBuffer, const int N);
 
-  int ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> & resultBuffer, const int N, const int headerTrailerSize);
+  int ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> & resultBuffer, const int N);
   void ExecuteInstruction(const char* feeServerName);
   
   const unsigned int CheckFeeState(const char *feeServerName,  const int branch, const int cardNumber, char *message, unsigned long int *pcmv = 0);
