@@ -73,7 +73,6 @@ DcsInterface::ApplyTruSettings(int modID, int RcuID, char *Mesbuf, unsigned long
 int 
 DcsInterface::ArmTrigger(const int modID) const
 {
-  cout << "DcsInterface::ArmTrigger" << endl;
   return fPhosDetectorPtr->ArmTrigger(modID);
 }
 
@@ -231,7 +230,7 @@ DcsInterface::SetAllApds(const int modID, const int rcuId, const int branch, con
 void 
 DcsInterface::SetApdValues(const int mod, const int rcu, const int branch, const int cardId, const unsigned long *values)
 {
-  cout <<"DcsInterface::SetApdValues; mod  =" << mod <<"  rcu = "<< rcu <<"  branch = "<< branch << "card = " <<  cardId <<endl;  
+  //cout <<"DcsInterface::SetApdValues; mod  =" << mod <<"  rcu = "<< rcu <<"  branch = "<< branch << "card = " <<  cardId <<endl;  
   FeeCard *tmpFeeCard  = GetFeeCard(mod,  rcu, branch, cardId);
   tmpFeeCard->SetApdValues(values);
 }
