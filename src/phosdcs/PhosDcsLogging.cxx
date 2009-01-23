@@ -12,7 +12,7 @@ PhosDcsLogging* PhosDcsLogging::fInstance = 0;
 
 PhosDcsLogging::PhosDcsLogging() :
   fFileLogLevel(LOG_LEVEL_EXTREME_VERBOSE),
-  fTerminalLogLevel(LOG_LEVEL_NONE),
+  fTerminalLogLevel(LOG_LEVEL_VERBOSE),
   fLogViewerLevel(LOG_LEVEL_DEFAULT),
   fLogFile(),
   fLogViewerStringStream()
@@ -31,8 +31,7 @@ PhosDcsLogging::PhosDcsLogging() :
   stringstream datestamp;
   
   GetTimeStamp(timestamp, datestamp); 
-
-  filename << "log/" << datestamp.str() << "_" << timestamp.str() << ".log";
+   filename << "log/" << datestamp.str() << "_" << timestamp.str() << ".log";
   
   fLogFile.open(filename.str().c_str());
   //fLogFile.open("log/test.log");
@@ -66,7 +65,7 @@ PhosDcsLogging* PhosDcsLogging::Instance()
 
 void PhosDcsLogging::Logging(string logmsg, unsigned int level)
 {
-
+  
   string tmplogmsg = fLogLevels[level] + ": " + logmsg;
   if(level <= fFileLogLevel)
     {

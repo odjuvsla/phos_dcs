@@ -602,19 +602,24 @@ Rcu::IsActiveFee(const int branch, const int card) const
   unsigned long int mask = 0x1;
   int shift =  (branch*16 +card);
   mask = mask << shift;
-  unsigned long res = (mask & fActiveFeeList);
 
   stringstream log;
+
+  log << "Rcu::IsActiveFee: mask = 0x"  << hex << mask << "  -  fActiveFeeList = 0x" << fActiveFeeList << dec;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
+  unsigned long res = (mask & fActiveFeeList);
+
   if(res == 0)
     {
       tmp = false;
-      
+      log.str("");
       log << "Rcu::IsActiveFee: branch "  << branch << "  card " << card <<"  is not active";
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
     }
   else
     {
       tmp = true;
+      log.str("");
       log << "Rcu::IsActiveFee: branch "  << branch << "  card " << card <<"  IS!!! active";
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
     }
@@ -713,18 +718,18 @@ Rcu::SetFeeServer(const char *name)
 {
 
    sprintf(fFeeServerName,"%s",name);
-//   stringstream log;
-//   log << "ServerName was set to: " << fFeeServerName;
-//   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
-//   if( fFeeClientPtr !=0)
-//     {
-//       fFeeClientPtr->registerFeeServerName(fFeeServerName); 
-//       cout << "Registered FeeServername" << endl;
-//     }
-//   else
-//     {
-//       cout << "Rcu::SetFeeServerName: !!! ERROR, fFeeClientPtr = NULL !!!!!!!!!! " << endl;
-//     }
+  stringstream log;
+  log << "ServerName was set to: " << fFeeServerName;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+  if( fFeeClientPtr !=0)
+    {
+      fFeeClientPtr->registerFeeServerName(fFeeServerName); 
+      cout << "Registered FeeServername" << endl;
+    }
+  else
+    {
+      cout << "Rcu::SetFeeServerName: !!! ERROR, fFeeClientPtr = NULL !!!!!!!!!! " << endl;
+    }
 }
 
 
