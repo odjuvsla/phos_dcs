@@ -34,8 +34,6 @@ ScriptCompiler::ScriptCompiler() : PhosDcsBase()
 }
 
 
-
-
 void 
 ScriptCompiler::MakeTriggerConfigScript(const char *filename,  TriggerMode_t triggerMode, const AltroConfig_t altroconfig) 
 {
@@ -58,8 +56,8 @@ ScriptCompiler::MakeTriggerConfigScript(const char *filename,  TriggerMode_t tri
   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROCFG2, altroconfig.GetNPreSamples().GetIntValue());  
 
   // The L1 latency and L1 msg latency. Hardcoded for the moment...
-  //fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_LATENCY, 0x20e0); //224 bunch crossings (5.3 us)
-  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_LATENCY, 0x2104);  // 260 bunch crossings (6.5 us)
+  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_LATENCY, 0x20e0); //224 bunch crossings (5.3 us)
+  //fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_LATENCY, 0x2104);  // 260 bunch crossings (6.5 us)
 
   // fprintf(fp, "w 0x%x  0x%x\n", 0x400a, 0xe04e20);  
   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_MSG_LATENCY, 0x1040c80);   //More correct value? 
