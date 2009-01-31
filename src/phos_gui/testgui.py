@@ -12,23 +12,24 @@ class testGui(QtGui.QMainWindow, window_class):
     def __init__(self, *args):
         QtGui.QMainWindow.__init__(self, *args)
         self.setupUi(self)
-        print self.pushButton_rcu_update_status.text()
-        print self.pushButton_rcu_update_status.geometry().x()
-        print self.pushButton_rcu_update_status.geometry().y()
-        print self.pushButton_rcu_view.geometry().x()
-        print self.pushButton_rcu_view.geometry().y()
+        
+    def initFee(self):
 
-        tmpQrect = copy.deepcopy(self.fee_1.geometry())
-        tmpQrect.setX(tmpQrect.x()+12)
+        tmpQrect = copy.deepcopy(self.fee_1_a.geometry())
 
-        #self.push_test = QtGui.QPushButton(self.tab_modules.currentWidget())
-#        self.push_test = QtGui.QPushButton(self.frame_rcu0)
-#        self.push_test = QtGui.QPushButton()
- #       tmpQrect = self.pushButton_rcu_update_status.geometry()
+        self.pushButton_fee_a = range(14)
+        self.pushButton_fee_a[0] = self.fee_1_a
+        
+        for i in range(1,14):
 
-#        self.push_test.setGeometry(tmpQrect)
+            self.pushButton_fee_a[i] = QtGui.QPushButton(self.frame_rcu0)
+            tmpQrect.setX(tmpQrect.x()+11)
+            tmpQrect.setWidth(16)
+            self.pushButton_fee_a[i].setGeometry(tmpQrect)
 
+            
 window = testGui()
+window.initFee()
 window.show()
 app.exec_()
 

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <ctime>
 #include <vector>
+#include <cstdlib>
 
 PhosDcsLogging* PhosDcsLogging::fInstance = 0;
 

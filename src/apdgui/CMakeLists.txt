@@ -22,6 +22,7 @@ ADD_CUSTOM_COMMAND(
    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && rootcint -f PhosDcsDICT.cxx -c ${DINCLUDEPATH} ${DHEADERS}
    )
 
+#SET(RLIBS Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Gui
 SET(RLIBS Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Gui
 	  Postscript Matrix Physics MathCore Thread VMC Geom 
 	  EG dl pthread TreePlayer ProofPlayer Proof Minuit)

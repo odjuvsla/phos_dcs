@@ -23,12 +23,13 @@
 #include "Rcu.h"
 #include "FeeCard.h"
 #include "PhosDataTypes.h"
+#include <vector>
 
 //DcsInterface::DcsInterface() : PhosDcsBase()
 DcsInterface::DcsInterface()
 {
   fPhosDetectorPtr = new PhosDetector();
-  PhosModule* tmpPhosModulePtr = fPhosDetectorPtr->GetModulePtr(MODULE_2);
+ 
 
 //   tmpPhosModulePtr->CreateRcu("tpc-fee_0_17_3", MODULE_2, RCU_0, Z_0, X_0);
 //   tmpPhosModulePtr->CreateRcu("tpc-fee_0_17_3", MODULE_2, RCU_1, Z_1, X_0);
@@ -40,13 +41,13 @@ DcsInterface::DcsInterface()
 //  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_2, Z_0, X_1);
 //  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_3, Z_1, X_1);
 
-  tmpPhosModulePtr->CreateRcu("alphsdcs0282", MODULE_2, RCU_0, Z_0, X_0);
-  tmpPhosModulePtr->CreateRcu("alphsdcs0279", MODULE_2, RCU_1, Z_1, X_0);
-  tmpPhosModulePtr->CreateRcu("alphsdcs0281", MODULE_2, RCU_2, Z_0, X_1);
-  tmpPhosModulePtr->CreateRcu("alphsdcs0280", MODULE_2, RCU_3, Z_1, X_1);
+//   tmpPhosModulePtr->CreateRcu("alphsdcs0282", MODULE_2, RCU_0, Z_0, X_0);
+//   tmpPhosModulePtr->CreateRcu("alphsdcs0279", MODULE_2, RCU_1, Z_1, X_0);
+//   tmpPhosModulePtr->CreateRcu("alphsdcs0281", MODULE_2, RCU_2, Z_0, X_1);
+//   tmpPhosModulePtr->CreateRcu("alphsdcs0280", MODULE_2, RCU_3, Z_1, X_1);
   
-  fPhosDetectorPtr->StartFeeClient();
-  fDatabasePtr = new DatabaseDummy();
+//  fPhosDetectorPtr->StartFeeClient();
+//  fDatabasePtr = new DatabaseDummy();
 }
 
 
@@ -56,6 +57,42 @@ DcsInterface::~DcsInterface()
 
 }
 
+int DcsInterface::Init(vector<FeeServer> feeServers)
+{
+  PhosModule* tmpPhosModulePtr = fPhosDetectorPtr->GetModulePtr(MODULE_2);
+  
+  vector<FeeServer>::iterator server;
+  
+  int ret = 0;
+  
+  server = feeServers.begin();
+  while(server != feeServers.end())
+    {
+      tmpPhosModulePtr->CreateRcu((*server).fName.c_str(), (*server).fModId, (*server).fRcuId, (*server).fZ, (*server).fX);
+      server++;
+    }
+  
+  ret = fPhosDetectorPtr->StartFeeClient();
+  if(ret > 0) 
+    {
+      char tmp[256];
+      server = feeServers.begin();
+      while(server != feeServers.end())
+	{
+	  DisArmTrigger((*server).fModId, (*server).fRcuId, tmp);
+	  server++;
+	}
+    }
+  fDatabasePtr = new DatabaseDummy();
+
+  return ret;
+
+}
+
+int DcsInterface::DeInit()
+{
+  return fPhosDetectorPtr->StopFeeClient();
+}
 
 void 
 DcsInterface::ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card, char *messageBuffer) const 

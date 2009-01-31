@@ -4,10 +4,6 @@ PROJECT(phos_dcs)
 
 ENABLE_TESTING()
 
-#SET(CMAKE_CXX_FLAGS "-W -Wall -Weffc++ -Woverloaded-virtual -fPIC -pipe -fmessage-length=0 -Wno-long-long -Dlinux")
-#SET(CMAKE_EXE_LINKER_FLAGS "-Wall,--warn-unresolved-symbols")
-#SET(CMAKE_SHARED_LINKER_FLAGS "-Wall,--warn-unresolved-symbols")
-
 SET(FEECLIENT $ENV{FEECLIENT})
 SET(ROOTSYS $ENV{ROOTSYS})
 

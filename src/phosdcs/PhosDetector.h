@@ -39,7 +39,8 @@ class PhosDetector : public PhosDcsBase
   Rcu*  GetRcuPtr(const int modId, const int rcuId) const;
   void DisArmTrigger(const int modId, const int rcuId, char *messageBuffer) const;
   void SetPhosBit(const int modId) const; 
-  void StartFeeClient() const; 
+  int StartFeeClient() const; 
+  int StopFeeClient() const; 
   const int ArmTrigger() const;
   const int ArmTrigger(const int moduleId) const;
   void LoadApdValues();

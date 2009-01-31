@@ -22,7 +22,7 @@
 
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
-
+#include <vector>
 
 
 class FeeCard;
@@ -30,14 +30,19 @@ class PhosDetector;
 class PhosModule;
 class DatabaseDummy;
 class Rcu;
+class FeeServer;
 
 struct ConfigInfo_t;
 
-class  DcsInterface : public PhosDcsBase
+class DcsInterface : public PhosDcsBase
 {
  public:
                   DcsInterface();
   virtual         ~DcsInterface();
+
+  int             Init(vector<FeeServer> feeServers);
+  int             DeInit();
+
   void            ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card, char *messageBuffer) const;
   void            ApplyTruSettings(int modID, int RcuID, char *Mesbuf, unsigned long *regAddr, unsigned long *regVal, bool *verify, int nTruRegs);
   //  void            ApplyTruSettings(int modID, int RcuID, char *Mesbuf, unsigned long *regAddr, unsigned long *regVal, bool *verify, int nTruRegs);
@@ -77,12 +82,14 @@ class  DcsInterface : public PhosDcsBase
   unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
   void            TurnOnAllFee(const int  modID, const int rcuId) const ;
   void            TurnOnAllTru( const int  modID, const int rcuId, char *message = 0) const; 
-  unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
-  unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  //unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage) {}
+  //unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage) {}
   void            TurnOffAllFee(const int modID, const int rcuId) const;
   void            TurnOffAllTru(const int  modID, const int rcuId, char *message = 0) const; 
-  unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
-  unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage) {}
+  unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage) {}
   void            UpdateAFL(const int mod, const int rcu) const;
 
  private:

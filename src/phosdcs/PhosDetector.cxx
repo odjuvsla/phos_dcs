@@ -102,12 +102,17 @@ PhosDetector::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t r
 }
 
 
-void
+int
 PhosDetector::StartFeeClient() const
 {
-  fFeeClientPtr->startFeeClient();
+  return fFeeClientPtr->startFeeClient();
 }
 
+int
+PhosDetector::StopFeeClient() const
+{
+  return fFeeClientPtr->stopFeeClient();
+}
 
 void
 PhosDetector::SetPhosBit(const int moduleId) const
