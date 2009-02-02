@@ -29,7 +29,7 @@
      <attribute name="title" >
       <string>Module 0</string>
      </attribute>
-     <widget class="QTextBrowser" name="textBrowser" >
+     <widget class="QTextBrowser" name="log_viewer" >
       <property name="geometry" >
        <rect>
         <x>20</x>
@@ -54,10 +54,10 @@
       <property name="frameShadow" >
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QPushButton" name="fee0_2" >
+      <widget class="QPushButton" name="fee_1_b" >
        <property name="geometry" >
         <rect>
-         <x>250</x>
+         <x>240</x>
          <y>0</y>
          <width>16</width>
          <height>111</height>
@@ -68,9 +68,12 @@
        </property>
       </widget>
       <widget class="QPushButton" name="pushButton_rcu_update_status" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
        <property name="geometry" >
         <rect>
-         <x>510</x>
+         <x>500</x>
          <y>10</y>
          <width>111</width>
          <height>31</height>
@@ -80,23 +83,10 @@
         <string>Update status</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_22" >
+      <widget class="QPushButton" name="fee_1_a" >
        <property name="geometry" >
         <rect>
-         <x>200</x>
-         <y>0</y>
-         <width>16</width>
-         <height>111</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>E</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="fee_1" >
-       <property name="geometry" >
-        <rect>
-         <x>70</x>
+         <x>60</x>
          <y>0</y>
          <width>16</width>
          <height>111</height>
@@ -106,23 +96,10 @@
         <string>1</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_37" >
-       <property name="geometry" >
-        <rect>
-         <x>380</x>
-         <y>0</y>
-         <width>16</width>
-         <height>111</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>E</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="pushButton_rcu_toggle" >
        <property name="geometry" >
         <rect>
-         <x>510</x>
+         <x>500</x>
          <y>40</y>
          <width>111</width>
          <height>31</height>
@@ -135,7 +112,7 @@
       <widget class="QPushButton" name="pushButton_rcu_view" >
        <property name="geometry" >
         <rect>
-         <x>510</x>
+         <x>500</x>
          <y>70</y>
          <width>111</width>
          <height>31</height>
@@ -145,10 +122,10 @@
         <string>RCU View</string>
        </property>
       </widget>
-      <widget class="Line" name="line8" >
+      <widget class="Line" name="rcu_line_3" >
        <property name="geometry" >
         <rect>
-         <x>480</x>
+         <x>470</x>
          <y>10</y>
          <width>20</width>
          <height>91</height>
@@ -158,7 +135,7 @@
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
-      <widget class="Line" name="line7" >
+      <widget class="Line" name="rcu_line_2" >
        <property name="geometry" >
         <rect>
          <x>400</x>
@@ -174,7 +151,7 @@
       <widget class="QPushButton" name="pushButton_41" >
        <property name="geometry" >
         <rect>
-         <x>430</x>
+         <x>420</x>
          <y>0</y>
          <width>16</width>
          <height>111</height>
@@ -187,7 +164,7 @@
       <widget class="QPushButton" name="pushButton_42" >
        <property name="geometry" >
         <rect>
-         <x>460</x>
+         <x>450</x>
          <y>0</y>
          <width>16</width>
          <height>111</height>
@@ -197,7 +174,7 @@
         <string>B</string>
        </property>
       </widget>
-      <widget class="Line" name="line6" >
+      <widget class="Line" name="rcu_line_1" >
        <property name="geometry" >
         <rect>
          <x>220</x>
@@ -210,7 +187,7 @@
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
-      <widget class="Line" name="line5" >
+      <widget class="Line" name="rcu_line_0" >
        <property name="geometry" >
         <rect>
          <x>40</x>
@@ -228,7 +205,7 @@
         <rect>
          <x>20</x>
          <y>10</y>
-         <width>21</width>
+         <width>16</width>
          <height>91</height>
         </rect>
        </property>
@@ -287,10 +264,10 @@
       <property name="frameShadow" >
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="Line" name="line4" >
+      <widget class="Line" name="title_line_3" >
        <property name="geometry" >
         <rect>
-         <x>480</x>
+         <x>470</x>
          <y>0</y>
          <width>20</width>
          <height>41</height>
@@ -300,7 +277,7 @@
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
-      <widget class="Line" name="line2" >
+      <widget class="Line" name="title_line_2" >
        <property name="geometry" >
         <rect>
          <x>400</x>
@@ -313,7 +290,7 @@
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
-      <widget class="Line" name="line1" >
+      <widget class="Line" name="title_line_1" >
        <property name="geometry" >
         <rect>
          <x>220</x>
@@ -326,7 +303,7 @@
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
-      <widget class="Line" name="line0" >
+      <widget class="Line" name="title_line_0" >
        <property name="geometry" >
         <rect>
          <x>40</x>
@@ -393,11 +370,6 @@
       </widget>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab_2" >
-     <attribute name="title" >
-      <string>Tab 2</string>
-     </attribute>
-    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar" >
@@ -406,7 +378,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
