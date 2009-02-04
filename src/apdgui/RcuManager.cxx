@@ -317,7 +317,7 @@ RcuManager::HandleOnOffFeeSlot(Int_t branch, Int_t card, Int_t state)
     {
       cout << "RcuManager::HandleOnOffFeeSlot(Int_t branch, Int_t card) : branch =" << branch <<"   card =" << card << "  state =  " << state  <<endl;
       unsigned int tmpStates[CARDS_PER_RCU];
-      fDcsInterfacePtr->ToggleOnOffFee(fCurrentModule->GetIntValue(),  fCurrentRcu,  branch, card, state, tmpStates, tmpMessage);      
+      fDcsInterfacePtr->ToggleOnOffFee(fCurrentModule->GetIntValue(),  fCurrentRcu,  branch, card, state, tmpStates);      
 
       for(int i=0; i< CARDS_PER_RCU; i++)
 	{

@@ -4,10 +4,10 @@ import copy
 
 from PyQt4 import QtCore, QtGui, uic
 
-app = QtGui.QApplication(sys.argv)
+
 window_class, base_class = uic.loadUiType("phos_gui.ui")
 
-class testGui(QtGui.QMainWindow, window_class):
+class phosGui(QtGui.QMainWindow, window_class):
 
     def __init__(self, *args):
         QtGui.QMainWindow.__init__(self, *args)

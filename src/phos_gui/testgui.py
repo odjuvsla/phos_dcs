@@ -3,11 +3,15 @@ import sys
 import copy
 
 from PyQt4 import QtCore, QtGui, uic
+from phos_gui import *
+import DcsInterface
 
 app = QtGui.QApplication(sys.argv)
-window_class, base_class = uic.loadUiType("phos_gui.ui")
 
-        
+dcs_interface = DcsInterface.DcsInterface()
+
+
+
 window = phosGui()
 window.show()
 app.exec_()
