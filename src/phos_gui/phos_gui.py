@@ -3,7 +3,7 @@ import sys
 import copy
 
 from PyQt4 import QtCore, QtGui, uic
-
+from PhosConst import *
 
 window_class, base_class = uic.loadUiType("phos_gui.ui")
 

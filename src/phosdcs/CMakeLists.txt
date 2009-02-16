@@ -28,10 +28,13 @@ FIND_LIBRARY(DIMLIB dim FEECLIENT/lib)
 SET(CMAKE_SWIG_FLAGS "")
 
 SET_SOURCE_FILES_PROPERTIES(DcsInterface.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(PhosConst.i PROPERTIES CPLUSPLUS ON)
 #SET_SOURCE_FILES_PROPERTIES(DcsInterface.i PROPERTIES SWIG_FLAGS "-includeall")
 SWIG_ADD_MODULE(DcsInterface python DcsInterface.i DcsInterface.cxx)
+SWIG_ADD_MODULE(PhosConst python PhosConst.i PhosConst.h)
 #SWIG_ADD_MODULE(DcsInterface interfaces/DcsInterface.i DcsInterface.cxx)
 SWIG_LINK_LIBRARIES(DcsInterface PhosDcs ${FEECLIENT}/lib/libdim.so ${FEECLIENT}/lib/libFeeClient.so ${PYTHON_LIBRARIES})
+SWIG_LINK_LIBRARIES(PhosConst PhosDcs ${FEECLIENT}/lib/libdim.so ${FEECLIENT}/lib/libFeeClient.so ${PYTHON_LIBRARIES})
 
 
 INSTALL(TARGETS PhosDcs

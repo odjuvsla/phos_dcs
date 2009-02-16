@@ -431,7 +431,7 @@ class ReadoutConfig_t
 class ConfigInfo_t
 {
  public:
-  const ConfigInfo_t & operator = (const ConfigInfo_t &t);
+  const ConfigInfo_t & operator= (const ConfigInfo_t &t);
   char fInfo[1024];
   int fID; 
   int fIDLimit;

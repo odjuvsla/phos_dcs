@@ -13,4 +13,4 @@ FIND_LIBRARY(DIMLIB libdim.so FEECLIENT/lib)
 INCLUDE_DIRECTORIES(src/phosdcs src/apdgui ${FEECLIENT}/include ${ROOTSYS}/include)
 
 ADD_SUBDIRECTORY(src/phosdcs)
-ADD_SUBDIRECTORY(src/apdgui)
+#ADD_SUBDIRECTORY(src/apdgui)

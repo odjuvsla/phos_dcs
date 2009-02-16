@@ -4,6 +4,7 @@ import copy
 
 from PyQt4 import QtCore, QtGui
 from DcsInterface import *
+from PhosConst import *
 from threading import *
 
 
@@ -96,8 +97,7 @@ class FeeCardHandler(PHOSHandler):
     def applyApdSettings(self, feeId):
         """Apply APD settings for this card"""
 
-        self.feeId = feeId
-        applyApdThread = self.__ApplyApdThread(self.feeId, self.dcs_interface_wrapper)
+        applyApdThread = self.__ApplyApdThread(feeId, self.dcs_interface_wrapper)
         self.connect(applyApdThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
         self.connect(applyApdThread, QtCore.SIGNAL("settingApplied"), self.emit_signal)
         applyApdThread.start()
@@ -256,10 +256,8 @@ class RcuHandler(PHOSHandler):
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
             
             moduleId, rcuId = self.GetRcuLogicalIDs(self.rcuId)
-            status = 0
-#            status = vectorint(1)
-            
-#            dcs_interface.UpdateFeeStatus(moduleId, rcuId, status)
+
+            status = dcs_interface.UpdateFeeStatus(moduleId, rcuId)
 
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog")
             
@@ -307,4 +305,46 @@ class DetectorHandler():
         self.dcs_interface.DeInit()
         self.fee_servers.clear()
         print 'stopping fee client'
+
+
+class LogHandler(PHOSHandler):
+    """Class for handling the logging system"""
+
+    def __init__(self, dcs_interface):
+        """init takes a DcsInterfaceThreadWrapper object as argument"""
+        PHOSHandler.__init__(self)
+        self.dcs_interface_wrapper = dcs_interface
+
+    def getLogString(self, moduleId):
+        """ Gets log strings from the different modules"""
+        
+        getLogThread = __GetLogThread(moduleId, self.dcs_interface_wrapper)
+
+        self.connect(getLogThread, QtCore.SIGNAL("gotLog"), self.emit_signal)
+
+        getLogThread.start()
+
+    class __GetLogThread(Thread, PHOSHandler):
+        """Member threading class for getting the log"""
+        
+        def __init__(self, moduleId, dcs_interface_wrapper):
+            """init takes DcsInterfaceThreadWrapper and module ID as argument"""
+
+            self.moduleId = moduleId
+            self.dcs_interface_wrapper = dcs_interface_wrapper
+            Thread.__init__(self)
+            PHOSHandler.__init__(self)
+
+        def run(self):
+            """Run the thread"""
+            
+            dcs_interface = dcs_interface_wrapper.getDcsInterface()
+
+            logString = dcs_interface.GetLogViewerString()
+
+            self.emit(Qtcore.SIGNAL("gotLog"), self.moduleId)
+
+
+
+    
 

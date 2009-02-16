@@ -105,9 +105,9 @@ class MainWindow(QtGui.QMainWindow):
         
         print 'Operation finished!'
 
-#        for val in args:
-#        print args[0]
-#        print args[1]
+#         n = args[0]
+#         for i in n:
+#             print n[i]
 
 #         print "feeId: " + str(args[0])
 #         print "state: " + str(args[1])

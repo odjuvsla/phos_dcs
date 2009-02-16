@@ -19,3 +19,7 @@
 namespace std {
    %template(vectorfee) vector<FeeServer>;
 };
+
+namespace std {
+   %template(vectorint) vector<int>;
+};

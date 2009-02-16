@@ -23,14 +23,15 @@
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
 #include <vector>
-
-
+#include <string>
 class FeeCard;
 class PhosDetector;
 class PhosModule;
 class DatabaseDummy;
 class Rcu;
 class FeeServer;
+
+
 
 struct ConfigInfo_t;
 
@@ -59,6 +60,7 @@ class DcsInterface : public PhosDcsBase
   void            GetConfigComment(char *text, const int id);
   FeeCard*        GetFeeCard(const int mod, const int rcu, const int branch, const int cardId) const;
   int             GetLatestConfigId();
+  std::string     GetLogViewerString();
   Rcu*            GetRcuPtr(const int modID, const int rcuID) const;
 
   void            LoadApdConfig(ConfigInfo_t *info);
@@ -91,7 +93,7 @@ class DcsInterface : public PhosDcsBase
   unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]) {}
   unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]) {}
   void            UpdateAFL(const int mod, const int rcu) const;
-  void            UpdateFeeStatus(const int mod, const int rcu, vector<int>& status);
+  vector<int>     UpdateFeeStatus(const int mod, const int rcu);
 
  private:
   DatabaseDummy   *fDatabasePtr;

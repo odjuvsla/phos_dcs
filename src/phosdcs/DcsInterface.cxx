@@ -24,6 +24,7 @@
 #include "FeeCard.h"
 #include "PhosDataTypes.h"
 #include <vector>
+#include "PhosDcsLogging.h"
 
 //DcsInterface::DcsInterface() : PhosDcsBase()
 DcsInterface::DcsInterface()
@@ -77,11 +78,10 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
   ret = fPhosDetectorPtr->StartFeeClient();
   if(ret > 0) 
     {
-      char tmp[256];
       server = feeServers.begin();
       while(server != feeServers.end())
 	{
-	  DisArmTrigger((*server).fModId, (*server).fRcuId, tmp);
+	  DisArmTrigger((*server).fModId, (*server).fRcuId);
 	  server++;
 	}
     }
@@ -354,24 +354,30 @@ DcsInterface::UpdateAFL(const int mod, const int rcu) const
   tmpRcuPtr->UpdateAFL();
 }
 
-void
-UpdateFeeStatus(const int mod, const int rcu, vector<int>& status)
+vector<int>
+DcsInterface::UpdateFeeStatus(const int mod, const int rcu)
 {
+  vector<int> status;
+
   status.clear();
   for(int i = 0; i < CARDS_PER_BRANCH; i++)
     {
-      status.push_back(CheckFeeState(mod, rcu, BRANCH_A));
+      //      status.push_back(CheckFeeState(mod, rcu, BRANCH_A, i+1));
+      status.push_back(i);
     }
   for(int i = 0; i < CARDS_PER_BRANCH; i++)
     {
-      status.push_back(CheckFeeState(mod, rcu, BRANCH_B));
+      //      status.push_back(CheckFeeState(mod, rcu, BRANCH_B, i+1));
+      status.push_back(i);
     }
+  return status;
 }
-// string
-// DcsInterface::GetLogViewerString()
-// {
-//   return PhosDcsLogging::Instance()->GetLogViewerString();
-// }
+
+string
+DcsInterface::GetLogViewerString()
+{
+  return PhosDcsLogging::Instance()->GetLogViewerString();
+}
 
 
 // unsigned int 
