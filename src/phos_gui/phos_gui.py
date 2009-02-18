@@ -14,6 +14,12 @@ class phosGui(QtGui.QMainWindow, window_class):
 
         self.setupUi(self)
 
+        print self.frame_rcu_top.height()
+        print self.frame_rcu_top.width()
+        print self.frame_rcu_top.x()
+        print self.frame_rcu_top.y()
+        
+
         self.buildGui()
 
     def buildGui(self):
@@ -110,7 +116,7 @@ class phosGui(QtGui.QMainWindow, window_class):
             self.pushButton_fee[rcuId][i].setText(hex(i+1)[2:].upper())
 
         tmpQrect = copy.deepcopy(self.fee_1_b.geometry())
-
+        print tmpQrect.height()
         for i in range(14):
 
             self.pushButton_fee[rcuId][i+14] = QtGui.QPushButton(self.rcu_frames[rcuId])

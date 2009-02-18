@@ -379,7 +379,25 @@ DcsInterface::GetLogViewerString()
   return PhosDcsLogging::Instance()->GetLogViewerString();
 }
 
+unsigned int    
+TurnOnTru(const int mod,  const int rcu , const int truId)
+{
+  int tmpStates[CARDS_PER_RCU];
 
+  ToggleOnOffFee(mod, rcu , truId , TRU_SLOT, TURN_ON, tmpStates);
+  
+  return 0;
+}
+
+unsigned int    
+TurnOffTru(const int mod,  const int rcu , const int truId)
+{
+  int tmpStates[CARDS_PER_RCU];
+
+  ToggleOnOffFee(mod, rcu, truId, TRU_SLOT, TURN_OFF, tmpStates);
+  
+  return 0;
+}
 // unsigned int 
 // DcsInterface::TurnOnFee(const int mod,  const int rcu , const int branch , 
 // 			const int cardId,  unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage)

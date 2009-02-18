@@ -5,6 +5,7 @@ import copy
 from PyQt4 import QtCore, QtGui
 from DcsInterface import *
 from PhosConst import *
+from phos_utilities import *
 from threading import *
 
 
@@ -12,31 +13,9 @@ class PHOSHandler(QtCore.QObject):
     """Base class for the handlers"""
 
     def __init__(self):
-        QtCore.QObject.__init__(self)
+        super(QtCore.QObject, self).__init__(self)
 
-    def GetFeeLogicalIDs(self, feeId):
-        """Helper funtion to extract the logical FEE card ID from absolute ID"""
-        moduleId = feeId/(CARDS_PER_RCU*RCUS_PER_MODULE)
-        cardIdInModule = feeId%(CARDS_PER_RCU*RCUS_PER_MODULE)
-            
-        rcuId = cardIdInModule/CARDS_PER_RCU
-        cardIdInRcu = cardIdInModule%CARDS_PER_RCU
-            
-        branchId = cardIdInRcu/CARDS_PER_BRANCH
-        cardIdInBranch = cardIdInRcu%CARDS_PER_BRANCH
-
-        feeId = cardIdInBranch+1
-    
-        return moduleId, rcuId, branchId, feeId
-    #------------------------------------------------------
-
-    def GetRcuLogicalIDs(self, rcuId):
-        """Helper funtion to extract the RCU ID from absolute ID"""
-        moduleId = rcuId/RCUS_PER_MODULE
-        rcuId = rcuId%RCUS_PER_MODULE
-            
-        return moduleId, rcuId
-    #------------------------------------------------------
+        self.idConverter = PhosIdConverter()
 
     def emit_signal(self, signal, *args):
         """Function for forwarding the signals from the thread"""        
@@ -120,7 +99,7 @@ class FeeCardHandler(PHOSHandler):
             # Get the DcsInterface object
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
 
-            moduleId, rcuId, branchId, feeId = self.GetFeeLogicalIDs(self.feeId)
+            moduleId, rcuId, branchId, feeId = self.idConverter.GetFeeLogicalIDs(self.feeId)
 
             currentstate = 0
             tmpStates = [0]*CARDS_PER_RCU
@@ -158,7 +137,7 @@ class FeeCardHandler(PHOSHandler):
             # Get the DcsInterface object
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
 
-            moduleId, rcuId, branchId, feeId = self.GetFeeLogicalIDs(self.feeId)
+            moduleId, rcuId, branchId, feeId = self.idConverter.GetFeeLogicalIDs(self.feeId)
 
             currentstate = 0
             tmpStates = [0]*CARDS_PER_RCU
@@ -225,7 +204,7 @@ class RcuHandler(PHOSHandler):
             # Get the DcsInterface object
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
             
-            moduleId, rcuId = self.GetRcuLogicalIDs(feeId)
+            moduleId, rcuId = self.idConverter.GetRcuLogicalIDs(feeId)
             
             # Here we toggle
             dcs_interface.TurnOnAllFee(moduleId, rcuId)
@@ -255,7 +234,7 @@ class RcuHandler(PHOSHandler):
             
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
             
-            moduleId, rcuId = self.GetRcuLogicalIDs(self.rcuId)
+            moduleId, rcuId = self.idConverter.GetRcuLogicalIDs(self.rcuId)
 
             status = dcs_interface.UpdateFeeStatus(moduleId, rcuId)
 

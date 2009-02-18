@@ -6,6 +6,7 @@ import copy
 from PyQt4 import QtCore, QtGui
 from PhosConst import *
 from phos_buttons import *
+from phos_widgets import *
 
 app = QtGui.QApplication(sys.argv)
 
@@ -15,20 +16,19 @@ class phosGui(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(QtGui.QMainWindow, self).__init__(parent)
         
-        self.resize(480, 640)
+        self.resize(1080, 860)
+        self.initTabs()
+        self.setCentralWidget(self.tabControls)
+    def initTabs(self):
+        
         self.tabControls = QtGui.QTabWidget(self)
         
-        self.setCentralWidget(self.tabControls)
-        
-        self.testWidget = QtGui.QWidget()
-        self.testLayout = QtGui.QVBoxLayout()
-        self.testButton1 = FeePushButton(self.testWidget, 1)
-        self.testButton2 = FeePushButton(self.testWidget, 2)
-        self.testWidget.setLayout(self.testLayout)
-        self.testLayout.addWidget(self.testButton1)
-        self.testLayout.addWidget(self.testButton2)
+        self.moduleTabs = [None]*PHOS_MODS
 
-        self.tabControls.addTab(self.testWidget, "test widget")
+        for i in range(PHOS_MODS):
+            
+            self.moduleTabs[i] = ModuleTabWidget(i)
+            self.tabControls.addTab(self.moduleTabs[i], "Module " + str(i))
 
 window = phosGui()
 window.show()
