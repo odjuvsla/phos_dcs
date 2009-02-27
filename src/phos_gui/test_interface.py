@@ -51,7 +51,7 @@ app = QtGui.QApplication(sys.argv)
 
 
 
-
+global_dcs_interface = DcsInterface()
 
 class MainWindow(QtGui.QMainWindow):
     
@@ -60,14 +60,14 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__(parent)
 
         QtCore.QObject.__init__(self)
-        self.dcs_interface = DcsInterface()
-        self.dcs_interface_wrapper = DcsInterfaceThreadWrapper(self.dcs_interface)
+#        self.dcs_interface = DcsInterface()
+ #       self.dcs_interface_wrapper = DcsInterfaceThreadWrapper(self.dcs_interface)
+        self.dcs_interface_wrapper = DcsInterfaceThreadWrapper(global_dcs_interface)
         
-        self.fee_button = FeePushButton(self, 1)
+        self.fee_button = FeePushButton(self, 23)
         self.rcu_button = RcuUpdateStatusPushButton(self, 1)
 
         tmpQrect = copy.deepcopy(self.rcu_button.geometry())
-
 
         tmpQrect.setX(self.rcu_button.x() + self.rcu_button.width())
         tmpQrect.setWidth(self.rcu_button.width())
@@ -79,7 +79,6 @@ class MainWindow(QtGui.QMainWindow):
         
         self.fee_card_handler = FeeCardHandler(self.dcs_interface_wrapper)
         self.rcu_handler = RcuHandler(self.dcs_interface_wrapper)
-
 
         self.connect(self.fee_button, QtCore.SIGNAL("toggleFee"), self.toggleOnOff)
         self.connect(self.fee_card_handler, QtCore.SIGNAL("cardToggled"), self.printstuff)
@@ -94,15 +93,16 @@ class MainWindow(QtGui.QMainWindow):
         print "Fetch Log!" 
 
     def toggleOnOff(self, feeId):
-        
-        self.fee_card_handler.toggleOnOff(feeId)
 
+        self.fee_card_handler.toggleOnOff(feeId)
+        
     def updateStatus(self, rcuId):
         
         self.rcu_handler.updateStatus(rcuId)
         
     def printstuff(self, *args):
         
+        print args[0]
         print 'Operation finished!'
 
 #         n = args[0]

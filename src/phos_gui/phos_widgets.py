@@ -14,14 +14,19 @@ class ModuleTabWidget(QtGui.QWidget):
         super(QtGui.QWidget, self).__init__(parent)
 
         self.moduleId = moduleId
-
         self.idConverter = PhosIdConverter()
 
         self.initRcus()
         self.initLogViewer()
         self.initModuleIndicator()
         self.initModuleButtons()
+        self.initConnections()
 
+    def emit_signal(self, *args):
+        print "emmiting signal: " + args[0]
+        print "with ID: " + str(args[1])
+        self.emit(QtCore.SIGNAL(args[0]), *args)
+        
     def initRcus(self):
 
         self.rcuTopFrame = RcuTopFrame(self)
@@ -41,7 +46,7 @@ class ModuleTabWidget(QtGui.QWidget):
     def initModuleIndicator(self):
         
         self.moduleIndicatorFrame = QtGui.QFrame(self)
-        self.moduleIndicatorFrame.setGeometry(720, 0, 330, 100)
+        self.moduleIndicatorFrame.setGeometry(760, 0, 330, 100)
         self.moduleIndicatorFrame.setFrameShadow(QtGui.QFrame.Sunken)
         self.moduleIndicatorFrame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.moduleIndicatorFrame.setFixedWidth(330)
@@ -56,45 +61,64 @@ class ModuleTabWidget(QtGui.QWidget):
     def initModuleButtons(self):
         
         self.moduleMainButtonFrame = QtGui.QFrame(self)
-        self.moduleMainButtonFrame.setGeometry(720, 120, 330, 145)
+        self.moduleMainButtonFrame.setGeometry(760, 120, 330, 140)
         self.moduleMainButtonFrame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.moduleMainButtonFrame.setFrameShadow(QtGui.QFrame.Raised)
 
-        self.moduleTurnOnButton = QtGui.QPushButton(self.moduleMainButtonFrame)
+        self.moduleTurnOnButton = ModuleTurnOnButton(self.moduleMainButtonFrame, self.moduleId)
         self.moduleTurnOnButton.setGeometry(5, 5, 320, 60)
-        self.moduleTurnOnButton.setText("Turn On Module Electronics")
         
-        self.moduleShutdownButton = QtGui.QPushButton(self.moduleMainButtonFrame)
-        self.moduleShutdownButton.setGeometry(5, 80, 320, 60)
-        self.moduleShutdownButton.setText("Shutdown Module Electronics")
+        self.moduleShutdownButton = ModuleTurnOffButton(self.moduleMainButtonFrame, self.moduleId)
+        self.moduleShutdownButton.setGeometry(5, 75, 320, 60)
         
         self.moduleConfigurationButtonsFrame = QtGui.QFrame(self)
-        self.moduleConfigurationButtonsFrame.setGeometry(720, 280, 330, 75)
+        self.moduleConfigurationButtonsFrame.setGeometry(760, 275, 330, 75)
         self.moduleConfigurationButtonsFrame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.moduleConfigurationButtonsFrame.setFrameShadow(QtGui.QFrame.Raised)
 
-        self.modulePropertiesButton = QtGui.QPushButton(self.moduleConfigurationButtonsFrame)
+        self.modulePropertiesButton = ModulePropertiesButton(self.moduleConfigurationButtonsFrame, self.moduleId)
         self.modulePropertiesButton.setGeometry(5, 5, 320, 30)
-        self.modulePropertiesButton.setText("Module Properties")
 
-        self.moduleConfigureElectronicsButton = QtGui.QPushButton(self.moduleConfigurationButtonsFrame)
+        self.moduleConfigureElectronicsButton = ModuleConfigureElectronicsButton(self.moduleConfigurationButtonsFrame, self.moduleId)
         self.moduleConfigureElectronicsButton.setGeometry(5, 40, 320, 30)
-        self.moduleConfigureElectronicsButton.setText("Configure Electronics")
         
-        self.moduleConfigurationButtonsFrame = QtGui.QFrame(self)
-        self.moduleConfigurationButtonsFrame.setGeometry(720, 370, 330, 75)
-        self.moduleConfigurationButtonsFrame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.moduleConfigurationButtonsFrame.setFrameShadow(QtGui.QFrame.Raised)
+        self.moduleTriggerButtonsFrame = QtGui.QFrame(self)
+        self.moduleTriggerButtonsFrame.setGeometry(760, 370, 330, 75)
+        self.moduleTriggerButtonsFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.moduleTriggerButtonsFrame.setFrameShadow(QtGui.QFrame.Raised)
 
-        self.modulePropertiesButton = QtGui.QPushButton(self.moduleConfigurationButtonsFrame)
-        self.modulePropertiesButton.setGeometry(5, 5, 320, 30)
-        self.modulePropertiesButton.setText("Module Properties")
+        self.moduleEnableTriggerButton = ModuleEnableTriggerButton(self.moduleTriggerButtonsFrame, self.moduleId)
+        self.moduleEnableTriggerButton.setGeometry(5, 5, 320, 30)
 
-        self.moduleConfigureElectronicsButton = QtGui.QPushButton(self.moduleConfigurationButtonsFrame)
-        self.moduleConfigureElectronicsButton.setGeometry(5, 40, 320, 30)
-        self.moduleConfigureElectronicsButton.setText("Configure Electronics")
+        self.moduleDisableTriggerButton = ModuleDisableTriggerButton(self.moduleTriggerButtonsFrame, self.moduleId)
+        self.moduleDisableTriggerButton.setGeometry(5, 40, 320, 30)
+
+    def initConnections(self):
         
+        for i in range(RCUS_PER_MODULE):
+            self.connect(self.rcus[i], QtCore.SIGNAL("toggleFee"), self.emit_signal)
+            self.connect(self.rcus[i], QtCore.SIGNAL("viewFee"), self.emit_signal)
+
+#             self.connect(self.rcus[i], QtCore.SIGNAL("toggleFee"), self.emit_signal)
+#             self.connect(self.rcus[i], QtCore.SIGNAL("viewFee"), self.emit_signal)
+
+            self.connect(self.rcus[i], QtCore.SIGNAL("toggleTru"), self.emit_signal)
+            self.connect(self.rcus[i], QtCore.SIGNAL("viewTru"), self.emit_signal)
+
+            self.connect(self.rcus[i], QtCore.SIGNAL("rcuUpdateStatus"), self.emit_signal)
+            self.connect(self.rcus[i], QtCore.SIGNAL("rcuToggleOnOff"), self.emit_signal)
+            self.connect(self.rcus[i], QtCore.SIGNAL("viewRcu"), self.emit_signal)
         
+        self.connect(self.moduleTurnOnButton, QtCore.SIGNAL("turnOnModule"), self.emit_signal)
+        self.connect(self.moduleShutdownButton, QtCore.SIGNAL("shutdownModule"), self.emit_signal)
+        
+        self.connect(self.modulePropertiesButton, QtCore.SIGNAL("showModuleProperties"), self.emit_signal)
+        self.connect(self.moduleConfigureElectronicsButton, QtCore.SIGNAL("configureElectronicsModule"), self.emit_signal)
+        
+        self.connect(self.moduleEnableTriggerButton, QtCore.SIGNAL("enableTriggerModule"), self.emit_signal)
+        self.connect(self.moduleDisableTriggerButton, QtCore.SIGNAL("disableTriggerModule"), self.emit_signal)
+
+
 class RcuTopFrame(QtGui.QFrame):
     """Top frame for the RCUs"""
 
@@ -152,7 +176,6 @@ class RcuTopFrame(QtGui.QFrame):
         self.actionsLabel = QtGui.QLabel("Actions", self)
         self.actionsLabel.setGeometry(550, 10, 60, 20)
 
-
 class Rcu(QtGui.QWidget):
     """The RCU widget"""
 
@@ -171,9 +194,13 @@ class Rcu(QtGui.QWidget):
         self.initTruButtons()
         self.initActionButtons()
         self.initRcuLabel()
+        self.initConnections()
 
         self.setFixedHeight(110)
 
+    def emit_signal(self,*args):
+        self.emit(QtCore.SIGNAL(args[0]), *args)
+        
     def initFrame(self):
 
         self.rcuFrame = QtGui.QFrame(self)
@@ -246,17 +273,17 @@ class Rcu(QtGui.QWidget):
         
     def initActionButtons(self):
         
-        self.rcuUpdateStatusButton = RcuUpdateStatusPushButton(self, self.rcuId)
+        self.rcuUpdateStatusButton = RcuUpdateStatusPushButton(self, self.moduleId, self.rcuId)
         
         self.rcuUpdateStatusButton.geometry().setX(510)
         self.rcuUpdateStatusButton.geometry().setY(10)
 
-        self.rcuToggleButton = RcuToggleOnOffPushButton(self, self.rcuId)
+        self.rcuToggleButton = RcuToggleOnOffPushButton(self, self.moduleId, self.rcuId)
 
         self.rcuToggleButton.geometry().setX(510)
         self.rcuToggleButton.geometry().setY(40)
         
-        self.rcuViewButton = RcuViewPushButton(self, self.rcuId)
+        self.rcuViewButton = RcuViewPushButton(self, self.moduleId, self.rcuId)
         
         self.rcuViewButton.geometry().setX(510)
         self.rcuViewButton.geometry().setY(70)
@@ -274,6 +301,19 @@ class Rcu(QtGui.QWidget):
         self.rcuLabel.geometry().setX(20)
         self.rcuLabel.geometry().setY(10)
 
+    def initConnections(self):
+        
+        for i in range(CARDS_PER_RCU):
+            self.connect(self.feeButtons[i], QtCore.SIGNAL("toggleFee"), self.emit_signal)
+            self.connect(self.feeButtons[i], QtCore.SIGNAL("viewFee"), self.emit_signal)
+        for i in range(TRUS_PER_RCU):
+            self.connect(self.truButtons[i], QtCore.SIGNAL("toggleTru"), self.emit_signal)
+            self.connect(self.truButtons[i], QtCore.SIGNAL("viewTru"), self.emit_signal)
+
+        self.connect(self.rcuUpdateStatusButton, QtCore.SIGNAL("rcuUpdateStatus"), self.emit_signal)
+        self.connect(self.rcuToggleButton, QtCore.SIGNAL("rcuToggleOnOff"), self.emit_signal)
+        self.connect(self.rcuViewButton, QtCore.SIGNAL("viewRcu"), self.emit_signal)
+   
 class LogViewer(QtGui.QTextBrowser):
     
     def __init__(self, parent, moduleId):
@@ -282,5 +322,5 @@ class LogViewer(QtGui.QTextBrowser):
 
         self.geometry().setX(20)
         self.geometry().setY(500)
-        self.setFixedSize(1030, 300)
+        self.setFixedSize(1070, 300)
        

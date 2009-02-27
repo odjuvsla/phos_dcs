@@ -37,7 +37,7 @@ class PhosDetector : public PhosDcsBase
   PhosFeeClient* GetFeeClientPointer() const;
   PhosModule* GetModulePtr(const int i) const; 
   Rcu*  GetRcuPtr(const int modId, const int rcuId) const;
-  void DisArmTrigger(const int modId, const int rcuId, char *messageBuffer) const;
+  void DisArmTrigger(const int modId, const int rcuId) const;
   void SetPhosBit(const int modId) const; 
   int StartFeeClient() const; 
   int StopFeeClient() const; 
@@ -45,8 +45,8 @@ class PhosDetector : public PhosDcsBase
   const int ArmTrigger(const int moduleId) const;
   void LoadApdValues();
   void SetAllApds(const int value);
-  void SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig ,char *messageBuf);
-  void ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card, char *messageBuffer) const;
+  void SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig);
+  void ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const;
   PhosFeeClient *fFeeClientPtr;
 
  private:

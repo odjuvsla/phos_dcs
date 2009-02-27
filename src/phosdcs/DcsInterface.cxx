@@ -99,12 +99,11 @@ int DcsInterface::DeInit()
 void 
 DcsInterface::ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const 
 {
-  char messageBuffer[256];
-  fPhosDetectorPtr->ApplyApdSettings(modID, rcuId, branch, card, messageBuffer);
+  fPhosDetectorPtr->ApplyApdSettings(modID, rcuId, branch, card);
 }
 
 void 
-DcsInterface::ApplyTruSettings(int modID, int RcuID, char *Mesbuf, unsigned long *regAddr, unsigned long *regVal, bool *verify, int nTruRegs)
+DcsInterface::ApplyTruSettings(int modID, int RcuID, unsigned long *regAddr, unsigned long *regVal, bool *verify, int nTruRegs)
 {
   //  fPhosDetectorPtr->phosModulePtr[modID]->rcuPtr[RcuID]->ApplyTruSettings(regAddr, regVal, verify, nTruRegs,  Mesbuf);
 }
@@ -120,17 +119,15 @@ DcsInterface::ArmTrigger(const int modID) const
 unsigned int 
 DcsInterface::CheckFeeState(const int mod,  const int rcu , const int branch , const int cardId)
 {
-  char message[128];
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(mod, rcu); 
-  return tmpRcuPtr->CheckFeeState(branch, cardId, message);
+  return tmpRcuPtr->CheckFeeState(branch, cardId);
 }
 
 
 void 
 DcsInterface::DisArmTrigger(const int modID, const int RcuID) const
 {
-  char messageBuffer[128];
-  fPhosDetectorPtr->DisArmTrigger(modID, RcuID, messageBuffer);
+  fPhosDetectorPtr->DisArmTrigger(modID, RcuID);
 }
 
 
@@ -288,9 +285,8 @@ DcsInterface::SetPhosBit(const int modId) const
 void 
 DcsInterface::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig) const
 {
-  char messageBuf[256];
   //  rdoConfig.PrintInfo("DcsInterface::SetReadoutConfig"); 
-  fPhosDetectorPtr->SetReadoutConfig(modID,  rdoConfig,  messageBuf);
+  fPhosDetectorPtr->SetReadoutConfig(modID,  rdoConfig);
 }
 
 
@@ -308,6 +304,14 @@ DcsInterface::ToggleOnOffFee(const int mod,  const int rcu , const int branch , 
   return state;
 }
 
+unsigned int
+DcsInterface::ToggleOnOffTru(const int mod, const int rcu, const int truId)
+
+{  
+  Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(mod, rcu); 
+  int state = tmpRcuPtr->ToggleTruOnOff(truId);
+  return state;
+}
 
 void 
 DcsInterface::TurnOnAllFee(const int modID, const int rcuId) const
@@ -315,12 +319,11 @@ DcsInterface::TurnOnAllFee(const int modID, const int rcuId) const
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(modID, rcuId); 
   tmpRcuPtr->TurnOnAllFee();
   char* tmp = 0;
-  TurnOnAllTru(modID, rcuId, tmp); //bad
-}
+ }
 
 
 void 
-DcsInterface::TurnOnAllTru(const int modID, const int rcuId, char *message) const
+DcsInterface::TurnOnAllTru(const int modID, const int rcuId) const
 {
   //  fPhosDetectorPtr->phosModulePtr[modID]->TurnOnAllTru(message);
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(modID, rcuId); 
@@ -333,13 +336,12 @@ DcsInterface::TurnOffAllFee(const int modID, const  int rcuId) const
 {
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(modID, rcuId); 
   tmpRcuPtr->TurnOffAllFee();
-  char* tmp = 0;
-  TurnOffAllTru(modID, rcuId, tmp); //bad
+  TurnOffAllTru(modID, rcuId); //bad
   //  fPhosDetectorPtr->phosModulePtr[modID]->TurnOffAllFee();
 }
 
 void 
-DcsInterface::TurnOffAllTru(const int modID, const int rcuId, char *message) const
+DcsInterface::TurnOffAllTru(const int modID, const int rcuId) const
 {
   //  fPhosDetectorPtr->phosModulePtr[modID]->TurnOffAllTru(message);
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(modID, rcuId); 
@@ -379,25 +381,20 @@ DcsInterface::GetLogViewerString()
   return PhosDcsLogging::Instance()->GetLogViewerString();
 }
 
-unsigned int    
-TurnOnTru(const int mod,  const int rcu , const int truId)
-{
-  int tmpStates[CARDS_PER_RCU];
+// unsigned int    
+// TurnOnTru(const int mod,  const int rcu , const int truId)
+// {
+//   int tmpStates[CARDS_PER_RCU];
 
-  ToggleOnOffFee(mod, rcu , truId , TRU_SLOT, TURN_ON, tmpStates);
-  
-  return 0;
-}
+//   return TurnOnOffTru(mod, rcu , truId);
+// }
 
-unsigned int    
-TurnOffTru(const int mod,  const int rcu , const int truId)
-{
-  int tmpStates[CARDS_PER_RCU];
+// unsigned int    
+// TurnOffTru(const int mod,  const int rcu , const int truId)
+// {
+//   int tmpStates[CARDS_PER_RCU];
 
-  ToggleOnOffFee(mod, rcu, truId, TRU_SLOT, TURN_OFF, tmpStates);
-  
-  return 0;
-}
+// }
 // unsigned int 
 // DcsInterface::TurnOnFee(const int mod,  const int rcu , const int branch , 
 // 			const int cardId,  unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage)

@@ -13,13 +13,14 @@ class PHOSHandler(QtCore.QObject):
     """Base class for the handlers"""
 
     def __init__(self):
-        super(QtCore.QObject, self).__init__(self)
+        super(PHOSHandler, self).__init__()
 
         self.idConverter = PhosIdConverter()
 
-    def emit_signal(self, signal, *args):
-        """Function for forwarding the signals from the thread"""        
-        self.emit(QtCore.SIGNAL(signal), *args)
+#    def emit_signal(self, signal, *args):
+    def emit_signal(self, *args):
+        """Function for forwarding the signals from the thread"""      
+        self.emit(QtCore.SIGNAL(args[0]), *args)
     #-----------------------------------------------------
 
 
@@ -59,8 +60,10 @@ class FeeCardHandler(PHOSHandler):
 
     def __init__(self, dcs_interface_wrapper):
         """init takes DcsInterfaceThreadWrapper object as argument"""
-        PHOSHandler.__init__(self)
+#        PHOSHandler.__init__(self)
+        super(FeeCardHandler, self).__init__()
         self.dcs_interface_wrapper = dcs_interface_wrapper
+
     #-----------------------------------------------------
         
     def toggleOnOff(self, feeId):
@@ -107,9 +110,9 @@ class FeeCardHandler(PHOSHandler):
             
             # Here we do the toggling
             #state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate, tmpStates)
-
+            
             # Emitting signal for fetching log information
-            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog")
+            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
 
             # Emitting the card toggled signal together with the returned state of the card
             self.emit(QtCore.SIGNAL("cardToggled"), "cardToggled", feeId, state)
@@ -146,10 +149,10 @@ class FeeCardHandler(PHOSHandler):
             #dcs_interface.ApplyApdSettings(moduleId, rcuId, branchId, feeId)
 
             # Emitting signal for fetching log information
-            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog")
+            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
 
             # Emitting the applied signal
-            self.emit(QtCore.SIGNAL("apdSettingApplied"), "apdSettingApplied", feeId)
+            self.emit(QtCore.SIGNAL("apdSettingApplied"), "apdSettingApplied", self.feeId)
 
             # Release the DcsInterface object
             self.dcs_interface_wrapper.releaseDcsInterface()
@@ -157,6 +160,68 @@ class FeeCardHandler(PHOSHandler):
     ##################################################################### End of __ApplyApdThread class
 
 ######################################################################################### End of FeeCardHandler class
+
+############################################
+# Class taking care of the TRU card commands
+############################################
+class TruCardHandler(PHOSHandler):
+    """Class taking care of the TRU card commands"""
+
+    def __init__(self, dcs_interface_wrapper):
+        """init takes DcsInterfaceThreadWrapper object as argument"""
+#        PHOSHandler.__init__(self)
+        super(TruCardHandler, self).__init__()
+        self.dcs_interface_wrapper = dcs_interface_wrapper
+
+    #-----------------------------------------------------
+        
+    def toggleOnOff(self, truId):
+        """Function for toggling cards"""
+        # Start a thread for the toggling
+        self.truId = truId
+        onOffThread = self.__ToggleOnOffThread(self.truId, self.dcs_interface_wrapper)
+        self.connect(onOffThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+        self.connect(onOffThread, QtCore.SIGNAL("truToggled"), self.emit_signal)
+        onOffThread.start()
+    #-----------------------------------------------------
+
+    class __ToggleOnOffThread(Thread, PHOSHandler):
+        """Member threading class"""
+        
+        def __init__(self, truId, dcs_interface_wrapper):
+            """init takes DcsInterfaceThreadWrapper and TRU ID (absolute number) as arguments"""
+
+            self.truId = truId
+            self.dcs_interface_wrapper = dcs_interface_wrapper
+            Thread.__init__(self)
+            PHOSHandler.__init__(self)
+        #------------------------------------------------
+
+        def run(self):
+            """Run the thread"""
+
+            # Get the DcsInterface object
+            dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+
+            moduleId, rcuId, truId = self.idConverter.GetTruLogicalIDs(self.truId)
+
+            state = 0
+            
+            # Here we do the toggling
+            #state = dcs_interface.ToggleOnOffTru(moduleId, rcuId, truId)
+
+            # Emitting signal for fetching log information
+            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
+
+            # Emitting the card toggled signal together with the returned state of the card
+            self.emit(QtCore.SIGNAL("cardToggled"), "cardToggled", self.truId, state)
+
+            # Release the DcsInterface object
+            self.dcs_interface_wrapper.releaseDcsInterface()
+            #---------------------------------------------
+    ##################################################################### End of __ToggleOnOffThread class
+
+######################################################################################### End of TruCardHandler class
 
 
 class RcuHandler(PHOSHandler):
@@ -177,7 +242,7 @@ class RcuHandler(PHOSHandler):
         self.connect(onOffThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
         self.connect(onOffThread, QtCore.SIGNAL("cardsToggled"), self.emit_signal)
         onOffThread.start()
-        updateStatus(rcuId)
+        self.updateStatus(rcuId)
     #-------------------------------------------------
 
     def updateStatus(self, rcuId):
@@ -186,6 +251,7 @@ class RcuHandler(PHOSHandler):
         self.connect(updateStatusThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
         self.connect(updateStatusThread, QtCore.SIGNAL("statusUpdated"), self.emit_signal)
         updateStatusThread.start()
+        
     #------------------------------------------------
     
     class __ToggleOnOffThread(Thread, PHOSHandler):
@@ -196,27 +262,19 @@ class RcuHandler(PHOSHandler):
             Thread.__init__(self)
             PHOSHandler.__init__(self)
             self.rcuId = rcuId
-            self.dcs_interface_wrapper = dcs_interface
-
+            self.dcs_interface_wrapper = dcs_interface_wrapper
+            self.feeHandler = FeeCardHandler(dcs_interface_wrapper)
+            
         def run(self):
             """Run the thread"""
             
-            # Get the DcsInterface object
-            dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
-            
-            moduleId, rcuId = self.idConverter.GetRcuLogicalIDs(feeId)
-            
-            # Here we toggle
-            dcs_interface.TurnOnAllFee(moduleId, rcuId)
-            
-            # Emitting signal for fetching log information
-            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog")
-            
+            for i in range(CARDS_PER_RCU):
+                feeId = self.rcuId*CARDS_PER_RCU + i
+                self.feeHandler.toggleOnOff(feeId)
+                            
             # Emitting the cards toggled signal 
             self.emit(QtCore.SIGNAL("cardsToggled"), "cardsToggled")
             
-            # Release the DcsInterface object
-            self.dcs_interface_wrapper.releaseDcsInterface()
     #################################################################### End of __ToggleOnOffThread class
 
     class __UpdateStatusThread(Thread, PHOSHandler):
@@ -237,29 +295,39 @@ class RcuHandler(PHOSHandler):
             moduleId, rcuId = self.idConverter.GetRcuLogicalIDs(self.rcuId)
 
             status = dcs_interface.UpdateFeeStatus(moduleId, rcuId)
-
-            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog")
+            
+            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
             
             self.emit(QtCore.SIGNAL("statusUpdated"), "statusUpdated", status)
 
             self.dcs_interface_wrapper.releaseDcsInterface()
 
-class ModuleHandler():
+class ModuleHandler(PHOSHandler):
     
     def __init__(self, dcs_interface):
+        super(ModuleHandler, self).__init__()
+               
+    def turnOn(self, moduleId):
+        
+        print 'Turning on module: ' + str(moduleId)
+        
+    def shutdown(self, moduleId):
+        
+        print "Shutting down module: " + str(moduleId)
 
-        print 'starting module handler'
+    def enableTrigger(self, moduleId):
         
-    def turnOnOff(moduleId):
-        
-        print 'turning on/off ' + str(moduleId)
-        
-class DetectorHandler():
+        print "Enabling trigger for module: " + str(moduleId)
+
+    def disableTrigger(self, moduleId):
+
+        print "Disabling trigger for module: " + str(moduleId)
+
+class DetectorHandler(PHOSHandler):
 
     def __init__(self, dcs_interface):
+        super(DetectorHandler, self).__init__()
 
-        print 'starting detector handler'
-        
         self.dcs_interface = dcs_interface
         
         self.fee_servers = vectorfee(PHOS_MODS*RCUS_PER_MODULE)
@@ -285,7 +353,6 @@ class DetectorHandler():
         self.fee_servers.clear()
         print 'stopping fee client'
 
-
 class LogHandler(PHOSHandler):
     """Class for handling the logging system"""
 
@@ -297,7 +364,7 @@ class LogHandler(PHOSHandler):
     def getLogString(self, moduleId):
         """ Gets log strings from the different modules"""
         
-        getLogThread = __GetLogThread(moduleId, self.dcs_interface_wrapper)
+        getLogThread = self.__GetLogThread(moduleId, self.dcs_interface_wrapper)
 
         self.connect(getLogThread, QtCore.SIGNAL("gotLog"), self.emit_signal)
 
@@ -317,13 +384,13 @@ class LogHandler(PHOSHandler):
         def run(self):
             """Run the thread"""
             
-            dcs_interface = dcs_interface_wrapper.getDcsInterface()
+            dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
 
             logString = dcs_interface.GetLogViewerString()
+            print "Log String: " + logString
+            self.emit(QtCore.SIGNAL("gotLog"), "gotLog")
 
-            self.emit(Qtcore.SIGNAL("gotLog"), self.moduleId)
-
-
+            self.dcs_interface_wrapper.releaseDcsInterface()
 
     
 

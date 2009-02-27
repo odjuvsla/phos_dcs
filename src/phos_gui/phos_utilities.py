@@ -9,6 +9,12 @@ class PhosIdConverter():
 
         return moduleId*RCUS_PER_MODULE*CARDS_PER_RCU + rcuId*CARDS_PER_RCU + branchId*CARDS_PER_BRANCH + feeId
     #------------------------------------------------------
+    
+    def RcuAbsoluteID(self, moduleId, rcuId):
+        """Funtion to extract the RCU absolute ID from logical IDs"""
+
+        return moduleId*RCUS_PER_MODULE + rcuId
+    #------------------------------------------------------
 
     def TruAbsoluteID(self, moduleId, rcuId, truId):
         """Funtion to extract the FEE absolute ID from logical IDs"""
@@ -28,9 +34,9 @@ class PhosIdConverter():
         branchId = cardIdInRcu/CARDS_PER_BRANCH
         cardIdInBranch = cardIdInRcu%CARDS_PER_BRANCH
 
-        feeId = cardIdInBranch+1
+        fee = cardIdInBranch+1
 
-        return moduleId, rcuId, branchId, feeId
+        return moduleId, rcuId, branchId, fee
     #------------------------------------------------------
 
     def GetRcuLogicalIDs(self, rcuId):
@@ -41,14 +47,20 @@ class PhosIdConverter():
         return moduleId, rcuId
     #------------------------------------------------------
 
+    def GetTruLogicalIDs(self, truId):
+        """Helper funtion to extract the TRU ID from absolute ID"""
 
+        moduleId = truId/(TRUS_PER_RCU*RCUS_PER_MODULE)
 
+        truIdInModule = truId%(TRUS_PER_RCU*RCUS_PER_MODULE)
 
+        rcuId = truIdInModule/TRUS_PER_RCU
+        
+        truId = truIdInModule%TRUS_PER_RCU
 
-
-
-
-
+        return moduleId, rcuId, truId
+        
+        
 
 
 

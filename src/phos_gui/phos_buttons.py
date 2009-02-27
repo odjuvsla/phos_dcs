@@ -13,6 +13,15 @@ class PhosPushButton(QtGui.QPushButton):
         
         self.idConverter = PhosIdConverter()
 
+class PhosModulePushButton(PhosPushButton):
+    
+    def __init__(self, parent, moduleId):
+        
+        super(PhosPushButton, self).__init__(parent)
+
+        self.moduleId = moduleId
+
+
 class FeePushButton(PhosPushButton):
     
 #    def __init__(self, parent, feeId):
@@ -40,12 +49,11 @@ class FeePushButton(PhosPushButton):
         
     def toggleOnOff(self):
 
-        self.emit(QtCore.SIGNAL("toggleFee"), self.feeId)
-        print "Toggle FEE"
-
+        self.emit(QtCore.SIGNAL("toggleFee"), "toggleFee", self.feeId)
+     
     def viewFee(self):
 
-        self.emit(QtCore.SIGNAL("viewFee"), self.feeId)
+        self.emit(QtCore.SIGNAL("viewFee"), "viewFee", self.feeId)
 
     def setColour(self, colour):
         
@@ -55,7 +63,7 @@ class TruPushButton(PhosPushButton):
 
     def __init__(self, parent, truId):
         
-        super(PhosPushButton, self).__init__(parent) 
+        super(TruPushButton, self).__init__(parent) 
         
         self.truId = truId
         
@@ -78,22 +86,21 @@ class TruPushButton(PhosPushButton):
  
     def toggleOnOff(self):
 
-        self.emit(QtCore.SIGNAL("toggleTru"), self.truId)
-        print "Toggle TRU"
+        self.emit(QtCore.SIGNAL("toggleTru"), "toggleTru", self.truId)
 
     def viewTru(self):
 
-        self.emit(QtCore.SIGNAL("viewTru"), self.truId)
+        self.emit(QtCore.SIGNAL("viewTru"), "viewTru", self.truId)
         
 class RcuViewPushButton(PhosPushButton):
     
-    def __init__(self, parent, rcuId):
+    def __init__(self, parent, moduleId, rcuId):
         
         super(RcuViewPushButton, self).__init__(parent)
 
         self.setText("RCU View")
-
-        self.rcuId = rcuId
+        
+        self.rcuId = self.idConverter.RcuAbsoluteID(moduleId, rcuId)
 
         self.setFixedWidth(110)
         self.setFixedHeight(25)
@@ -102,35 +109,120 @@ class RcuViewPushButton(PhosPushButton):
 
     def viewRcu(self):
 
-        self.emit(QtCore.SIGNAL("showRcu"), self.rcuId)
+        self.emit(QtCore.SIGNAL("viewRcu"), "viewRcu", self.rcuId)
 
 class RcuUpdateStatusPushButton(PhosPushButton):
     
-    def __init__(self, parent, rcuId):
+    def __init__(self, parent, moduleId, rcuId):
 
         super(RcuUpdateStatusPushButton, self).__init__(parent)
         
         self.setText("Update Status")
 
-        self.rcuId = rcuId
+        self.rcuId = self.idConverter.RcuAbsoluteID(moduleId, rcuId)
         self.connect(self, QtCore.SIGNAL("clicked()"), self.updateStatus)
 
     def updateStatus(self):
         
-        self.emit(QtCore.SIGNAL("updateStatus"), self.rcuId)
+        self.emit(QtCore.SIGNAL("rcuUpdateStatus"), "rcuUpdateStatus", self.rcuId)
 
 class RcuToggleOnOffPushButton(PhosPushButton):
 
-    def __init__(self, parent, rcuId):
+    def __init__(self, parent, moduleId, rcuId):
 
         super(RcuToggleOnOffPushButton, self).__init__(parent)
 
         self.setText("Toggle On/Off")
 
-        self.rcuId = rcuId
+        self.rcuId = self.idConverter.RcuAbsoluteID(moduleId, rcuId)
         self.connect(self, QtCore.SIGNAL("clicked()"), self.toggleOnOff)
 
     def toggleOnOff(self):
         
-        self.emit(QtCore.SIGNAL("toggleOnOff"), self.rcuId)
+        self.emit(QtCore.SIGNAL("rcuToggleOnOff"), "rcuToggleOnOff", self.rcuId)
 
+
+class ModuleTurnOnButton(PhosModulePushButton):
+    
+    def __init__(self, parent, moduleId):
+        
+        super(ModuleTurnOnButton, self).__init__(parent, moduleId)
+        
+        self.setText("Turn On Module Electronics")
+        
+        self.connect(self, QtCore.SIGNAL("clicked()"), self.turnOnModule)
+
+    def turnOnModule(self):
+        
+        self.emit(QtCore.SIGNAL("turnOnModule"), "turnOnModule", self.moduleId)
+
+class ModuleTurnOffButton(PhosModulePushButton):
+    
+    def __init__(self, parent, moduleId):
+        
+        super(ModuleTurnOffButton, self).__init__(parent, moduleId)
+
+        self.setText("Shutdown Module Electronics")
+       
+        self.connect(self, QtCore.SIGNAL("clicked()"), self.turnOffModule)
+
+    def turnOffModule(self):
+        
+        self.emit(QtCore.SIGNAL("shutdownModule"), "shutdownModule", self.moduleId)
+
+
+class ModulePropertiesButton(PhosModulePushButton):
+    
+    def __init__(self, parent, moduleId):
+        
+        super(ModulePropertiesButton, self).__init__(parent, moduleId)
+
+        self.setText("Module Properties")
+        
+        self.connect(self, QtCore.SIGNAL("clicked()"), self.showModuleProperties)
+
+    def showModuleProperties(self):
+        
+        self.emit(QtCore.SIGNAL("showModuleProperties"), "showModuleProperties", self.moduleId)
+
+class ModuleConfigureElectronicsButton(PhosModulePushButton):
+    
+    def __init__(self, parent, moduleId):
+        
+        super(ModuleConfigureElectronicsButton, self).__init__(parent, moduleId)
+
+        self.setText("Configure Electronics")
+        
+        self.connect(self, QtCore.SIGNAL("clicked()"), self.configureElectronicsModule)
+
+    def configureElectronicsModule(self):
+        
+        self.emit(QtCore.SIGNAL("configureElectronicsModule"), "configureElectronicsModule", self.moduleId)
+
+class ModuleEnableTriggerButton(PhosModulePushButton):
+    
+    def __init__(self, parent, moduleId):
+        
+        super(ModuleEnableTriggerButton, self).__init__(parent, moduleId)
+
+        self.setText("Enable Trigger")
+        
+        self.connect(self, QtCore.SIGNAL("clicked()"), self.enableTriggerModule)
+
+    def enableTriggerModule(self):
+        
+        self.emit(QtCore.SIGNAL("enableTriggerModule"), "enableTriggerModule", self.moduleId)
+
+class ModuleDisableTriggerButton(PhosModulePushButton):
+    
+    def __init__(self, parent, moduleId):
+        
+        super(ModuleDisableTriggerButton, self).__init__(parent, moduleId)
+
+        self.setText("Disable Trigger")
+        
+        self.connect(self, QtCore.SIGNAL("clicked()"), self.disableTriggerModule)
+
+    def disableTriggerModule(self):
+        
+        self.emit(QtCore.SIGNAL("disableTriggerModule"), "disableTriggerModule", self.moduleId)

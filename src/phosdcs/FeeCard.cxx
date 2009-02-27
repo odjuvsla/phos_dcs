@@ -87,7 +87,7 @@ FeeCard::SetAllApds(int value)
 
 
 int
-FeeCard::ApplyApdSettings(char *messageBuffer)
+FeeCard::ApplyApdSettings()
 {
   stringstream log;
   if(fIsInitialized == true)

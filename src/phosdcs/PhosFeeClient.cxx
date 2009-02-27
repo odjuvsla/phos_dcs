@@ -466,7 +466,7 @@ PhosFeeClient::ExecuteInstruction(const char* feeServerName)
 }
 
 const unsigned int
-PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const int cardNumber,  char *message, unsigned long int *pcmv)
+PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const int cardNumber, unsigned long int *pcmv)
 {
   unsigned long pcmversion = 0;
   unsigned long address = BCVERSION;
@@ -521,6 +521,12 @@ PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const 
 
       return FEE_STATE_ERROR;
     }
+}
+
+const unsigned int 
+PhosFeeClient::CheckTruState(const char *feeServerName, const int tru)
+{
+  return FEE_STATE_ON;
 }
 
 unsigned int
