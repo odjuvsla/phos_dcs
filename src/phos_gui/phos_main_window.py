@@ -1,6 +1,7 @@
 
 from PyQt4 import QtCore, QtGui
 from PhosConst import *
+from phos_dialogs import *
 from phos_widgets import *
 from phos_interface import *
 
@@ -12,11 +13,14 @@ class PhosGui(QtGui.QMainWindow):
         
         self.resize(1120, 880)
         self.initTabs()
-        self.connectMenu = self.menuBar().addMenu("&Connect")
-        self.settingsMenu = self.menuBar().addMenu("&Settings")
+        self.initMenuBar()
+        self.initDialogs()
+
         self.setCentralWidget(self.tabControls)
 
         self.initConnections()
+
+        self.rcuDialog = RcuDialog()
 
     def initTabs(self):
         
@@ -29,7 +33,23 @@ class PhosGui(QtGui.QMainWindow):
             self.moduleTabs[i] = ModuleTabWidget(i)
             self.tabControls.addTab(self.moduleTabs[i], "Module " + str(i))
 
+    def initMenuBar(self):
+        
+        self.connectMenu = self.menuBar().addMenu("&Connect")
+        self.settingsMenu = self.menuBar().addMenu("&Settings")
+        
+        self.connectAction = QtGui.QAction("Connect &Now", self)
+        self.connectSettingsAction = QtGui.QAction("Connection &Settings...", self)
+        self.connectMenu.addAction(self.connectAction)
+        self.connectMenu.addAction(self.connectSettingsAction)
+
+    def initDialogs(self):
+        
+        self.connectSettingsDialog  = ConnectSettingsDialog()
+
     def initConnections(self):
+
+        self.connect(self.connectSettingsAction, QtCore.SIGNAL("triggered()"), self.showConnectDialog)
 
         self.dcsInterface = DcsInterfaceThreadWrapper(DcsInterface())
         
@@ -116,6 +136,7 @@ class PhosGui(QtGui.QMainWindow):
     def showRcuDialog(self, feeId):
         
         print 'Dialog not yet made...'
+        self.rcuDialog.show()
 
     def showModulePropertiesDialog(self, moduleId):
         
@@ -127,8 +148,8 @@ class PhosGui(QtGui.QMainWindow):
         
     def showConnectDialog(self):
         
-        print 'Connnect Dialog not yet made...'
-
+        self.connectSettingsDialog.exec_()
+       
     def fetchLog(self, signal, moduleId):
         
         self.logHandler.getLogString(moduleId)
