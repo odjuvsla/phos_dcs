@@ -1,6 +1,7 @@
 
 from PyQt4 import QtCore, QtGui
 from PhosConst import *
+from phos_widgets import *
 
 
 class ConnectSettingsDialog(QtGui.QDialog):
@@ -21,7 +22,7 @@ class ConnectSettingsDialog(QtGui.QDialog):
 
         for i in range(PHOS_MODS):
             
-            self
+            self.settingsTabs[i] = ConnectionSettingsTabWidget()
 
     def initCheckBoxes(self):
         

@@ -324,3 +324,26 @@ class LogViewer(QtGui.QTextBrowser):
         self.geometry().setY(500)
         self.setFixedSize(1070, 300)
        
+class ConnectionSettingsTabWidget(QtGui.QWidget):
+    """Tab for the connection setting dialog"""
+
+    def __init__(self, moduleId, width, height, parent = None):
+        super(QtGui.QWidget, self).__init__(parent)
+
+        self.moduleId = moduleId
+        self.setFixedSize(width, height)
+
+        self.initFrame()
+        self.initButtons()
+        
+    def initFrame(self):
+        
+        self.mainFrame = QtGui.QFrame(self)
+        self.mainFrame
+
+    def initButtons(self):
+        
+        print 'init buttons'
+
+    
+        
