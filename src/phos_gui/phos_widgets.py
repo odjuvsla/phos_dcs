@@ -331,15 +331,29 @@ class ConnectionSettingsTabWidget(QtGui.QWidget):
         super(QtGui.QWidget, self).__init__(parent)
 
         self.moduleId = moduleId
-        self.setFixedSize(width, height)
-
+       
+        self.swidth = width
+        self.sheight = height
+        
+        self.setGeometry(10, 10, width - 25, height - 90)
+        self.setFixedSize(width - 25, height - 90)
+        
         self.initFrame()
         self.initButtons()
         
     def initFrame(self):
         
+        tmpWidth = self.width()
+        tmpHeight = self.height()
+        print 'width: ' + str(tmpWidth) + ' height: ' + str(tmpHeight)
         self.mainFrame = QtGui.QFrame(self)
-        self.mainFrame
+#        self.mainFrame.setGeometry(10, 10, self.width() - 40, self.height() - 60)
+        self.mainFrame.setGeometry(10, 10, self.swidth - 40, self.sheight - 60)
+        self.mainFrame.setFixedSize(self.swidth - 40, self.sheight - 60)
+#         self.feeServerNameLayout = QtGui.QVBoxLayout(self.mainFrame)
+#         tmpRect = QtCore.QRect(10, 40, self.width - 90, self.height - 120)
+
+#         self.feeServerNameLayout.setGeometry(tmpRect)
 
     def initButtons(self):
         

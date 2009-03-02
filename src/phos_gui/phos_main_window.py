@@ -130,7 +130,7 @@ class PhosGui(QtGui.QMainWindow):
         print 'Dialog not yet made...'
 
     def showTruDialog(self, feeId):
-        
+
         print 'Dialog not yet made...'
 
     def showRcuDialog(self, feeId):
