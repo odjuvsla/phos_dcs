@@ -226,3 +226,29 @@ class ModuleDisableTriggerButton(PhosModulePushButton):
     def disableTriggerModule(self):
         
         self.emit(QtCore.SIGNAL("disableTriggerModule"), "disableTriggerModule", self.moduleId)
+
+# class PhosSaveButton(QtGui.QPushButton):
+    
+#     def __init__(self, parent):
+#         super(QtGui.QPushButton, self).__init__(parent)
+
+#         self.setText("Save")
+
+#     def setConfigFile(self, filepath):
+        
+#         self.filePath = filepath
+        
+#         self.connect(self, QtCore.SIGNAL("clicked()"), self.saveToFile)
+
+#     def saveToFile(self):
+
+#         GetSaveData()
+
+#         args = ['test1', 'test2', 'test3']
+  
+#         for i in args:
+#             print i
+
+
+            
+        

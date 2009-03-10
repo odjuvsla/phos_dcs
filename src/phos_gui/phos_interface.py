@@ -332,14 +332,24 @@ class DetectorHandler(PHOSHandler):
         
         self.fee_servers = vectorfee(PHOS_MODS*RCUS_PER_MODULE)
         self.fee_servers.clear()
-    
+
     def turnOnOff(self):
         
         print 'turning on/off PHOS' 
 
-    def addFeeServer(self, feeServer):
+    def addFeeServer(self, feeServer, id):
 
-        self.fee_servers.push_back(feeServer)
+        tmpFeeServer = FeeServer()
+        
+        tmpFeeServer.fName = feeServer
+        moduleId, rcuId, x, z = GetRcuLogicalCoordinatesFromFeeServerId(id)
+        tmpFeeServer.fModId = moduleId
+        tmpFeeServer.fRcuId = rcuId
+        tmpFeeServer.fZ = z
+        tmpFeeServer.fX = x
+
+        self.fee_servers.push_back(tmpFeeServer)
+        
         print 'adding fee server'
 
     def startFeeClient(self):
@@ -353,6 +363,15 @@ class DetectorHandler(PHOSHandler):
         self.fee_servers.clear()
         print 'stopping fee client'
 
+    def connectToFeeServers(self, feeServerNames, feeServerEnabled):
+        
+        for i in range(len(feeServerNames)):
+            if feeServerEnabled == True:
+                self.addFeeServer(feeServerNames[i], i)
+
+        self.startFeeClient()
+        self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
+        
 class LogHandler(PHOSHandler):
     """Class for handling the logging system"""
 

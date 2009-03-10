@@ -42,10 +42,18 @@ class PhosIdConverter():
     def GetRcuLogicalIDs(self, rcuId):
         """Helper funtion to extract the RCU ID from absolute ID"""
         moduleId = rcuId/RCUS_PER_MODULE
-        rcuId = rcuId%RCUS_PER_MODULE
+        rcuIdLog = rcuId%RCUS_PER_MODULE
             
         return moduleId, rcuId
     #------------------------------------------------------
+
+    def GetRcuLogicalCoordinatesFromFeeServerId(self, feeId):
+        moduleId = feeId/(RCUS_PER_MODULE+TORS_PER_MODULE)
+        rcuIdLog = feeId%(RCUS_PER_MODULE+TORS_PER_MODULE)
+        
+        x = feeId%(RCUS_PER_MODULE/2)
+        z = feeId/(RCUS_PER_MODULE/2)
+        return moduleId, rcuIdLog, x, z
 
     def GetTruLogicalIDs(self, truId):
         """Helper funtion to extract the TRU ID from absolute ID"""

@@ -32,6 +32,7 @@ class PhosGui(QtGui.QMainWindow):
             
             self.moduleTabs[i] = ModuleTabWidget(i)
             self.tabControls.addTab(self.moduleTabs[i], "Module " + str(i))
+#            self.moduleTabs[i].setEnabled(0)
 
     def initMenuBar(self):
         
@@ -45,11 +46,13 @@ class PhosGui(QtGui.QMainWindow):
 
     def initDialogs(self):
         
-        self.connectSettingsDialog  = ConnectSettingsDialog()
+        self.feeServerNames = [None]*PHOS_MODS
+        self.connectSettingsDialog = ConnectSettingsDialog(self.feeServerNames)
 
     def initConnections(self):
 
         self.connect(self.connectSettingsAction, QtCore.SIGNAL("triggered()"), self.showConnectDialog)
+        self.connect(self.connectAction, QtCore.SIGNAL("triggered()"), self.connectToFeeServers)
 
         self.dcsInterface = DcsInterfaceThreadWrapper(DcsInterface())
         
@@ -150,6 +153,18 @@ class PhosGui(QtGui.QMainWindow):
         
         self.connectSettingsDialog.exec_()
        
+
+    def connectToFeeServers(self):
+        
+        feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
+        feeServers = []
+        for i in range(len(feeServerNames)):
+            if feeServerEnabled[i] == True:
+                feeServers.append(feeServerNames[i])
+                print 'FEE Server Name: ' + feeServerNames[i]
+
+        self.detectorHandler.connectToFeeServers(feeServerNames, feeServerEnabled)
+
     def fetchLog(self, signal, moduleId):
         
         self.logHandler.getLogString(moduleId)

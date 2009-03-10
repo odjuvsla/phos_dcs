@@ -38,6 +38,7 @@ class ModuleTabWidget(QtGui.QWidget):
             self.rcus[i] = Rcu(self.moduleId, i, self)
             self.rcus[i].geometry().setX(20)
             self.rcus[i].geometry().setY(i*self.rcus[i].geometry().height() + self.rcuTopFrame.geometry().y() + self.rcuTopFrame.geometry().height())
+    #        self.rcus[i].setEnabled(0)
 
     def initLogViewer(self):
 
@@ -324,40 +325,98 @@ class LogViewer(QtGui.QTextBrowser):
         self.geometry().setY(500)
         self.setFixedSize(1070, 300)
        
-class ConnectionSettingsTabWidget(QtGui.QWidget):
-    """Tab for the connection setting dialog"""
+class ConnectionSettingsModuleTabWidget(QtGui.QWidget):
+    """Module tab for the connection settings dialog"""
 
     def __init__(self, moduleId, width, height, parent = None):
         super(QtGui.QWidget, self).__init__(parent)
 
         self.moduleId = moduleId
        
-        self.swidth = width
-        self.sheight = height
-        
         self.setGeometry(10, 10, width - 25, height - 90)
         self.setFixedSize(width - 25, height - 90)
         
         self.initFrame()
-        self.initButtons()
+        self.initConnections()
         
     def initFrame(self):
         
-        tmpWidth = self.width()
-        tmpHeight = self.height()
-        print 'width: ' + str(tmpWidth) + ' height: ' + str(tmpHeight)
         self.mainFrame = QtGui.QFrame(self)
-#        self.mainFrame.setGeometry(10, 10, self.width() - 40, self.height() - 60)
-        self.mainFrame.setGeometry(10, 10, self.swidth - 40, self.sheight - 60)
-        self.mainFrame.setFixedSize(self.swidth - 40, self.sheight - 60)
-#         self.feeServerNameLayout = QtGui.QVBoxLayout(self.mainFrame)
-#         tmpRect = QtCore.QRect(10, 40, self.width - 90, self.height - 120)
+        self.mainFrame.setGeometry(10, 10, self.width() - 40, self.height() - 60)
+        self.mainFrame.setFixedSize(self.width() - 40, self.height() - 60)
+        self.mainFrame.setFrameShape(QtGui.QFrame.StyledPanel);
+        self.mainFrame.setFrameShadow(QtGui.QFrame.Raised);
 
-#         self.feeServerNameLayout.setGeometry(tmpRect)
+        self.initFeeNameLineEdits()
+        self.initCheckBoxes()
+        self.initLabels()
 
-    def initButtons(self):
+    def initFeeNameLineEdits(self):
+
+        self.feeNameLayoutWidget = QtGui.QWidget(self.mainFrame)
         
-        print 'init buttons'
+#        self.feeNameLayoutWidget.setGeometry(QtCore.QRect(10, 40, self.tabWidth - 90, self.tabHeight - 120))
+        self.feeNameLayoutWidget.setGeometry(QtCore.QRect(10, 40, 230, 310))
+        self.feeServerNameLayout = QtGui.QVBoxLayout(self.feeNameLayoutWidget)
+ 
+        self.feeServerRcuLineEdit = [None]*RCUS_PER_MODULE
+
+        for i in range(RCUS_PER_MODULE):
+            
+            self.feeServerRcuLineEdit[i] = QtGui.QLineEdit(self.feeNameLayoutWidget)
+            self.feeServerRcuLineEdit[i].setFixedSize(230, 30)
+#            self.feeServerRcuLineEdit[i].setEnabled(0)
+            self.feeServerNameLayout.addWidget(self.feeServerRcuLineEdit[i])
+        
+        self.feeServerTorLineEdit = QtGui.QLineEdit(self.feeNameLayoutWidget)
+        self.feeServerTorLineEdit.setFixedSize(230, 30)
+#        self.feeServerTorLineEdit.setEnabled(0)
+        self.feeServerNameLayout.addWidget(self.feeServerTorLineEdit)
+
+        self.feeNameLayoutWidget.setLayout(self.feeServerNameLayout)
+        
+    def initCheckBoxes(self):
+
+        self.enabledLayoutWidget = QtGui.QWidget(self.mainFrame)
+        self.enabledLayoutWidget.setGeometry(QtCore.QRect(250, 40, 120, 310))
+
+        self.enabledLayout = QtGui.QVBoxLayout(self.enabledLayoutWidget)
+
+        self.enabledRcuBoxes = [None]*RCUS_PER_MODULE
+
+        for i in range(RCUS_PER_MODULE):
+            
+            self.enabledRcuBoxes[i] = QtGui.QCheckBox(self.enabledLayoutWidget)
+            self.enabledRcuBoxes[i].setText("RCU " + str(i))
+            self.enabledLayout.addWidget(self.enabledRcuBoxes[i])
+
+        self.enabledTorBox = QtGui.QCheckBox(self.enabledLayoutWidget)
+        self.enabledTorBox.setText("TOR")
+        self.enabledLayout.addWidget(self.enabledTorBox)
+
+        self.enabledLayoutWidget.setLayout(self.enabledLayout)
+        
+    def initLabels(self):
+        
+        self.feeNameLabel = QtGui.QLabel("FeeServer Names:", self.mainFrame)
+        self.feeNameLabel.setGeometry(10, 15, 130, 20)
+        
+        self.enabledLabel = QtGui.QLabel("Enabled:", self.mainFrame)
+        self.enabledLabel.setGeometry(250, 15, 60, 20)
+
+    def initConnections(self):
+
+        for i in range(RCUS_PER_MODULE):
+            self.connect(self.enabledRcuBoxes[i], QtCore.SIGNAL("stateChanged"), self.feeServerRcuLineEdit[i].setEnabled)
+
+
+class ConnectionSettingsBusyboxTabWidget(QtGui.QWidget):
+
+    def __init__(self, width, height, parent = None):
+        super(QtGui.QWidget, self).__init__(parent)
+       
+        self.setGeometry(10, 10, width - 25, height - 90)
+        self.setFixedSize(width - 25, height - 90)
 
     
         
