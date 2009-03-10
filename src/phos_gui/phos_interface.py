@@ -341,8 +341,8 @@ class DetectorHandler(PHOSHandler):
 
         tmpFeeServer = FeeServer()
         
-        tmpFeeServer.fName = feeServer
-        moduleId, rcuId, x, z = GetRcuLogicalCoordinatesFromFeeServerId(id)
+        tmpFeeServer.fName = str(feeServer)
+        moduleId, rcuId, x, z = self.idConverter.GetRcuLogicalCoordinatesFromFeeServerId(id)
         tmpFeeServer.fModId = moduleId
         tmpFeeServer.fRcuId = rcuId
         tmpFeeServer.fZ = z
@@ -350,23 +350,20 @@ class DetectorHandler(PHOSHandler):
 
         self.fee_servers.push_back(tmpFeeServer)
         
-        print 'adding fee server'
-
     def startFeeClient(self):
         
-#        self.dcs_interface.Init(fee_servers)
-        print 'starting fee client'
+        self.dcs_interface.getDcsInterface().Init(self.fee_servers)
+        self.dcs_interface.releaseDcsInterface()
 
     def stopFeeClient(self):
 
         self.dcs_interface.DeInit()
         self.fee_servers.clear()
-        print 'stopping fee client'
 
     def connectToFeeServers(self, feeServerNames, feeServerEnabled):
         
         for i in range(len(feeServerNames)):
-            if feeServerEnabled == True:
+            if feeServerEnabled[i] == True:
                 self.addFeeServer(feeServerNames[i], i)
 
         self.startFeeClient()
@@ -406,8 +403,7 @@ class LogHandler(PHOSHandler):
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
 
             logString = dcs_interface.GetLogViewerString()
-            print "Log String: " + logString
-            self.emit(QtCore.SIGNAL("gotLog"), "gotLog")
+            self.emit(QtCore.SIGNAL("gotLog"), "gotLog", logString)
 
             self.dcs_interface_wrapper.releaseDcsInterface()
 

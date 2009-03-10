@@ -157,12 +157,6 @@ class PhosGui(QtGui.QMainWindow):
     def connectToFeeServers(self):
         
         feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
-        feeServers = []
-        for i in range(len(feeServerNames)):
-            if feeServerEnabled[i] == True:
-                feeServers.append(feeServerNames[i])
-                print 'FEE Server Name: ' + feeServerNames[i]
-
         self.detectorHandler.connectToFeeServers(feeServerNames, feeServerEnabled)
 
     def fetchLog(self, signal, moduleId):

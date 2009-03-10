@@ -65,7 +65,6 @@ Rcu::~Rcu()
 void 
 Rcu::ApplyPattern(const Pattern_t pattern) const
 {
-  cout <<" Rcu::ApplyPattern" << endl;
   pattern.PrintInfo("Rcu::ApplyPattern");
 }
 
@@ -738,7 +737,6 @@ Rcu::SetFeeServer(const char *name)
   if( fFeeClientPtr !=0)
     {
       fFeeClientPtr->registerFeeServerName(fFeeServerName); 
-      cout << "Registered FeeServername" << endl;
     }
   else
     {

@@ -65,12 +65,17 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
   
   int ret = 0;
   PhosModule* tmpPhosModulePtr = 0;
+  stringstream log;
 
   server = feeServers.begin();
   while(server != feeServers.end())
     {
       tmpPhosModulePtr = fPhosDetectorPtr->GetModulePtr((*server).fModId);
-
+      log.str("");
+      log << "DcsInterface::Init: Adding FeeServer with name: " << (*server).fName <<  
+	". For Module #: " << (*server).fModId << " and RCU ID: " << (*server).fRcuId << 
+	". Coord: x = " << (*server).fX << ", z = " << (*server).fZ;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
       tmpPhosModulePtr->CreateRcu((*server).fName.c_str(), (*server).fModId, (*server).fRcuId, (*server).fZ, (*server).fX);
       server++;
     }
@@ -81,7 +86,7 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
       server = feeServers.begin();
       while(server != feeServers.end())
 	{
-	  DisArmTrigger((*server).fModId, (*server).fRcuId);
+	  //  DisArmTrigger((*server).fModId, (*server).fRcuId);
 	  server++;
 	}
     }

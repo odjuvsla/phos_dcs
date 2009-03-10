@@ -47,12 +47,12 @@ class PhosIdConverter():
         return moduleId, rcuId
     #------------------------------------------------------
 
-    def GetRcuLogicalCoordinatesFromFeeServerId(self, feeId):
-        moduleId = feeId/(RCUS_PER_MODULE+TORS_PER_MODULE)
-        rcuIdLog = feeId%(RCUS_PER_MODULE+TORS_PER_MODULE)
+    def GetRcuLogicalCoordinatesFromFeeServerId(self, feeServerId):
+        moduleId = feeServerId/(RCUS_PER_MODULE+TORS_PER_MODULE)
+        rcuIdLog = feeServerId%(RCUS_PER_MODULE+TORS_PER_MODULE)
         
-        x = feeId%(RCUS_PER_MODULE/2)
-        z = feeId/(RCUS_PER_MODULE/2)
+        x = rcuIdLog%(RCUS_PER_MODULE/2)
+        z = rcuIdLog/(RCUS_PER_MODULE/2)
         return moduleId, rcuIdLog, x, z
 
     def GetTruLogicalIDs(self, truId):
