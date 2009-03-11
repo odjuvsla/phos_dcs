@@ -115,7 +115,7 @@ class FeeCardHandler(PHOSHandler):
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
 
             # Emitting the card toggled signal together with the returned state of the card
-            self.emit(QtCore.SIGNAL("cardToggled"), "cardToggled", feeId, state)
+            self.emit(QtCore.SIGNAL("cardToggled"), "cardToggled", self.feeId, state)
 
             # Release the DcsInterface object
             self.dcs_interface_wrapper.releaseDcsInterface()
@@ -354,6 +354,7 @@ class DetectorHandler(PHOSHandler):
         
         self.dcs_interface.getDcsInterface().Init(self.fee_servers)
         self.dcs_interface.releaseDcsInterface()
+        self.fee_servers.clear()
 
     def stopFeeClient(self):
 

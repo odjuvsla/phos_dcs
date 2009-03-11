@@ -80,7 +80,7 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
       server++;
     }
   
-  ret = fPhosDetectorPtr->StartFeeClient();
+  //  ret = fPhosDetectorPtr->StartFeeClient();
   if(ret > 0) 
     {
       server = feeServers.begin();

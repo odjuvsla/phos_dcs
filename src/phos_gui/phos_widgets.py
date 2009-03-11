@@ -119,6 +119,14 @@ class ModuleTabWidget(QtGui.QWidget):
         self.connect(self.moduleEnableTriggerButton, QtCore.SIGNAL("enableTriggerModule"), self.emit_signal)
         self.connect(self.moduleDisableTriggerButton, QtCore.SIGNAL("disableTriggerModule"), self.emit_signal)
 
+    def addLogString(self, logString):
+                
+#        self.logViewer.append(logString)
+        self.logViewer.setText(self.logViewer.toPlainText() + logString)
+
+    def updateCard(self, feeId, state):
+        
+        print 'update card ' + str(feeId) + ' with state ' + str(state)
 
 class RcuTopFrame(QtGui.QFrame):
     """Top frame for the RCUs"""
@@ -246,6 +254,7 @@ class Rcu(QtGui.QWidget):
 
         self.feeButtons = [None]*CARDS_PER_BRANCH*2
 
+
         for i in range(CARDS_PER_BRANCH):
             
             feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i)
@@ -324,7 +333,7 @@ class LogViewer(QtGui.QTextBrowser):
         self.geometry().setX(20)
         self.geometry().setY(500)
         self.setFixedSize(1070, 300)
-       
+
 class ConnectionSettingsModuleTabWidget(QtGui.QWidget):
     """Module tab for the connection settings dialog"""
 

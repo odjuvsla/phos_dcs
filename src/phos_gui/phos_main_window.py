@@ -4,6 +4,7 @@ from PhosConst import *
 from phos_dialogs import *
 from phos_widgets import *
 from phos_interface import *
+from phos_utilities import *
 
 class PhosGui(QtGui.QMainWindow):
     """The main gui"""
@@ -68,6 +69,7 @@ class PhosGui(QtGui.QMainWindow):
         self.connect(self.rcuHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
         self.connect(self.moduleHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
         self.connect(self.detectorHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
+        self.connect(self.logHandler, QtCore.SIGNAL("gotLog"), self.updateLogViewer)
 
         self.connect(self, QtCore.SIGNAL("viewFee"), self.showFeeDialog)
         self.connect(self, QtCore.SIGNAL("viewdTru"), self.showTruDialog)
@@ -108,7 +110,20 @@ class PhosGui(QtGui.QMainWindow):
 
             self.connect(self.moduleTabs[i], QtCore.SIGNAL("enableTriggerModule"), self.extractSignal)
             self.connect(self.moduleTabs[i], QtCore.SIGNAL("disableTriggerModule"), self.extractSignal)
+
+            self.connect(self, QtCore.SIGNAL("cardToggled" + str(i)), self.moduleTabs[i].updateCard)
+
+        self.connect(self.feeCardHandler, QtCore.SIGNAL("cardToggled"), self.translateFeeSignal)
             
+    def translateFeeSignal(self, *args):
+        
+        feeId = args[1]
+        res = args[2]
+        module = feeId/(RCUS_PER_MODULE+CARDS_PER_RCU)
+        feeId = feeId + PHOS_MODS*RCUS_PER_MODULE+CARDS_PER_RCU
+        self.emit(QtCore.SIGNAL(args[0] + str(module)), feeId, res)
+        
+
     def extractSignal(self, *args):
         
         params = []
@@ -138,7 +153,6 @@ class PhosGui(QtGui.QMainWindow):
 
     def showRcuDialog(self, feeId):
         
-        print 'Dialog not yet made...'
         self.rcuDialog.show()
 
     def showModulePropertiesDialog(self, moduleId):
@@ -158,7 +172,15 @@ class PhosGui(QtGui.QMainWindow):
         
         feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
         self.detectorHandler.connectToFeeServers(feeServerNames, feeServerEnabled)
-
+        
     def fetchLog(self, signal, moduleId):
         
         self.logHandler.getLogString(moduleId)
+        
+    def updateLogViewer(self, tmpSignal, logString):
+        
+        for i in range(PHOS_MODS):
+            
+            self.moduleTabs[i].addLogString(logString)
+
+    

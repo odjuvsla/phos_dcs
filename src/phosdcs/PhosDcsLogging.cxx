@@ -106,7 +106,7 @@ void PhosDcsLogging::LogViewer(string logmsg)
 string PhosDcsLogging::GetLogViewerString()
 { 
   string tmpstring = fLogViewerStringStream.str();
-  fLogViewerStringStream.str("");
+  fLogViewerStringStream.str(" ");
   return tmpstring; 
 } 
 
@@ -138,3 +138,16 @@ void PhosDcsLogging::GetTimeStamp(stringstream& timestamp, stringstream& datesta
       datestamp << timeinfo->tm_mday;  
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
