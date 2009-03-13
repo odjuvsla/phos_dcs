@@ -111,18 +111,19 @@ class PhosGui(QtGui.QMainWindow):
             self.connect(self.moduleTabs[i], QtCore.SIGNAL("enableTriggerModule"), self.extractSignal)
             self.connect(self.moduleTabs[i], QtCore.SIGNAL("disableTriggerModule"), self.extractSignal)
 
-            self.connect(self, QtCore.SIGNAL("cardToggled" + str(i)), self.moduleTabs[i].updateCard)
+            self.connect(self, QtCore.SIGNAL("cardToggled" + str(i)), self.moduleTabs[i].updateFeeCard)
 
         self.connect(self.feeCardHandler, QtCore.SIGNAL("cardToggled"), self.translateFeeSignal)
-            
+        self.connect(self.rcuHandler, QtCore.SIGNAL("cardToggled"), self.translateFeeSignal)
+
     def translateFeeSignal(self, *args):
         
+        print 'translating'
         feeId = args[1]
         res = args[2]
-        module = feeId/(RCUS_PER_MODULE+CARDS_PER_RCU)
-        feeId = feeId + PHOS_MODS*RCUS_PER_MODULE+CARDS_PER_RCU
+        module = feeId/(RCUS_PER_MODULE*CARDS_PER_RCU)
         self.emit(QtCore.SIGNAL(args[0] + str(module)), feeId, res)
-        
+        print args[0]
 
     def extractSignal(self, *args):
         
@@ -174,7 +175,7 @@ class PhosGui(QtGui.QMainWindow):
         self.detectorHandler.connectToFeeServers(feeServerNames, feeServerEnabled)
         
     def fetchLog(self, signal, moduleId):
-        
+        print 'fetch log!'
         self.logHandler.getLogString(moduleId)
         
     def updateLogViewer(self, tmpSignal, logString):

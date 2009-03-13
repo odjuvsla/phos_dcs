@@ -306,6 +306,7 @@ DcsInterface::ToggleOnOffFee(const int mod,  const int rcu , const int branch , 
     {
       tmpStates[i] = *tmp[i];
     }
+
   return state;
 }
 

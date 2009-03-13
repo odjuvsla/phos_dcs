@@ -55,10 +55,18 @@ class FeePushButton(PhosPushButton):
 
         self.emit(QtCore.SIGNAL("viewFee"), "viewFee", self.feeId)
 
-    def setColour(self, colour):
-        
-        self.setPaletteBackGroundColor(colour)
-        
+    def setState(self, state):
+
+        self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(0, 0, 0))
+        if state == FEE_STATE_ON:
+            self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(0, 255, 0))
+        if state == FEE_STATE_OFF:
+            self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(255, 255, 255))
+        if state == FEE_STATE_WARNING: 
+            self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(255, 255, 0))
+        if state == FEE_STATE_ERROR: 
+            self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(255, 0, 0))
+        print FEE_STATE_OFF
 class TruPushButton(PhosPushButton):
 
     def __init__(self, parent, truId):

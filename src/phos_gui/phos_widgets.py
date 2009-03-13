@@ -124,9 +124,13 @@ class ModuleTabWidget(QtGui.QWidget):
 #        self.logViewer.append(logString)
         self.logViewer.setText(self.logViewer.toPlainText() + logString)
 
-    def updateCard(self, feeId, state):
+    def updateFeeCard(self, feeId, state):
         
         print 'update card ' + str(feeId) + ' with state ' + str(state)
+        module, rcu, branch, fee = self.idConverter.GetFeeLogicalIDs(feeId)
+
+        self.rcus[rcu].updateFeeCard(branch, fee, state)
+        self.update()
 
 class RcuTopFrame(QtGui.QFrame):
     """Top frame for the RCUs"""
@@ -257,7 +261,7 @@ class Rcu(QtGui.QWidget):
 
         for i in range(CARDS_PER_BRANCH):
             
-            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i)
+            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
             self.feeButtons[i] = FeePushButton(self, feeId)
             self.feeButtons[i].geometry().setX(50 + i*(self.feeButtons[i].geometry().width()-4))
             self.feeButtons[i].geometry().setWidth(16)
@@ -266,7 +270,7 @@ class Rcu(QtGui.QWidget):
             
             n = i + CARDS_PER_BRANCH
 
-            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_B, i)
+            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_B, i+1)
             self.feeButtons[n] = FeePushButton(self, feeId)
             self.feeButtons[n].geometry().setX(240 + i*(self.feeButtons[i].geometry().width()-4))
             self.feeButtons[i].geometry().setWidth(16)
@@ -323,6 +327,13 @@ class Rcu(QtGui.QWidget):
         self.connect(self.rcuUpdateStatusButton, QtCore.SIGNAL("rcuUpdateStatus"), self.emit_signal)
         self.connect(self.rcuToggleButton, QtCore.SIGNAL("rcuToggleOnOff"), self.emit_signal)
         self.connect(self.rcuViewButton, QtCore.SIGNAL("viewRcu"), self.emit_signal)
+
+    def updateFeeCard(self, branchId, feeId, state):
+        
+#        feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, branchId, feeId)
+        feeId = feeId - 1 + branchId*CARDS_PER_BRANCH
+        
+        self.feeButtons[feeId].setState(state)
    
 class LogViewer(QtGui.QTextBrowser):
     
@@ -417,6 +428,8 @@ class ConnectionSettingsModuleTabWidget(QtGui.QWidget):
 
         for i in range(RCUS_PER_MODULE):
             self.connect(self.enabledRcuBoxes[i], QtCore.SIGNAL("stateChanged"), self.feeServerRcuLineEdit[i].setEnabled)
+
+    
 
 
 class ConnectionSettingsBusyboxTabWidget(QtGui.QWidget):

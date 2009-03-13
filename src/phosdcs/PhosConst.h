@@ -22,6 +22,7 @@
 
 namespace PhosConst
 {
+  
   const unsigned int DEBUG	=  0;  //0/1/2/3 - Level for debugging details
  
   const int RAMP_PATTERN = 0;

@@ -7,7 +7,7 @@ class PhosIdConverter():
     def FeeAbsoluteID(self, moduleId, rcuId, branchId, feeId):
         """Funtion to extract the FEE absolute ID from logical IDs"""
 
-        return moduleId*RCUS_PER_MODULE*CARDS_PER_RCU + rcuId*CARDS_PER_RCU + branchId*CARDS_PER_BRANCH + feeId
+        return moduleId*RCUS_PER_MODULE*CARDS_PER_RCU + rcuId*CARDS_PER_RCU + branchId*CARDS_PER_BRANCH + feeId-1
     #------------------------------------------------------
     
     def RcuAbsoluteID(self, moduleId, rcuId):
