@@ -111,7 +111,7 @@ class FeeCardHandler(PHOSHandler):
             state = 0
             
             # Here we do the toggling
-            #state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate, tmpStates)
+            state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate, tmpStates)
             
             # Emitting signal for fetching log information
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
@@ -357,10 +357,10 @@ class DetectorHandler(PHOSHandler):
         
     def startFeeClient(self):
         
-        self.dcs_interface.getDcsInterface().Init(self.fee_servers)
+        res = self.dcs_interface.getDcsInterface().Init(self.fee_servers)
         self.dcs_interface.releaseDcsInterface()
         self.fee_servers.clear()
-
+        return res
     def stopFeeClient(self):
 
         self.dcs_interface.DeInit()
@@ -372,7 +372,8 @@ class DetectorHandler(PHOSHandler):
             if feeServerEnabled[i] == True:
                 self.addFeeServer(feeServerNames[i], i)
 
-        self.startFeeClient()
+        res = self.startFeeClient()
+        self.emit(QtCore.SIGNAL("feeServerStarted"), "feeServerStarted", res)
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
         
 class LogHandler(PHOSHandler):

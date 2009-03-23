@@ -132,6 +132,11 @@ class ModuleTabWidget(QtGui.QWidget):
         self.rcus[rcu].updateFeeCard(branch, fee, state)
         self.update()
 
+    def enableTab(self, enable, rcuId):
+        
+        self.setEnabled(enable)
+        self.rcus[rcuId].enableRcu(enable)
+
 class RcuTopFrame(QtGui.QFrame):
     """Top frame for the RCUs"""
 
@@ -335,6 +340,19 @@ class Rcu(QtGui.QWidget):
         
         self.feeButtons[feeId].setState(state)
    
+    def enableRcu(self, enable):
+        
+        for i in range(CARDS_PER_BRANCH*2):
+            self.feeButtons[i].setEnabled(enable)
+
+        for i in range(TRUS_PER_RCU):
+            self.truButtons[i].setEnabled(enable)
+
+        self.rcuUpdateStatusButton.setEnabled(enable)
+        self.rcuToggleButton.setEnabled(enable)
+        self.rcuViewButton.setEnabled(enable)
+
+
 class LogViewer(QtGui.QTextBrowser):
     
     def __init__(self, parent, moduleId):

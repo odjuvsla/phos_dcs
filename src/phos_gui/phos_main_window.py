@@ -174,6 +174,15 @@ class PhosGui(QtGui.QMainWindow):
         feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
         self.detectorHandler.connectToFeeServers(feeServerNames, feeServerEnabled)
         
+    def enableConnectedFeeServers(self):
+        
+        feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
+        for i in range(PHOS_MODS):
+            for j in range(RCUS_PER_MODULE):
+                if feeServerEnabled[i*(RCUS_PER_MODULE+1) + j] == True:
+                    self.moduleTabs[i].enableTab(j)
+        # Need to enable TORs also ...
+
     def fetchLog(self, signal, moduleId):
         print 'fetch log!'
         self.logHandler.getLogString(moduleId)

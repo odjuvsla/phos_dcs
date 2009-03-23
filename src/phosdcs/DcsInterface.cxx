@@ -80,13 +80,38 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
       server++;
     }
   
-  //  ret = fPhosDetectorPtr->StartFeeClient();
+  ret = fPhosDetectorPtr->StartFeeClient();
   if(ret > 0) 
     {
       server = feeServers.begin();
       while(server != feeServers.end())
 	{
-	  //  DisArmTrigger((*server).fModId, (*server).fRcuId);
+	  DisArmTrigger((*server).fModId, (*server).fRcuId);
+	  server++;
+	}
+      PhosDcsLogging::Instance()->Logging("FEE Client successfully started.", LOG_LEVEL_INFO);
+      server feeServers.begin();
+      while(server != feeServers.end())
+	{
+	  log << (*server).fName << "Module #: " << (*server).fModId 
+	      << " and RCU ID: " << (*server).fRcuId << ". Coord: x = " 
+	      << (*server).fX << ", z = " << (*server).fZ;
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+	  server++;
+	}
+    }
+  else
+    {
+      log.str("");
+      log << "Could not start FEE Client for FEE servers: ";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+      server feeServers.begin();
+      while(server != feeServers.end())
+	{
+	  log << (*server).fName << "Module #: " << (*server).fModId 
+	      << " and RCU ID: " << (*server).fRcuId << ". Coord: x = " 
+	      << (*server).fX << ", z = " << (*server).fZ;
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 	  server++;
 	}
     }
@@ -370,13 +395,13 @@ DcsInterface::UpdateFeeStatus(const int mod, const int rcu)
   status.clear();
   for(int i = 0; i < CARDS_PER_BRANCH; i++)
     {
-      //      status.push_back(CheckFeeState(mod, rcu, BRANCH_A, i+1));
-      status.push_back(i);
+      status.push_back(CheckFeeState(mod, rcu, BRANCH_A, i+1));
+      //      status.push_back(i);
     }
   for(int i = 0; i < CARDS_PER_BRANCH; i++)
     {
-      //      status.push_back(CheckFeeState(mod, rcu, BRANCH_B, i+1));
-      status.push_back(i);
+      status.push_back(CheckFeeState(mod, rcu, BRANCH_B, i+1));
+      //status.push_back(i);
     }
   return status;
 }
