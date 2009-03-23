@@ -100,7 +100,7 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
       log.str("");
       log << "Could not start FEE Client for FEE servers: ";
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
-      server feeServers.begin();
+      server = feeServers.begin();
       while(server != feeServers.end())
 	{
 	  log << (*server).fName << "Module #: " << (*server).fModId 
