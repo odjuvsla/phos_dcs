@@ -316,7 +316,8 @@ DcsInterface::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t r
 
 
 unsigned int 
-DcsInterface::ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate, unsigned int tmpStates[CARDS_PER_RCU])
+//DcsInterface::ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate, unsigned int tmpStates[CARDS_PER_RCU])
+DcsInterface::ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate)
 {
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(mod, rcu); 
   int state = tmpRcuPtr->ToggleFeeOnOff(branch, cardId);
@@ -324,9 +325,8 @@ DcsInterface::ToggleOnOffFee(const int mod,  const int rcu , const int branch , 
 
   for(int i=0; i < CARDS_PER_RCU; i++)
     {
-      tmpStates[i] = *tmp[i];
+      //      tmpStates[i] = *tmp[i];
     }
-
   return state;
 }
 

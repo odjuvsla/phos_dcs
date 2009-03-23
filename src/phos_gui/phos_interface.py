@@ -107,11 +107,12 @@ class FeeCardHandler(PHOSHandler):
             moduleId, rcuId, branchId, feeId = self.idConverter.GetFeeLogicalIDs(self.feeId)
             print 'toggling card'
             currentstate = 0
-            tmpStates = [0]*CARDS_PER_RCU
+#            tmpStates = [0]*CARDS_PER_RCU
             state = 0
             
             # Here we do the toggling
-            state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate, tmpStates)
+ #           state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate, tmpStates)
+            state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate)
             
             # Emitting signal for fetching log information
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)

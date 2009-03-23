@@ -81,7 +81,8 @@ class DcsInterface : public PhosDcsBase
   void            SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig) const;
 
 
-  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU]);
+  //  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU]);
+  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate);
   unsigned int    ToggleOnOffTru(const int mod, const int rcu, const int truId);
   void            TurnOnAllFee(const int  modID, const int rcuId) const ;
   void            TurnOnAllTru( const int  modID, const int rcuId) const; 
