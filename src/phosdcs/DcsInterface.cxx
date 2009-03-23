@@ -80,13 +80,13 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
       server++;
     }
   
-  //  ret = fPhosDetectorPtr->StartFeeClient();
+  ret = fPhosDetectorPtr->StartFeeClient();
   if(ret > 0) 
     {
       server = feeServers.begin();
       while(server != feeServers.end())
 	{
-	  //  DisArmTrigger((*server).fModId, (*server).fRcuId);
+	  DisArmTrigger((*server).fModId, (*server).fRcuId);
 	  server++;
 	}
     }
