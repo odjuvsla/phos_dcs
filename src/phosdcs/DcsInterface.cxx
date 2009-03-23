@@ -83,20 +83,15 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
   ret = fPhosDetectorPtr->StartFeeClient();
   if(ret > 0) 
     {
-      server = feeServers.begin();
-      while(server != feeServers.end())
-	{
-	  DisArmTrigger((*server).fModId, (*server).fRcuId);
-	  server++;
-	}
       PhosDcsLogging::Instance()->Logging("FEE Client successfully started.", LOG_LEVEL_INFO);
-      server feeServers.begin();
+      server = feeServers.begin();
       while(server != feeServers.end())
 	{
 	  log << (*server).fName << "Module #: " << (*server).fModId 
 	      << " and RCU ID: " << (*server).fRcuId << ". Coord: x = " 
 	      << (*server).fX << ", z = " << (*server).fZ;
 	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+	  DisArmTrigger((*server).fModId, (*server).fRcuId);
 	  server++;
 	}
     }
