@@ -55,7 +55,7 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
 
   void ExecuteScript(const char *scriptFilename, const char *feeServerName, char *resultBuffer, const int N);
 
-  int ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> & resultBuffer, const int N);
+  int ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> & resultBuffer);
   void ExecuteInstruction(const char* feeServerName);
   
   const unsigned int CheckFeeState(const char *feeServerName,  const int branch, const int cardNumber, char *message, unsigned long int *pcmv = 0);
@@ -64,9 +64,9 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
   
   bool ActivateFeeByBranch(unsigned long afl, const char* serverName, const unsigned branch, const int onOff);
 
-  bool ActivateAllFee(unsigned long afl, const char* feeServerName, const int onOff);
+  //  bool ActivateAllFee(unsigned long afl, const char* feeServerName, const int onOff);
 
-  bool ActivateAllTru(unsigned long afl, const char* feeServerName, const int onOff);
+  //bool ActivateAllTru(unsigned long afl, const char* feeServerName, const int onOff);
 
   void SendWaitCommand(const int nCycles, const char* feeServerName);
 
@@ -89,7 +89,7 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
   /** must be changed for RCU_fw2 */
   void ScanValues(unsigned long *values, const char *resultBuffer, const int bufferSize, const unsigned long baseAddress, const int N);
 
-  int  VerifyValues(const unsigned long *values1, const unsigned long *values2, const bool  *verify, const int N) const;
+  int  VerifyValues(const vector<unsigned long> values1, const unsigned long *values2, const bool  *verify, const int N) const;
 
   /** must be changed for RCU_fw2 */
   void MakeFormatString(const int N, char *formatString, const int baseAddress);
@@ -103,6 +103,8 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
 
   ScriptCompiler *scriptCompilerPtr;
   BinaryCompiler *binaryCompilerPtr;
+
+  bool fPrintDebug;
 };
 
 

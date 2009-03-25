@@ -35,6 +35,7 @@ DcsInterface::DcsInterface()
 //   tmpPhosModulePtr->CreateRcu("tpc-fee_0_17_3", MODULE_2, RCU_2, Z_0, X_1);
 //   tmpPhosModulePtr->CreateRcu("alphsdcs0280", MODULE_2, RCU_3, Z_1, X_1);
  
+
  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_0, Z_0, X_0);
  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_1, Z_1, X_0);
  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_2, Z_0, X_1);
@@ -47,6 +48,7 @@ DcsInterface::DcsInterface()
 
  fPhosDetectorPtr->StartFeeClient();
  fDatabasePtr = new DatabaseDummy();
+
 }
 
 
@@ -73,7 +75,6 @@ DcsInterface::ApplyTruSettings(int modID, int RcuID, char *Mesbuf, unsigned long
 int 
 DcsInterface::ArmTrigger(const int modID) const
 {
-  cout << "DcsInterface::ArmTrigger" << endl;
   return fPhosDetectorPtr->ArmTrigger(modID);
 }
 
@@ -231,7 +232,7 @@ DcsInterface::SetAllApds(const int modID, const int rcuId, const int branch, con
 void 
 DcsInterface::SetApdValues(const int mod, const int rcu, const int branch, const int cardId, const unsigned long *values)
 {
-  cout <<"DcsInterface::SetApdValues; mod  =" << mod <<"  rcu = "<< rcu <<"  branch = "<< branch << "card = " <<  cardId <<endl;  
+  //cout <<"DcsInterface::SetApdValues; mod  =" << mod <<"  rcu = "<< rcu <<"  branch = "<< branch << "card = " <<  cardId <<endl;  
   FeeCard *tmpFeeCard  = GetFeeCard(mod,  rcu, branch, cardId);
   tmpFeeCard->SetApdValues(values);
 }

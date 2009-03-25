@@ -20,10 +20,11 @@
 #include "ScriptCompiler.h"
 #include "unistd.h"
 #include "BCRegisterMap.h"
+#include "PhosDcsLogging.h"
 
 using namespace dcs::fee;
 using namespace BCRegisterMap;
-
+using namespace std;
 
 Rcu::Rcu() : PhosDcsBase(), 
 	     fFeeClientPtr(0), 
@@ -80,7 +81,9 @@ Rcu::GetRcuId() const
 void
 Rcu::ExecuteScript(const char *fileName) const
 {
-  cout << "Rcu::ExecuteScript fileName = "  << fileName  << endl;
+  stringstream log;
+  log << "Rcu::ExecuteScript fileName = "  << fileName;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
 
   char resultBuffer[100];
   fFeeClientPtr->ExecuteScript(fileName, fFeeServerName, resultBuffer, 100);
@@ -90,8 +93,10 @@ Rcu::ExecuteScript(const char *fileName) const
 void 
 Rcu::SetPcmVersion(const unsigned long pcmversion, const int branch, const int cardIndex) const 
 {
-  cout << endl;
-  cout << "Rcu::SetPcmVersion, "<< fFeeServerName  <<"   branch = "  <<  branch << ",  card = " <<  cardIndex  <<endl;
+  stringstream log;
+  log << "Rcu::SetPcmVersion: "<< fFeeServerName  << " branch = "  <<  branch << ",  card = " <<  cardIndex;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+
   fFeeCardPtr[branch*14 + cardIndex]->SetPcmversion(pcmversion);
 }
 
@@ -101,55 +106,59 @@ Rcu::ActivateFee(const int branch, const int cardIndex)
 {
   //  unsigned long tmpAddr = 0x8000;
 
+  stringstream log;
+
   unsigned long tmpAddr = RcuRegisterMap::AFL;
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList, 1); 
+
+  log << "Rcu::ActivateFee: AFL before activating FEE: 0x" << hex << fActiveFeeList << dec;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
+
   unsigned long  pcmversion = 0;
   //                                 BCVERSION
   unsigned long  pcmversionReg = BCVERSION;
-  char resultBuffer[100];
 
-  //fActiveFeeList = 0;
-  if(cardIndex == -1)
-    {
-      fFeeClientPtr->ActivateFeeByBranch(fActiveFeeList, fFeeServerName, branch, TURN_ON);
-    }
-  else
-    {
-      fFeeClientPtr->ActivateFee(fActiveFeeList, fFeeServerName, branch, cardIndex, TURN_ON);
-    }
+  unsigned int state = 0;
 
-
-  //  fFeeClientPtr->SetFilename("s_readactivefeelist2.txt");
-  //  fFeeClientPtr->SetScripFileName("s_readpcmversion.txt");
+  log.str("");
+  log << "Rcu::ActivateFee: Activating " << fFeeServerName << ", branch " << branch << ", card " << cardIndex;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+  
+  fFeeClientPtr->ActivateFee(fActiveFeeList, fFeeServerName, branch, cardIndex, TURN_ON);
+  
   fFeeClientPtr->ReadRegisters(REGTYPE_BC, fFeeServerName, &pcmversionReg, &pcmversion, 1, branch, cardIndex +1);
   
-  fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1); 
-
   if(pcmversion == 0xdead)
     {
-      return FEE_STATE_ERROR;
+      state = FEE_STATE_ERROR;
     }
   else if(pcmversion == 0)
     {
-     return DCS_NOT_MASTER;
+      state = DCS_NOT_MASTER; //TODO: Deprecated, DCS always master...
     }
   else if(pcmversion == PCMVERSION)
     {
       //  SetPcmVersion(pcmversion, branch, cardIndex +1);
       SetPcmVersion(pcmversion, branch, cardIndex );
-      return FEE_STATE_ON;
+      state = FEE_STATE_ON;
     }
   else if(pcmversion == OLD_PCMVERSION)
     {
       //      SetPcmVersion(pcmversion, branch, cardIndex +1); 
       SetPcmVersion(pcmversion, branch, cardIndex); 
-      return FEE_STATE_WARNING;
+      state = FEE_STATE_WARNING;
     }
   else
     {
-      return UNKNOWN_PCMVERSION;
+      state = UNKNOWN_PCMVERSION;
     }
+
+  log.str("");
+  log << "Rcu::ActivateFee: Result: State = " << state;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+
+  return state;
 }
 
 
@@ -161,20 +170,17 @@ Rcu::DeActivateFee(const int branch, const int cardIndex)
 
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1); 
-  char resultBuffer[100];
 
-  if(cardIndex == -1)
-    {
-      fFeeClientPtr->ActivateFeeByBranch(fActiveFeeList, fFeeServerName, branch, TURN_OFF);     
-    }
-  else
-    {
-      fFeeClientPtr->ActivateFee(fActiveFeeList, fFeeServerName, branch, cardIndex, TURN_OFF);
-    }
+  stringstream log;
+  log << "Rcu::DeActivateFee: Deactivating " << fFeeServerName << ", branch " << branch << ", card " << cardIndex;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+
+  fFeeClientPtr->ActivateFee(fActiveFeeList, fFeeServerName, branch, cardIndex, TURN_OFF);
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1);  
 
   return FEE_STATE_OFF;
+
 }
 
 
@@ -189,16 +195,7 @@ Rcu::UpdateAFL()
 int  
 Rcu::ToggleFeeOnOff(const int branch, const int cardNumber)
 {
-  printf("\nRcu::ToggleFeeOnOff; feestates = \n");
 
-  for(int i=0; i < CARDS_PER_RCU ; i++)
-    {
-      printf("%d  ",*fFeeState[i] );
-      if(i == 13)
-	{
-	  printf("\n");
-	} 
-    }
   int state=0;
   char resBuffer[100];
   char message[100];
@@ -249,6 +246,7 @@ Rcu::ToggleFeeOnOff(const int branch, const int cardNumber)
 	    }
 	}	
     }
+
   return state;
 }
 
@@ -258,20 +256,10 @@ void
 //Rcu::TurnOnAllFee(int **status)
 Rcu::TurnOnAllFee()
 {
-  int tmpState;
  
   unsigned long tmpAddr = RcuRegisterMap::AFL;
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1);
-
-//   bool allOn = fFeeClientPtr->ActivateAllFee(fActiveFeeList, fFeeServerName, 1);
-//   allOn = fFeeClientPtr->ActivateAllFee(fActiveFeeList, fFeeServerName, 1);
-
-//   for(int i =0; i<CARDS_PER_RCU; i++)
-//     {
-//       *fFeeState[i] = FEE_STATE_ON;
-//     } 
-
 
   unsigned long int one = 1;
   unsigned long int two = 2;
@@ -282,17 +270,13 @@ Rcu::TurnOnAllFee()
 	{
 	  if((fActiveFeeList & (one<<(i+(unsigned long int)12)+one)) == 0)
 	    {
-	      printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_A, 12+i+1);
-	      *fFeeState[12+i] =  ActivateFee(BRANCH_A, 12+i);
-	      printf(", state = %d ", *fFeeState[12+i]);
+	      *fFeeState[12+i] =  ActivateFee(BRANCH_A, 12+i+one);	    
 	    } 
 	}
 
       if((fActiveFeeList & (one<<(i + one))) == 0)
 	{     
-	  printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_A, i+1);
-	  *fFeeState[i] =  ActivateFee(BRANCH_A, i);
-	  printf(", state = %d ", *fFeeState[i]);
+	  *fFeeState[i] =  ActivateFee(BRANCH_A, i + one);
 	}
     }
   
@@ -302,17 +286,13 @@ Rcu::TurnOnAllFee()
 	{
 	  if((fActiveFeeList & (one << (i+(unsigned long int)12+two+one))) == 0)
 	    {
-	      printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_B, i - CARDS_PER_BRANCH +1);
-	      *fFeeState[12 + i] = ActivateFee(BRANCH_B, i+12-CARDS_PER_BRANCH);
-	      printf(", state = %d ", *fFeeState[12+i]); 
+	      *fFeeState[12 + i] = ActivateFee(BRANCH_B, i+12-CARDS_PER_BRANCH + one);
 	    }
 	} 
       
       if((fActiveFeeList & (one << (i+two+one))) == 0)
 	{
-	  printf("\nactivating %s, branch %d, card %d ", fFeeServerName, BRANCH_B, i+1); 
-	  *fFeeState[i] = ActivateFee(BRANCH_B, i - CARDS_PER_BRANCH);
-	  printf(", state = %d ", *fFeeState[i]); 
+	  *fFeeState[i] = ActivateFee(BRANCH_B, i - CARDS_PER_BRANCH + one);
 	}
     }
 }
@@ -329,13 +309,11 @@ Rcu::TurnOnAllTru()
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1);
 
-  bool allOn = fFeeClientPtr->ActivateAllTru(fActiveFeeList, fFeeServerName, 1);
-  allOn = fFeeClientPtr->ActivateAllTru(fActiveFeeList, fFeeServerName, 1);
-
-  for(int i =0; i<CARDS_PER_RCU; i++)
-    {
-      //    *fFeeState[i] = FEE_STATE_ON;
-    } 
+  if(fActiveFeeList & 0x1 == 0)
+    ActivateFee(BRANCH_A, 0);
+  if(fActiveFeeList & 0x10000 == 0)
+    ActivateFee(BRANCH_B, 0);
+  
 }
 
 
@@ -351,47 +329,40 @@ Rcu::TurnOffAllFee()
  
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1);
 
-  bool allOff = fFeeClientPtr->ActivateAllTru(fActiveFeeList, fFeeServerName, 0);
-  allOff = fFeeClientPtr->ActivateAllTru(fActiveFeeList, fFeeServerName, 0);
- 
-
-//   fFeeClientPtr->ActivateFeeByBranch(fActiveFeeList, fFeeServerName, BRANCH_B, 0);  
-//   //  fFeeClientPtr->SendWaitCommand(40000000, fFeeServerName);
-
-//   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1);
-//   fFeeClientPtr->ActivateFeeByBranch(fActiveFeeList, fFeeServerName, BRANCH_A, 0);
- 
-//   for(unsigned long int i = 0; i<14; i++)
-//     {
-//       if(i == 0 || i == 1)
-// 	{  
-	  
-// 	  if((fActiveFeeList & (one<<(i+(unsigned long int)12)+one)) != 0)
-// 	    {
-// 	      *fFeeState[12+i] = DeActivateFee(BRANCH_A, i+12);
-// 	    }
-// 	}
-
-//       if((fActiveFeeList & (one<<(i + one))) != 0)
-// 	{ 
-// 	  *fFeeState[i] = DeActivateFee(BRANCH_A, i);
-// 	}
-//     }
+  //  bool allOff = fFeeClientPtr->ActivateAllTru(fActiveFeeList, fFeeServerName, 0);
+  // allOff = fFeeClientPtr->ActivateAllTru(fActiveFeeList, fFeeServerName, 0);
   
-//   for(unsigned long i=14; i< CARDS_PER_RCU; i++)
-//     {
-//       if(i == 14 || i == 15)
-// 	{  
-// 	  if((fActiveFeeList & (one << (i+(unsigned long int)12+two+one))) != 0)
-// 	    {	  
-// 	      *fFeeState[i+12] =  DeActivateFee(BRANCH_B, 12+i);
-// 	    }
-// 	} 
-//       if((fActiveFeeList & (one << (i+two+one))) != 0)
-// 	{
-// 	  *fFeeState[i] = DeActivateFee(BRANCH_B, i - CARDS_PER_BRANCH);
-// 	} 
-//     }
+  for(unsigned long int i = 0; i<14; i++)
+    {
+      if(i == 0 || i == 1)
+	{  
+	  
+	  if((fActiveFeeList & (one<<(i+(unsigned long int)12)+one)) != 0)
+	    {
+	      *fFeeState[12+i] = DeActivateFee(BRANCH_A, i+12);
+	    }
+	}
+
+      if((fActiveFeeList & (one<<(i + one))) != 0)
+	{ 
+	  *fFeeState[i] = DeActivateFee(BRANCH_A, i);
+	}
+    }
+  
+  for(unsigned long i=14; i< CARDS_PER_RCU; i++)
+    {
+      if(i == 14 || i == 15)
+	{  
+	  if((fActiveFeeList & (one << (i+(unsigned long int)12+two+one))) != 0)
+	    {	  
+	      *fFeeState[i+12] =  DeActivateFee(BRANCH_B, 12+i);
+	    }
+	} 
+      if((fActiveFeeList & (one << (i+two+one))) != 0)
+	{
+	  *fFeeState[i] = DeActivateFee(BRANCH_B, i - CARDS_PER_BRANCH);
+	} 
+    }
 
   for(int i =0; i<CARDS_PER_RCU; i++)
     {
@@ -412,7 +383,7 @@ Rcu::TurnOffAllTru()
  
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList,1);
 
-  bool allOff = fFeeClientPtr->ActivateAllFee(fActiveFeeList, fFeeServerName, 0);
+  //  bool allOff = fFeeClientPtr->ActivateAllFee(fActiveFeeList, fFeeServerName, 0);
 }
 
 void
@@ -426,9 +397,15 @@ Rcu::SetReadoutRegion(const unsigned long int afl, const int acl[RcuRegisterMap:
       fActiveChList[i] = acl[i];
     }
 
-  cout << "SetReadoutRegion::fActiveFeeList: " << hex << afl << dec << endl;
+  stringstream log;
+  log << "Rcu::SetReadoutRegion: fActiveFeeList: " << hex << afl << dec;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
+
   fActiveFeeRdoList = afl;
-  cout << "setting readout region" << endl;
+  log.str("");
+  log << "Rcu::SetReadOutRegion: Setting readout region";
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+
 }
 
 
@@ -476,15 +453,18 @@ Rcu::ApplyReadoutRegion() const
 
   iRet = fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU_ACL, fFeeServerName, tmpRegs, tmpAfl, tmpVerify, RcuRegisterMap::Active_Channel_List_Length );   
 
+  stringstream log;
   if(iRet == REG_OK)
     {
-      printf("The activre channel list was set correctly for %s, status = %d", fFeeServerName, iRet);
+      log << "Rcu::ApplyReadoutRegion: The active channel list was set correctly for " << fFeeServerName << ", status = " << iRet;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
     }
   else
     {
-      printf("WARNING:Active channel list was not set correctly for %s, status = %d", fFeeServerName, iRet);
-   }
-  cout << "Rcu::ApplyReadoutRegion() finnsihed applying readout reagio" << endl; 
+      log << "Rcu::ApplyReadoutRegion: Active channel list was not set correctly for " << fFeeServerName << ", status = " << iRet;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+    }
+
   return iRet;
 
 }
@@ -493,10 +473,16 @@ Rcu::ApplyReadoutRegion() const
 void
 Rcu::ArmTrigger(const char *fileName, char *message)
 {
-  cout << "Rcu::ArmTrigge, filename = " <<  fileName  << endl;
+  stringstream log;
+  log << "Rcu::ArmTrigger: filename = " <<  fileName;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
+  
   char resultBuffer[50];
-  sprintf(message, "Arming trigger for server: %s  ...... Done ! ", fFeeServerName);
   fFeeClientPtr->ExecuteScript(fileName, fFeeServerName, resultBuffer, 50);
+
+  log.str("");
+  log << "Rcu::ArmTrigger: Arming trigger for server: " << fFeeServerName << " ...... Done!";
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 }
 
 
@@ -544,7 +530,10 @@ Rcu::EnableTrigger() const
   //sprintf(tmpFileName,"s_enabletrigger.txt"); 
   fFeeClientPtr->ExecuteScript(tmpFileName, fFeeServerName, resultBuffer, 50);
   //  cout <<   "Enabeling external RCU trigger for : %s  ...... Done ! "  << endl;
-  printf("Enabeling external RCU trigger for : %s  ...... Done ! ", fFeeServerName);
+  
+  stringstream log;
+  log << "Rcu::EnableTrigger: Enabling external RCU trigger for : " << fFeeServerName << " ...... Done ! ";
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 }
 
 
@@ -556,8 +545,10 @@ Rcu::EnableTrigger_ttcrx() const
   sprintf(tmpFileName,"%s/s_enabletrigger_ttcrx.txt" ,fPhosDcsScriptDir );  
   //sprintf(tmpFileName,"s_enabletrigger_ttcrx.txt");  
   fFeeClientPtr->ExecuteScript( tmpFileName, fFeeServerName, resultBuffer, 50);
-  printf("Enabeling ttcrx trigger for : %s  ...... Done ! ", fFeeServerName);
-  //  cout <<  "Enabeling trigger over TTCRx for: %s  ...... Done ! " << endl;
+
+  stringstream log;
+  log << "Rcu::EnableTrigger_ttcrx: Enabling TTCrx RCU trigger for : " << fFeeServerName << " ...... Done ! ";
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 }
 
 
@@ -582,7 +573,6 @@ Rcu::CheckFeeState(const int branch, const int cardNumber, char *message)
 
   if(IsActiveFee(branch, cardNumber) == false)
     {
-      sprintf(message,"branch %d card %d : FEE_STATE_OFF", cardNumber,  branch);
       *fFeeState[tmpIndex] = FEE_STATE_OFF;
       return  FEE_STATE_OFF;
     }
@@ -591,10 +581,7 @@ Rcu::CheckFeeState(const int branch, const int cardNumber, char *message)
   
     }
   
-
   tmpStatus = fFeeClientPtr->CheckFeeState(fFeeServerName, branch, cardNumber, message, &tmpPcmversion);
-
-  cout << "Rcu::CheckFeeState: tmpStatus = " << tmpStatus << endl;
 
   if( (tmpPcmversion == PCMVERSION) || (tmpPcmversion ==  OLD_PCMVERSION ))
     {
@@ -610,22 +597,31 @@ Rcu::CheckFeeState(const int branch, const int cardNumber, char *message)
 bool 
 Rcu::IsActiveFee(const int branch, const int card) const
 {
-  cout << endl;
+  
   bool tmp;
   unsigned long int mask = 0x1;
   int shift =  (branch*16 +card);
   mask = mask << shift;
+
+  stringstream log;
+
+  log << "Rcu::IsActiveFee: mask = 0x"  << hex << mask << "  -  fActiveFeeList = 0x" << fActiveFeeList << dec;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
   unsigned long res = (mask & fActiveFeeList);
 
   if(res == 0)
     {
       tmp = false;
-      cout << "Rcu::IsActiveFee, branch "  << branch << "  card " << card <<"  is not active" << endl;
+      log.str("");
+      log << "Rcu::IsActiveFee: branch "  << branch << "  card " << card <<"  is not active";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
     }
   else
     {
       tmp = true;
-      cout << "Rcu::IsActiveFee, branch "  << branch << "  card " << card <<"  IS!!! active" << endl;
+      log.str("");
+      log << "Rcu::IsActiveFee: branch "  << branch << "  card " << card <<"  IS!!! active";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
     }
   return tmp;
 }
@@ -683,8 +679,10 @@ Rcu::LoadApdValues()
 int 
 Rcu::ApplyApdSettings(const int branch, const int card, char *messageBuffer) const 
 {
-  cout << "Rcu::ApplyApdSetting; fFeeCardPtr["<<  card + branch*CARDS_PER_BRANCH-1 <<"], branch = "<< fFeeCardPtr[card + branch*CARDS_PER_BRANCH-1]->GetBranch();
-  cout <<  "card = "<< fFeeCardPtr[card + branch*CARDS_PER_BRANCH-1]->GetCardNumber();
+  stringstream log;
+  log << "Rcu::ApplyApdSetting: fFeeCardPtr["<<  card + branch*CARDS_PER_BRANCH-1 <<"], branch = "<< fFeeCardPtr[card + branch*CARDS_PER_BRANCH-1]->GetBranch();
+  log << "card = "<< fFeeCardPtr[card + branch*CARDS_PER_BRANCH-1]->GetCardNumber();
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
   fFeeCardPtr[card + branch*CARDS_PER_BRANCH-1]->ApplyApdSettings(messageBuffer);
 }
 
@@ -707,8 +705,9 @@ Rcu::SetAllApds(int apdVal)
 	}
       else
 	{
-	  printf("\nApdInputPtr is ZERO\n");
-
+	  stringstream log;
+	  log << "Rcu::SetAllApdsApdInputPtr is ZERO";
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
 	}
     }
 }
@@ -717,12 +716,15 @@ Rcu::SetAllApds(int apdVal)
 void
 Rcu::SetFeeServer(const char *name)
 {
-  sprintf(fFeeServerName,"%s",name);
-  cout << "ServerName was set to: " << fFeeServerName << "." << endl; 
+
+   sprintf(fFeeServerName,"%s",name);
+  stringstream log;
+  log << "ServerName was set to: " << fFeeServerName;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
   if( fFeeClientPtr !=0)
     {
       fFeeClientPtr->registerFeeServerName(fFeeServerName); 
-       cout << "Registered FeeServername" << endl;
+      cout << "Registered FeeServername" << endl;
     }
   else
     {

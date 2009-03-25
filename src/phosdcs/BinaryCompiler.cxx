@@ -19,6 +19,7 @@
 #include "BinaryCompiler.h"
 #include "RcuRegisterMap.h"
 #include "InstructionMaker.h"
+#include "PhosDcsLogging.h"
 
 BinaryCompiler::BinaryCompiler() : PhosDcsBase()
 {
@@ -51,6 +52,15 @@ BinaryCompiler::MakeWriteReadRegisterBinary(const unsigned int regType, vector<u
   if(regType == REGTYPE_TRU)
     {
     }
+  
+  stringstream log;
+  for(int i = 0; i < binData.size(); ++i)
+    {
+      log.str("");
+      log << "BinaryCompiler::MakeWriteReadRegisterBinary: Final block data[" << i << "] = 0x" << hex << binData.at(i) << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
+    }
+
   return ret;
 }
 
@@ -69,8 +79,16 @@ BinaryCompiler::MakeReadRegisterBinary(const int regType, vector<unsigned long> 
     }
   else if( (regType == REGTYPE_RCU) || (regType == REGTYPE_RCU_ACL) || (regType == REGTYPE_TOR) || (regType == REGTYPE_BUSY))
     {
-      ret =  MakeReadRcuRegisterBinary(regType, binData, reg[0] , N);
+      ret =  MakeReadRcuRegisterBinary(binData, reg[0], N);
     }
+  stringstream log;
+  for(int i = 0; i < binData.size(); ++i)
+    {
+      log.str("");
+      log << "BinaryCompiler::MakeReadRegisterBinary: Final block data[" << i << "] = 0x" << hex << binData.at(i) << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
+    }
+
   return ret;
 }
 
@@ -78,16 +96,26 @@ int
 BinaryCompiler::MakeWriteReadRcuMemoryBlockBinary(vector<unsigned long> & binData, const unsigned long baseReg, const unsigned long* value, 
 						  const int N)
 {
-  binData.push_back(RcuRegisterMap::RCU_WRITE_MEMBLOCK|(N));
+  binData.push_back(RcuRegisterMap::RCU_WRITE_MEMBLOCK|N);
 
   binData.push_back(baseReg);
 
   for(int i = 0; i < N; i++) 
     {
       binData.push_back(value[i]);
-
     }
+
   binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
+
+  MakeReadRcuRegisterBinary(binData, baseReg, N); 
+
+  stringstream log;
+  for(int i = 0; i < binData.size(); ++i)
+    {
+      log.str("");
+      log << "BinaryCompiler::MakeWriteReadRcuMemoryBlockBinary: block data[" << i << "] = 0x" << hex << binData.at(i) << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
+    }
 
   return 0; 
 }
@@ -99,17 +127,20 @@ BinaryCompiler::MakeWriteReadFeeRegisterBinary(const unsigned int registerType, 
 					       const int N, const int branch , const int card , 
 					       const int chip , const int channel , const bool writeZeroes )
 { 
+  int ret = 0;
+
   if( (registerType == REGTYPE_BC) || (registerType ==  REGTYPE_ALTRO) || (registerType == REGTYPE_TRU) )
     {
       
-      int tmpN = N;
-      binData.push_back((RcuRegisterMap::RCU_WRITE_MEMBLOCK | (tmpN*2+2)));
+//       if(*verify)  binData.push_back((RcuRegisterMap::RCU_WRITE_MEMBLOCK | (N*3+3)));
+//       else binData.push_back((RcuRegisterMap::RCU_WRITE_MEMBLOCK | (N*2+2)));
 
+      binData.push_back((RcuRegisterMap::RCU_WRITE_MEMBLOCK | (N*2+2)));
       binData.push_back(RcuRegisterMap::Instruction_MEM);
       
       int j = 0;
 
-      for(int i=0; i<tmpN; i++)
+      for(int i=0; i<N; i++)
 	{
 	  
 	  binData.push_back(InstructionMaker::MakeMS20Instruction(registerType, false, reg[j], branch, card));
@@ -117,22 +148,32 @@ BinaryCompiler::MakeWriteReadFeeRegisterBinary(const unsigned int registerType, 
 	  j++;
 	}  
       binData.push_back(RcuRegisterMap::END);
-      if(*verify == true)
-	{
-	  MakeReadFeeRegisterBinary(registerType, binData, reg, N, branch, card, chip, channel);
-	}
-      else
-	{
-	  binData.push_back(RcuRegisterMap::ENDMEM);
-	  binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
-	}
+//       if(*verify == true)
+// 	{
+// 	  for(int i = 0; i < N; i++)
+// 	    {
+// 	      binData.push_back(InstructionMaker::MakeMS20Instruction(registerType, true, reg[i], branch, card));
+// 	    }
+// 	  binData.push_back(RcuRegisterMap::END);
+// // 	  MakeReadFeeRegisterBinary(registerType, binData, reg, N, branch, card, chip, channel);
+// // 	  ret = N+2;
+// 	}
+      binData.push_back(RcuRegisterMap::ENDMEM);
+      binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
+    }
+  stringstream log;
+  for(int i = 0; i < binData.size(); ++i)
+    {
+      log.str("");
+      log << "BinaryCompiler::MakeWriteReadFeeRegisterBinary: block data[" << i << "] = 0x" << hex << binData.at(i) << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
     }
 
-  return 0; 
+  return ret; 
 }
 
 int
-BinaryCompiler::MakeReadRcuRegisterBinary(const int registerType, vector<unsigned long> & binData, 
+BinaryCompiler::MakeReadRcuRegisterBinary(vector<unsigned long> & binData, 
 					  const unsigned long baseAddress,  const int N) 
 {
   binData.push_back(RcuRegisterMap::RCU_READ_MEMBLOCK|N);
@@ -140,6 +181,14 @@ BinaryCompiler::MakeReadRcuRegisterBinary(const int registerType, vector<unsigne
   binData.push_back(baseAddress);
 
   binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
+
+  stringstream log;
+  for(int i = 0; i < binData.size(); ++i)
+    {
+      log.str("");
+      log << "BinaryCompiler::MakeReadRcuRegisterBinary: block data[" << i << "] = 0x" << hex << binData.at(i) << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
+    }
 
   return 0; 
 }
@@ -161,6 +210,14 @@ BinaryCompiler::MakeReadFeeRegisterBinary(const int registerType, vector<unsigne
   binData.push_back(RcuRegisterMap::END);
   binData.push_back(RcuRegisterMap::ENDMEM);
   binData.push_back(RcuRegisterMap::CE_CMD_TRAILER);
+  
+  stringstream log;
+  for(int i = 0; i < binData.size(); ++i)
+    {
+      log.str("");
+      log << "BinaryCompiler::MakeReadFeeRegisterBinary: block data[" << i << "] = 0x" << hex << binData.at(i) << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
+    }
  
   return 0; 
 }
@@ -168,5 +225,5 @@ BinaryCompiler::MakeReadFeeRegisterBinary(const int registerType, vector<unsigne
 int
 BinaryCompiler::MakeReadResultMemoryBinary(vector<unsigned long> & binData, const int N)
 {
-  return MakeReadRcuRegisterBinary(REGTYPE_RCU, binData, RcuRegisterMap::Result_MEM, N);
+  return MakeReadRcuRegisterBinary(binData, RcuRegisterMap::Result_MEM, N);
 }

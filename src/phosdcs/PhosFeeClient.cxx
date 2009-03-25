@@ -24,6 +24,7 @@
 #include "unistd.h"
 #include "BCRegisterMap.h"
 #include "RcuRegisterMap.h"
+#include "PhosDcsLogging.h"
 
 using namespace BCRegisterMap;
 
@@ -32,8 +33,7 @@ using std::endl;
 
 using std::vector;
 
-
-PhosFeeClient::PhosFeeClient(): FeeSampleClient(), PhosDcsBase(), scriptCompilerPtr(0)
+PhosFeeClient::PhosFeeClient(): FeeSampleClient(), PhosDcsBase(), scriptCompilerPtr(0), fPrintDebug(false)
 {
   scriptCompilerPtr = new ScriptCompiler();
   binaryCompilerPtr = new BinaryCompiler();
@@ -73,76 +73,55 @@ PhosFeeClient::WriteReadRegisters(const int regType, const char *feeServerName, 
 				  const int N, const int branch, const int card) 
 {
   int iRet =0;
-  unsigned int tmpBufferSize = N*MAX_WORD_SIZE;
-  //cout << "tmpBufferSize: " << tmpBufferSize << " MAX_WORD_SIZE: " << MAX_WORD_SIZE << " sizeof(unsigned long): " << sizeof(long) << endl;
-  char resultBuffer[tmpBufferSize]; 
-  unsigned long *tmpScannedValues = new unsigned long[N];
-
-  unsigned long tmpBinData[N*2 + 16]; //the binary data may double in size and 16 extra words may be added.
-  unsigned long tmpBinResultBuffer[N*2 + 16];
-  
-  for(int i=0; i< tmpBufferSize ; i++)
-  {
-    resultBuffer[i] = 0;
-  }
-
+  stringstream log;
   if( (regType == REGTYPE_BC) || (regType ==  REGTYPE_ALTRO) || (regType == REGTYPE_TRU))
     {
 
-      int tmpN = N*2 + 10;
-      
       vector<unsigned long> binaryData;
+      vector<unsigned long> resultData;
      
-      vector<unsigned long> tmpResultValues;
-           
-      const int htsize = binaryCompilerPtr->MakeWriteReadRegisterBinary(regType, binaryData, regs, values, verify, N, branch, card, true);
-      int size = ExecuteBinary(feeServerName, binaryData, tmpResultValues, tmpN); 
+      int resultIndex = binaryCompilerPtr->MakeWriteReadRegisterBinary(regType, binaryData, regs, values, verify, N, branch, card, true);
+      int ret = ExecuteBinary(feeServerName, binaryData, resultData); 
 
       ExecuteInstruction(feeServerName);
       int res = GetExecutionResult(feeServerName, 2);
       
-      //ReadExecutionResult(feeServerName, tmpResultValues, N);
-      
-// 	  for(int i = 0; i < size/4; i++)
-// 	    {
-// 	      tmpScannedValues[i] = tmpBinResultBuffer[i];
-// 	      cout << "PhosFeeClient::ReadRegisters: Result_MEM = 0x" << hex << tmpScannedValues[i] << dec<< endl;
-// 	      i++;
-// 	    }  
-      //ScanValues(tmpScannedValues, resultBuffer, tmpBufferSize, RcuRegisterMap::Result_MEM, N);
-      //iRet = VerifyValues(tmpScannedValues, values, verify, N);
+      if(*verify)
+	{
+
+	  binaryData.clear();
+	  int resultIndex = binaryCompilerPtr->MakeReadRegisterBinary(regType, binaryData, regs, N, branch, card, 0);
+	  int ret = ExecuteBinary(feeServerName, binaryData, resultData); 
+	  
+	  ExecuteInstruction(feeServerName);
+	  int res = GetExecutionResult(feeServerName, 2);
+     
+	  ReadExecutionResult(feeServerName, resultData, N);
+	  res = VerifyValues(resultData, values, verify, N);
+	  log.str("");
+	  log << "PhosFeeClient::WriteReadRegister: Result from value verification: 0x" << hex << res << dec;
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+	}
       iRet = res;
     }
   else if( (regType == REGTYPE_RCU) || (regType == REGTYPE_RCU_ACL) || (regType == REGTYPE_TOR) || (regType == REGTYPE_BUSY))
     {
       unsigned long tmpMin = MinValue(regs, N);
+
+      vector<unsigned long> binaryData;
+
+      unsigned int tmpRegType = REGTYPE_RCU_MEM;
+
+      binaryCompilerPtr->MakeWriteReadRegisterBinary(tmpRegType, binaryData, regs, values, verify, N, branch, card, false);
       
-      if( regType == REGTYPE_RCU_ACL)
-	{
-	  vector<unsigned long> binaryData;
-	  int tmpN = RcuRegisterMap::Active_Channel_List_Length;
-	  //binaryData.resize(2);
-	  unsigned int tmpRegType = REGTYPE_RCU_MEM;
-	  unsigned long* baseAdd = new unsigned long;
-	  *baseAdd = RcuRegisterMap::Active_Channel_List;
-	  const int htsize = binaryCompilerPtr->MakeWriteReadRegisterBinary(tmpRegType, binaryData, baseAdd, values, verify, tmpN, branch, card, false);
+      vector<unsigned long> tmpResultValues;
+      
+      iRet = ExecuteBinary(feeServerName, binaryData, tmpResultValues);
 
-	  vector<unsigned long> tmpResultValues;
-	  //	  tmpResultValues.resize(2);
-
-	  ExecuteBinary(feeServerName, binaryData, tmpResultValues, N);
-	  //	      ExecuteACLBinary(feeServerName, values, tmpResultValues, N);
-	  //	  iRet = VerifyValues(tmpResultValues, values, verify, N);
-	  //  delete [] binaryData;	      
-	}
-      else
+      if(*verify)
 	{
-	  scriptCompilerPtr->MakeWriteReadRegisterScript(regType, fScriptFilename, regs, values, verify, N, branch, card, true);
-	  ExecuteScript(fScriptFilename, feeServerName, resultBuffer, tmpBufferSize); 
-	    
-	  ScanValues(tmpScannedValues, resultBuffer, tmpBufferSize, tmpMin, N);
-	  iRet = VerifyValues(tmpScannedValues, values, verify, N);
-	}
+	  
+ 	}
     }
   return iRet;
 }
@@ -155,92 +134,105 @@ PhosFeeClient::ReadRegisters(const int regType, const char *feeServerName, const
   unsigned int tmpBufferSize = N*MAX_WORD_SIZE;
   char resultBuffer[tmpBufferSize]; 
 
+  stringstream log;
+
   unsigned long tmpMin = MinValue(regs, N);
 
-  vector<unsigned long> tmpBinData; //the binary data may double in size and 16 extra words can be added.
+  vector<unsigned long> tmpBinData; 
   vector<unsigned long> tmpBinResultBuffer;
 
   for(int i=0; i< tmpBufferSize ; i++)
   {
     resultBuffer[i] = 0;
   }
-  if(CheckFile(fScriptFilename, "w") == 0)
+  const int htsize = binaryCompilerPtr->MakeReadRegisterBinary(regType, tmpBinData, regs, N, branch, card);
+
+
+  log.str("");
+  log << "PhosFeeClient::ReadRegisters: Executing binary..." << endl;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);      
+ 
+  int ret = ExecuteBinary(feeServerName, tmpBinData, tmpBinResultBuffer);
+
+  log.str("");
+  log << "PhosFeeClient::ReadRegisters: Binary executed - returned " << ret << endl;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
+
+  for(int i = 0; i < tmpBinResultBuffer.size(); i++)
     {
-      //      scriptCompilerPtr->MakeReadRegisterScript(regType, fScriptFilename, regs, N, branch, card);
-      //ExecuteScript(fScriptFilename, feeServerName, resultBuffer, tmpBufferSize); 
-      const int htsize = binaryCompilerPtr->MakeReadRegisterBinary(regType, tmpBinData, regs, N, branch, card);
+      rbValues[i] = tmpBinResultBuffer[i];
+    }
       
-      //cout << "PhosFeeClient::ReadRegisters: Executing binary, size:" << N + htsize << endl;
-      int size = ExecuteBinary(feeServerName, tmpBinData, tmpBinResultBuffer, N);
-      //cout << "PhosFeeClient::ReadRegisters: Executing binary...Done! Size = " << size << endl;
-      for(int i = 0; i < size/4; i++)
-	{
-	  rbValues[i] = tmpBinResultBuffer[i];
-	  //cout << "PhosFeeClient::ReadRegisters: Result = 0x" << hex << rbValues[i] << dec<< endl;
-	}
+  if( (regType == REGTYPE_BC) || (regType ==  REGTYPE_ALTRO) || (regType == REGTYPE_TRU) )
+    {
+
+      ExecuteInstruction(feeServerName);
+      int res = 0;//GetExecutionResult(feeServerName, N*2);
+      vector<unsigned long> tmpBinReadData;
+      vector<unsigned long> tmpBinReadResultBuffer;
+
+      const int htsize_res = binaryCompilerPtr->MakeReadResultMemoryBinary(tmpBinReadData, N*2);
+
+      log.str("");
+      log << "PhosFeeClient::ReadRegisters: Executing binary..." << endl;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);      
+      //      size = ExecuteBinary(feeServerName, tmpBinReadData, tmpBinReadResultBuffer, 1); //TODO: check if I need to pass 1...
+      ret = ExecuteBinary(feeServerName, tmpBinReadData, tmpBinReadResultBuffer);
+
+      log.str("");
+      log << "PhosFeeClient::ReadRegisters: Binary executed " << endl;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
       
-      if( (regType == REGTYPE_BC) || (regType ==  REGTYPE_ALTRO) || (regType == REGTYPE_TRU) )
+      int j = 0;
+      for(int i = 0; i < tmpBinReadResultBuffer.size(); i++)
 	{
+	  i++;
+	  rbValues[j] = tmpBinReadResultBuffer[i];
+	  j++;
+	  
+	}  
+    }
+  else if( (regType == REGTYPE_RCU) || (regType == REGTYPE_RCU_ACL) || (regType == REGTYPE_TOR) || (regType == REGTYPE_BUSY)  )
+    {
+      
+    }
 
-	  ExecuteInstruction(feeServerName);
-	  int res = 0;//GetExecutionResult(feeServerName, N*2);
-	  vector<unsigned long> tmpBinReadData;
-	  vector<unsigned long> tmpBinReadResultBuffer;
-
-	  const int htsize_res = binaryCompilerPtr->MakeReadResultMemoryBinary(tmpBinReadData, N*2);
-	  //cout << "PhosFeeClient::ReadRegisters: Executing binary_MEM" << endl;
-	  size = ExecuteBinary(feeServerName, tmpBinReadData, tmpBinReadResultBuffer, 1);
-	  //cout << "PhosFeeClient::ReadRegisters: Executing binary_MEM...Done! Size = " << size << endl;
-	  //	  for(int i = 0; i < size/4; i++)
-	  int j = 0;
-	  for(int i = 0; i < tmpBinReadResultBuffer.size(); i++)
-	  //for(int i = 0; i < 1; i++)
-	    {
-	      i++;
-	      rbValues[j] = tmpBinReadResultBuffer[i];
-	      j++;
-	      //cout << "PhosFeeClient::ReadRegisters: Result_MEM = 0x" << hex << rbValues[i] << dec<< endl;
-	    }  
-
-	  //ScanValues(rbValues, resultBuffer, tmpBufferSize, RcuRegisterMap::Result_MEM, N);
-	}
-      else if( (regType == REGTYPE_RCU) || (regType == REGTYPE_RCU_ACL) || (regType == REGTYPE_TOR) || (regType == REGTYPE_BUSY)  )
-	{
-	  //ScanValues(rbValues, resultBuffer, tmpBufferSize, tmpMin, N);
-	}
-   }
   return iRet;
 }
 
 
 int
-PhosFeeClient::VerifyValues(const unsigned long *values1, const unsigned long *values2, const bool *verify, const int N) const
+PhosFeeClient::VerifyValues(vector<unsigned long> values1, const unsigned long *values2, const bool *verify, const int N) const
 {
   int regStatus = REG_OK;;
+  stringstream log;
+  int j = 0;
 
-  for(int i=0; i<N; i++)
+  for(int i = 0; i < N*2 ; i += 2)
     {
-      if(verify[i] == true)
-	{  
-	  printf("PhosFeeClient::VerifyValues: value1[%d] = %d,, value2[%d] = %d\n", i, values1[i], i, values2[i]);
-	  if(values1[i] != values2[i])
+      log.str("");
+      log << "PhosFeeClient::VerifyValues: Compare: " << values1[i+1] << " with " << values2[j];
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
+      if(values1[i+1] != values2[j]) 
+	{
+	  log.str("");
+	  log << "PhosFeeClient::VerifyValues: Value read " << values1[i+1] << " does not match with written value " << values2[j];
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
+
+	  if(values1[i] == 0xdead)
 	    {
-	      
-	      if(values1[i] == 0xdead)
-		{
-		  //	  printf("PhosFeeClient::VerifyValues: value1[%d] = %d,, value2[%d] = %d\n", i, values1[i], i, values2[i]);
-		  regStatus = REG_DEAD;
-		}
-	      else if(values1[i] == 0x0)
-		{
-		  regStatus = REG_ZERO;
-		}
-	      else
-		{
-		  regStatus = REG_CRAZY;
-		}
+	      regStatus = REG_DEAD;
+	    }
+	  else if(values1[i] == 0x0)
+	    {
+	      regStatus = REG_ZERO;
+	    }
+	  else
+	    {
+	      regStatus = REG_CRAZY;
 	    }
 	}
+      j++;
     }
   return regStatus;
 }
@@ -414,41 +406,39 @@ PhosFeeClient::ExecuteScript(const char *scriptFilename, const char *feeServerNa
 }
 
 int
-PhosFeeClient::ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> &  resultBuffer, const int N)
+PhosFeeClient::ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> &  resultBuffer)
 {
 
   vector<unsigned int> data;
   data.resize(binData.size());
   std::string serverName    = feeServerName;
+  
+  stringstream log;
 	 
   size_t size          = binData.size()*4;
   unsigned short flags = 0;
   short errorCode      = 0;
   short status         = 0;
 
-  // cout << "PhosFeeClient::ExecuteBinary: size: " << size << endl;
-
-
   for(int i = 0; i < binData.size(); i++)
     {
       data[i] = binData[i];
-      //      if(i < 100)
-	//cout << "PhosFeeClient::ExecuteBinary: setting data = 0x" << hex << data[i] << dec << endl;
     }
-
-  cout << "PhosFeeClient::ExecuteBinary: size = " << size << endl;
-
-  writeReadData(serverName, size, data, flags, errorCode, status);
-  cout << "writeReadData: " << status << endl;
+  
+  int ret = writeReadData(serverName, size, data, flags, errorCode, status);
   
   resultBuffer.clear();
   for(int i=0; i< size/4; i++)
     {
-      //cout << "PhosFeeClient::ExecuteBinary: result = 0x" << hex << data[i] << dec << endl;
+      
+      log.str("");
+      log << "PhosFeeClient::ExecuteBinary result data[" << i << "] = 0x" << hex << data[i] << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
+      
       resultBuffer.push_back(data[i]);
     }
   
-  return size;
+  return ret;
 }
 
 void
@@ -470,7 +460,7 @@ PhosFeeClient::ExecuteInstruction(const char* feeServerName)
   data.push_back(RcuRegisterMap::CE_CMD_TRAILER);
 
   size = data.size()*4;
-  cout << "Executing instruction..." << endl;
+  PhosDcsLogging::Instance()->Logging("PhosFeeClient::ExecuteInstruction: Executing instruction...", LOG_LEVEL_VERBOSE);
   writeReadData(serverName, size, data, flags, errorCode, status);  
   
 }
@@ -483,38 +473,52 @@ PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const 
 
   ReadRegisters(REGTYPE_BC, feeServerName, &address, &pcmversion, 1, branch, cardNumber);
 
-  cout << "PhosFeeClient::CheckFeeState, feeservername ="<< feeServerName  << endl;
-  cout << "PhosFeeClient::CheckFeeState, address = "  <<  address <<endl;
-  cout << "PhosFeeClient::CheckFeeState, card = " << cardNumber << "branch = " << branch <<"   pcmversion = " << pcmversion  << endl;
+  stringstream log;
+  log << "PhosFeeClient::CheckFeeState: feeservername = "<< feeServerName;
+  log.str("");
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+  log.str("");
+  log << "PhosFeeClient::CheckFeeState: address = "  <<  address;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+  log.str("");
+  log << "PhosFeeClient::CheckFeeState: card = " << cardNumber << ", branch = " << branch <<", pcmversion = " << pcmversion;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
   
   if(pcmv != 0)
     {
       *pcmv = pcmversion; 
     }
 
-  if(pcmversion == 0xffff)
+  if(pcmversion == 0xffff || pcmversion == 0)
     {
-      sprintf(message, "checking.. branch %d,  card %d pcmversion = %d, FEE_STATE_ERROR",  branch, cardNumber, pcmversion); 
+      log.str("");
+      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << pcmversion << ", FEE_STATE_ERROR";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+      
       return FEE_STATE_ERROR;
     }
   else if(pcmversion == PCMVERSION)
     {
-      sprintf(message, "checking.. branch %d,  card %d pcmversion = %d, FEE_STATE_ON",  branch, cardNumber, pcmversion);   
+      log.str("");
+      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << pcmversion << ", FEE_STATE_ON";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+      
       return FEE_STATE_ON;
-    }
-  else if(pcmversion == 0)
-    {
-      sprintf(message, "checking.. branch %d,  card %d pcmversion = %d, FEE_STATE_ERROR",  branch, cardNumber, pcmversion);    
-      return FEE_STATE_ERROR;   
     }
   else if(pcmversion == OLD_PCMVERSION)
     {
-      sprintf(message, "checking.. branch %d,  card %d pcmversion = %d, FEE_STATE_WARNING, old pcmversion",  branch, cardNumber, pcmversion);     
+      log.str("");
+      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << pcmversion << ", FEE_STATE_WARNING";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+      
      return FEE_STATE_WARNING;
     }
   else
     {
-      sprintf(message, "checking.. branch %d,  card %d pcmversion = %d, FEE_STATE_ERROR, unknown",  branch, cardNumber, pcmversion);  
+      log.str("");
+      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << pcmversion << ", FEE_STATE_ERROR";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+
       return FEE_STATE_ERROR;
     }
 }
@@ -525,16 +529,15 @@ PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const u
 {
   
   unsigned long  activeFeeList = afl;
-  //  unsigned long  activeFeeList = 0;
   unsigned long int  tmpFeeList;
   int shift;
-  int cardNumber = cardIndex +1;
 
   size_t size          = 0;
   unsigned short flags = 0;
   short errorCode      = 0;
   short status         = 0;
 
+  int res = 0;
 
   if(branch == 0)
     {
@@ -545,10 +548,11 @@ PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const u
       shift = 16;
     } 
   else
-    {   
-     printf("\nERROR in activating card, branch has invalid value:%d\n", branch);
+    {         
+      PhosDcsLogging::Instance()->Logging(string("PhosFeeClient::ActivateFee: In activating card, branch has invalid value"), LOG_LEVEL_ERROR);	
     }
-  tmpFeeList = 1<<(cardNumber+shift);
+
+  tmpFeeList = 1<<(cardIndex+shift);
 
   if(onOff == TURN_OFF)
    {
@@ -556,21 +560,20 @@ PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const u
        {
 	 activeFeeList = (activeFeeList ^ tmpFeeList);  
        }
-    
-     printf("\nPhosFeeClien::acticefrontendlist = 0x%x\n", activeFeeList);
    }
 
   else if(onOff == TURN_ON)
     {
       activeFeeList = (activeFeeList | tmpFeeList);
     }
-
-  cout << "PhosFeeClient::ActiveFeeList: " << hex << activeFeeList << dec << endl;
-
+  
+  stringstream log;
+  log << "PhosFeeClient::ActivateFee: Active FEE List: " << activeFeeList;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);	
   vector<unsigned int> data;
   std::string serverName = feeServerName;
 
-  WriteAFL(activeFeeList, feeServerName);
+  res = WriteAFL(activeFeeList, feeServerName);
 
   SendWaitCommand(4000, feeServerName);
 
@@ -580,142 +583,8 @@ PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const u
 
   writeReadData(serverName, size, data, flags, errorCode, status);  
 
+  return res;
 
-  return data[0];
-
-}
-
-bool
-PhosFeeClient::ActivateFeeByBranch(unsigned long afl, const char* feeServerName, const unsigned int branch, const int onOff) 
-{
-  
-  unsigned long  activeFeeList = afl;
-  //  unsigned long  activeFeeList = 0;
-  unsigned long int  tmpFeeList;
-  int shift;
-
-  size_t size               = 0;
-  unsigned short flags = 0;
-  short errorCode      = 0;
-  short status         = 0;
-
-
-  if(branch == 0)
-    {
-      shift = 0;
-    } 
-  else if(branch == 1)
-    {
-      shift = 16;
-    } 
-  else
-    {   
-     printf("\nERROR in activating card, branch has invalid value:%d\n", branch);
-    }
-  tmpFeeList = 0x7ffe<<shift;
-
-  if(onOff == 0)
-   {
-     if(activeFeeList & tmpFeeList)
-       {
-	 activeFeeList = (activeFeeList ^ tmpFeeList);  
-       }
-   }
-  
-  else if(onOff == 1)
-    {
-      activeFeeList = (activeFeeList | tmpFeeList);
-    }
-
-  status = WriteAFL(activeFeeList, feeServerName);
-
-  if(status != 0)
-    return false;
-
-  return true;
-
-}
-
-bool
-PhosFeeClient::ActivateAllFee(unsigned long afl, const char* feeServerName, const int onOff) 
-{
-  
-  unsigned long  activeFeeList = afl;
-  //  unsigned long  activeFeeList = 0;
-  unsigned long int  tmpFeeList;
-
-  size_t size               = 0;
-  unsigned short flags = 0;
-  short errorCode      = 0;
-  short status         = 0;
-
-  tmpFeeList = 0x7ffe7ffe;
-
-  cout << "PhosFeeClient::ActiveFeeList: " << hex << activeFeeList << dec << endl;
-
-  if(onOff == 0)
-   {
-     activeFeeList = 0x0;
-   }
-    
-  else if(onOff == 1)
-    {
-      while(activeFeeList != 0x7ffe7ffe || activeFeeList != 0x7fff7fff)
-	{
-	  
-	  activeFeeList = (activeFeeList | tmpFeeList);
-	}
-      
-    }
-
-  status = WriteAFL(activeFeeList, feeServerName);
-
-  if(status != 0)
-    return false;
-
-  return true;
-
-}
-
-bool
-PhosFeeClient::ActivateAllTru(unsigned long afl, const char* feeServerName, const int onOff) 
-{
-  
-  unsigned long  activeFeeList = afl;
-  //  unsigned long  activeFeeList = 0;
-  unsigned long int  tmpFeeList;
-
-  size_t size               = 0;
-  unsigned short flags = 0;
-  short errorCode      = 0;
-  short status         = 0;
-
-
-  tmpFeeList = 0x10001;
-
-  cout << "PhosFeeClient::ActiveFeeList: " << hex << activeFeeList << dec << endl;
-
-  if(onOff == 0)
-   {
-     activeFeeList = activeFeeList ^ 0x10001;
-     //     printf("\nPhosFeeClient::Activefrontendlist = 0x%x\n", activeFeeList);
-   }
-  
-  
-  else if(onOff == 1)
-    {
-      activeFeeList = (activeFeeList | tmpFeeList);
-    }
-
-  cout << "PhosFeeClient::ActiveFeeList: " << hex << activeFeeList << dec << endl;
-
-  status = WriteAFL(activeFeeList, feeServerName);
-
-  if(status != 0)
-    return false;
-
-
-  return true;
 }
 
 bool
@@ -739,24 +608,7 @@ PhosFeeClient::WriteAFL(unsigned long activeFeeList, const char* feeServerName)
   size = data.size()*4;
 
   int res = writeReadData(serverName, size, data, flags, errorCode, status);  
-  
-//   SendWaitCommand(4000, feeServerName);
-
-//   Reset(feeServerName, RcuRegisterMap::FEC_RESET);
-  
-//   SendWaitCommand(4000, feeServerName);
-
-//   Reset(feeServerName, RcuRegisterMap::FEC_RESET);
-
-//   SendWaitCommand(4000, feeServerName);
-
-//   Reset(feeServerName, RcuRegisterMap::RCU_RESET);
-
-//   SendWaitCommand(4000, feeServerName);
-
-
-
-  if(res != 0)
+    if(res != 0)
     return false;
 
   return true;
@@ -776,14 +628,6 @@ PhosFeeClient::SendWaitCommand(int nCycles, const char* feeServerName)
   unsigned short flags = 0;
   short errorCode      = 0;
   short status         = 0;
-
-//   size = 5*4;
-//   data[0] = RcuRegisterMap::RCU_EXEC_INSTRUCTION|1;
-//   data[1] = RcuRegisterMap::RCU_WAIT_COMMAND| nCycles;
-//   data[2] = RcuRegisterMap::END;
-//   data[3] = RcuRegisterMap::ENDMEM;
-//   data[4] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
 
   data.clear();
   data.push_back(RcuRegisterMap::RCU_EXEC_INSTRUCTION|1);
@@ -812,12 +656,6 @@ PhosFeeClient::Reset(const char* feeServerName, const int type)
   short errorCode      = 0;
   short status         = 0;
 
-//   size = 3*4;
-//   data[0] = RcuRegisterMap::RCU_WRITE_MEMBLOCK|1;
-//   data[1] = RcuRegisterMap::GLB_RESET | type;
-//   data[2] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-
   data.clear();
   data.push_back(RcuRegisterMap::RCU_WRITE_MEMBLOCK|1);
   data.push_back(RcuRegisterMap::GLB_RESET | type);
@@ -833,40 +671,40 @@ PhosFeeClient::Reset(const char* feeServerName, const int type)
 void
 PhosFeeClient::ReadExecutionResult(const char* feeServerName, vector<unsigned long> & resultBuffer, int N)
 {
-
+  stringstream log;
   size_t size           = 0;
 
   vector<unsigned int> data;
   //data.resize(5);
   std::string serverName = feeServerName;
 
-
   unsigned short flags = 0;
   short errorCode      = 0;
   short status         = 0;
-
-//   size = 5*4;
-//   data[0] = RcuRegisterMap::RCU_READ_MEMBLOCK|(N*2);
-//   data[1] = RcuRegisterMap::Result_MEM;
-//   data[2] = RcuRegisterMap::END;
-//   data[3] = RcuRegisterMap::ENDMEM;
-//   data[4] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
   
   data.clear();
   data.push_back(RcuRegisterMap::RCU_READ_MEMBLOCK|(N*2));
   data.push_back(RcuRegisterMap::Result_MEM);
-  data.push_back(RcuRegisterMap::END);
-  data.push_back(RcuRegisterMap::ENDMEM);
   data.push_back(RcuRegisterMap::CE_CMD_TRAILER);
-  
+
+  for(int i = 0; i < data.size(); i++)
+    {
+      log.str("");
+      log << "PhosFeeClient::ReadExecutionResult: command [" << i << "] = 0x" << hex << data[i] << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
+    }
   size = data.size()*4;
   
   writeReadData(serverName, size, data, flags, errorCode, status);  
 
   resultBuffer.clear();
-  for(int i = 0; i < size/4; i++)
+  //  for(int i = 0; i < size/4; i++)
+  for(int i = 0; i < data.size(); i++)
     {
+      log.str("");
+      log << "PhosFeeClient::ReadExecutionResult: data[" << i << "] = 0x" << hex << data[i] << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
+
       resultBuffer.push_back(data[i]);
     }
   
@@ -887,38 +725,33 @@ PhosFeeClient::GetExecutionResult(const char* feeServerName, int N)
   short errorCode      = 0;
   short status         = 0;
 
-//   size = 5*4;
-//   Data[0] = RcuRegisterMap::RCU_READ_MEMBLOCK|(N*2);
-//   data[1] = RcuRegisterMap::Result_MEM;
-//   data[2] = RcuRegisterMap::END;
-//   data[3] = RcuRegisterMap::ENDMEM;
-//   data[4] = RcuRegisterMap::CE_CMD_TRAILER;  
-//   writeReadData(serverName, size, data, flags, errorCode, status);  
-//  cout << "PhosFeeClient::GetExecutionResult: N = " << N << endl;
   data.clear();
   data.push_back(RcuRegisterMap::RCU_READ_MEMBLOCK|(N*2));
   data.push_back(RcuRegisterMap::Result_MEM);
-  //  data.push_back(RcuRegisterMap::END);
-  //  data.push_back(RcuRegisterMap::ENDMEM);
+
   data.push_back(RcuRegisterMap::CE_CMD_TRAILER);
   
   size = data.size()*4;
 
-  //cout << "PhosFeeClient::GetExecutionResult: size before = " << size/4 << endl;
-
   writeReadData(serverName, size, data, flags, errorCode, status);  
 
-  //cout << "PhosFeeClient::GetExecutionResult: size after = " << size/4 << endl;
+  stringstream log;
 
-  for(int i = 0; i < size/8; i++)
+  for(int i = 0; i < size/4; i++)
     {
-      cout << "PhosFeeClient::GetExecutionResult: data[" << i << "] = " << hex << data[i] << dec << endl;
+      log.str("");
+      log << "PhosFeeClient::GetExecutionResult: data[" << i << "] = 0x" << hex << data[i] << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+
       if((data[i]&(0x100000)) != 0) 
 	{
-	  cout << "Error bit set for " << i << " data = " << data[i] << endl;
+	  log.str("");
+	  log << "PhosFeeClient::GetExecutionResult: Error bit set for " << i << " data = " << data[i];
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
 	  return -1; //Error bit set
 	}
     }
-  cout << "PhosFeeClient::GetExecutionResult: result = success"  << endl;
+  PhosDcsLogging::Instance()->Logging(string("PhosFeeClient::GetExecutionResult: result = success"), LOG_LEVEL_VERBOSE);
+
   return 1;
 }

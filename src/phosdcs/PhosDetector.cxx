@@ -22,6 +22,7 @@
 #include "ScriptCompiler.h"
 #include "PhosDcsBase.h"
 #include "Rcu.h"
+#include "PhosDcsLogging.h"
 
 
 PhosDetector::PhosDetector() : PhosDcsBase(), 
@@ -61,8 +62,9 @@ void
 PhosDetector::DisArmTrigger(const int modId, const int  rcuId, char *messageBuffer) const
 {
   phosModulePtr[modId]->DisArmTrigger(rcuId);
-  sprintf(messageBuffer,"disarming trigger for %s",  phosModulePtr[modId]->GetFeeServerName(rcuId));
-  printf("PhosDetector::DisArmTrigge, messageBuffer =", messageBuffer);
+  stringstream log;
+  log << "PhosDetector::DisArmTrigger: Disarming trigger for " << phosModulePtr[modId]->GetFeeServerName(rcuId);
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 }
 
                                  

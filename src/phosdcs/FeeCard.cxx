@@ -19,6 +19,7 @@
 #include "FeeCard.h"
 #include "ScriptCompiler.h"
 #include "PhosFeeClient.h"
+#include "PhosDcsLogging.h"
 //#include <iostream>
 using namespace BCRegisterMap;
 
@@ -88,6 +89,7 @@ FeeCard::SetAllApds(int value)
 int
 FeeCard::ApplyApdSettings(char *messageBuffer)
 {
+  stringstream log;
   if(fIsInitialized == true)
 
     {
@@ -99,7 +101,6 @@ FeeCard::ApplyApdSettings(char *messageBuffer)
 
       if((currentState == FEE_STATE_ON) || (currentState == FEE_STATE_WARNING) )
       	{
-
 	  do
 	    {
 	      
@@ -108,7 +109,9 @@ FeeCard::ApplyApdSettings(char *messageBuffer)
 	      unsigned long tmpvalue = 0x0;
 	      unsigned long tmpaddress = 0x1e;
 	      bool tmpverify = false;
-	      cout << "FeeCard::ApplyApd: apdStatus = " << apdStatus << endl;
+	      log.str();
+	      log << "FeeCard::ApplyApdSetting: apdStatus = " << apdStatus;
+	      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
 	      for(int i = 0; i < 32; i++)
 		//cout << "FeeCard::ApplyApdSettings: value = " << hex << apdValue[i] << dec << endl;
 		
@@ -121,49 +124,48 @@ FeeCard::ApplyApdSettings(char *messageBuffer)
       
 	      if(apdStatus == REG_OK)
 		{
-		  printf("\nApllying APD values to  %s, branch %d, card %d, trials = %d, status = %d = SUCCESS !!\n", \
-			 feeServerName, branch, cardNumber, trials, apdStatus);
-		  sprintf(messageBuffer, "applying APD values for %s card%d at branch%d ..SUCCESS", feeServerName, cardNumber, branch);
+		  log.str("");
+		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = SUCCESS !";
+		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 		}
-	      else if(apdStatus == REG_DEAD)
+ 	      else if(apdStatus == REG_DEAD)
 		{
-		  printf("\nApllying APD values to  %s, branch %d, card %d, trials = %d, status = %d =NO response from FEE, please check that card is ON !!\n",\
-			 feeServerName, branch, cardNumber, trials, apdStatus);
-		  sprintf(messageBuffer, "applying APD values for %s card%d at branch%d ..ERROR 1: No response from FEE" ,feeServerName, cardNumber, branch);  
+		  log.str("");
+		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = NO response from FEE, please check that card is ON !";
+		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
 		}
       
 	      else if(apdStatus == REG_ZERO)
 		{
-		  printf("\nApllying APD values to  %s, branch %d, card %d, trials = %d, status = %d  =Cannot access RCU, check that DCS is master !!\n",\
-			 feeServerName, branch, cardNumber, trials, apdStatus);
-		  sprintf(messageBuffer, "applying APD values for %s card%d at branch%d ..ERROR 2: Cannot acsess RCU\n",feeServerName, cardNumber, branch);	 	  
+		  log.str("");
+		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = Cannot access RCU, check that DCS is master !!\n";
+		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
 		}
       
 	      else if(apdStatus == REG_CRAZY)
 		{
-		  printf("\nApllying APD values to  %s, branch %d, card %d, trials = %d, status = %d  = Serious mailfunction in communication with the RCU, \
-          check that the 1)feeserver is running 2)check ethernet cables  3)check that you can log into the DCS cards\n!!", \
-			 feeServerName, branch, cardNumber, trials, apdStatus);
-		  sprintf(messageBuffer, "applying APD values for %s card%d at branch%d ..ERROR 3: Readback values are crazy", feeServerName, cardNumber, branch);	   
+		  log.str("");
+		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = Serious mailfunction in communication with the RCU";
+		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
 		}
       
 	      else
 		{
-		  printf("three quarks for muster mark ..oops. something is very wrong, consult a psyciatrist\n", feeServerName, cardNumber, branch);
-		  sprintf(messageBuffer, "three quarks for muster mark ..oops. something is very wrong, consult a psyciatrist", feeServerName, cardNumber, branch);
+		  log.str("");
+		  log << "FeeCard::ApplyApdSetting: three quarks for muster mark ..oops. something is very wrong, consult a psyciatrist";
+		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
 		}
 
 
 	      if(trials == MAX_TRIALS && (apdStatus != REG_OK))
 		{
-		  printf("\nWARNING Giving up on  %s, branch %d, card %d, after %d attemts\n", feeServerName, branch, cardNumber, trials);
-		  sprintf(messageBuffer, "Puh !!, and then DCS said, giving up on  %s, branch %d, card %d, after %d attemt ", feeServerName, branch, cardNumber, trials);
+		  log.str("");
+		  log << "FeeCard::ApplyApdSetting: Giving up on " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", after " << trials << " attemts\n";
+		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
 		}
 	    }
 	  while(apdStatus != REG_OK  && trials < MAX_TRIALS);
 
-	  cout << "FeeCard::ApplyApd: apdStatus = " << apdStatus << endl;
-	  
 	  unsigned long tmpvalue = 0x0;
 	  unsigned long tmpaddress = 0x1e;
 	  bool tmpverify = false;
@@ -174,13 +176,16 @@ FeeCard::ApplyApdSettings(char *messageBuffer)
 
       else
 	{
-	  sprintf(messageBuffer, "ERROR;  %s, branch %d, card %d,  is either not turned on or in error",  feeServerName, branch, cardNumber);
+	  log.str("");
+	  log << "FeeCard::ApplyApdSetting: " << feeServerName << ", branch " << branch << ", card " << cardNumber << " is either not turned on or in error";
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
 	}
     }
   else
     {
-      printf("\nFeeCard::ApplyApdSetting FATAL ERROR, the card is not initialized in software APD registermap is unknown\n");
-      sprintf(messageBuffer, "ERROR;  %s, branch %d, card %d,  is not intialized in software, card hasnt been on after apdgui was started",  feeServerName, branch, cardNumber); 
+      log.str("");
+      log << "FeeCard::ApplyApdSetting: the card is not initialized in software APD registermap is unknown";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
     }
 
   unsigned long tmpvalue = 0x0;
@@ -199,11 +204,11 @@ FeeCard::LoadApdValues() //load default values from file
 
   if(CheckFile(apdFilename,"r") == NO_EXIST)
     {
-      printf("The file does not exist, loading default APD values = 512 for all entries, and trying to making new file......\n");
+      PhosDcsLogging::Instance()->Logging(string("Rcu::LoadApdValues: The file does not exist, loading default APD values = 512 for all entries, and trying to making new file......\n"), LOG_LEVEL_VERBOSE);
       
       if(CheckFile(apdFilename,"w") == NO_EXIST)
 	{
-	  cout << "ERROR from FeeCard::LoadApdValues(), couldnt make file  " << apdFilename << endl;
+	  PhosDcsLogging::Instance()->Logging(string("Rcu::LoadApdValues: Could not create file for APD values"), LOG_LEVEL_ERROR);
 	}
       else
 	{
@@ -223,7 +228,6 @@ FeeCard::LoadApdValues() //load default values from file
       for(int i=0; i < CSPS_PER_FEE; i++)
 	{
 	  fscanf(fp,"%d\n",&apdValue[i]);
-	  // cout << "FeeCard::LoadApdValues: apdValue: " << apdValue[i] << endl;
 	}
      fclose(fp);
     }

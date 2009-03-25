@@ -51,7 +51,7 @@ int MakeReadRegisterBinary(const int regType, vector<unsigned long> & binData,
 			   const unsigned long branch = 0, const unsigned long card = 0, 
 			   const unsigned long chip = 0, const unsigned long channel = 0);
  
-int MakeReadRcuRegisterBinary(const int registerType, vector<unsigned long> & binData, 
+int MakeReadRcuRegisterBinary(vector<unsigned long> & binData, 
 			      const unsigned long baseAddress,  const int N);
 
 int MakeReadFeeRegisterBinary(const int registerType, vector<unsigned long> & binData, const unsigned long *reg, 

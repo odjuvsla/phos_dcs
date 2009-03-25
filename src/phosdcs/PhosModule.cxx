@@ -21,6 +21,7 @@
 #include "Mapper.h"
 #include "PhosFeeClient.h"
 #include "Rcu.h"
+#include "PhosDcsLogging.h"
 
 using namespace std;
 
@@ -67,7 +68,9 @@ PhosModule::ExecuteScript(const char *scriptName) const
 	  fRcuPtr[i]->ExecuteScript(scriptName);
 	} 
       else {
-	printf("\nWarning, RCU Ptr is ZERO\n");
+	stringstream log;
+	log << "RCU pointer is NULL";
+	PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
       }
   }
 }
@@ -76,8 +79,10 @@ PhosModule::ExecuteScript(const char *scriptName) const
 void
 PhosModule::SetAllApds(const int value) const
 {
-  printf("\nSetting all APDs for MODULE\n");
-  
+  stringstream log;
+  log << "PhosModule::SetAllApds: Setting all APDs for MODULE";
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+
   for(int i = 0; i< RCUS_PER_MODULE; i++)
     {
       fRcuPtr[i]->SetAllApds(value);
@@ -96,7 +101,9 @@ PhosModule::LoadApdValues() const
 	}
       else
 	{
-	  cout << "PhosModule::LoadApdValues, ERROR attempt to load padvalues when fRcuPtr[" << i<<"] is zero"<<endl;
+	  stringstream log;
+	  log << "PhosModule::LoadApdValues: Attempt to load apd values when fRcuPtr[" << i<<"] is zero";
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
 	}
     }
 }
@@ -112,7 +119,6 @@ PhosModule::GetRcuPtr(const int id) const
     }
   else 
     {
-      printf("\nError, coud not return RCU pointer\n");
       return 0;
     }
 }
@@ -142,7 +148,7 @@ PhosModule::ArmTrigger(const char *triggerScriptFileName)
 	  char mbuff[256];
 
 	  fRcuPtr[i]->ApplyPattern(fReadoutConfig.GetAltroConfig().GetPattern(), mbuff);
-	  printf("\n%s", mbuff);
+	  //	  printf("\n%s", mbuff);
 	    
 	}
     }
@@ -175,15 +181,19 @@ PhosModule::ArmTrigger(const char *triggerScriptFileName)
   if(initialized == false)
     {
       iRet = - 1;
-      cout << "WARNING, the active channel readout list was not set correctly"<< endl;
-      cout << "for at least one of the RCUs after 5 attemts, please check that the"<< endl;
-      cout << "feeserver is running and try to restart the GUI"<< endl;
+      stringstream log;
+      log << "PhosModule::ArmTrigger: The active channel readout list was not set correctly"<< endl;
+      log << "for at least one of the RCUs after 5 attemts, please check that the"<< endl;
+      log << "feeserver is running and try to restart the GUI"<< endl;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
     }
   
   if(initialized == true)
     {
       iRet = 1;
-      cout << "The readout configuration was apllied correctly to all RCUs"<< endl;
+      stringstream log;
+      log << "PhosModule::ArmTrigger: The readout configuration was applied correctly to all RCUs"<< endl;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
     }
 
   return iRet;
@@ -228,7 +238,9 @@ PhosModule::CreateRcu(const char *serverName, const int mId, const int rcuId, co
      }  
   else
     {
-      cout << "PhosModule:XXX:CreateRcu, ERROR !!!!, fFeeClientPtr == NULL !!!!!!!!"  <<endl;
+      stringstream log;
+      log << "PhosModule::CreateRcu: fFeeClientPtr == NULL !!!!!!!!"  <<endl;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
     }    
 } 
 
