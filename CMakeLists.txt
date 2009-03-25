@@ -10,7 +10,7 @@ SET(ROOTSYS $ENV{ROOTSYS})
 FIND_LIBRARY(FEELIB libFeeClient.so FEECLIENT/lib)
 FIND_LIBRARY(DIMLIB libdim.so FEECLIENT/lib)
 
-INCLUDE_DIRECTORIES(src/phosdcs src/apdgui ${FEECLIENT}/include ${ROOTSYS}/include)
+INCLUDE_DIRECTORIES(src/phosdcs ${FEECLIENT}/include)
 
-ADD_SUBDIRECTORY(src/phosdcs)
-#ADD_SUBDIRECTORY(src/apdgui)
+ADD_SUBDIRECTORY(src/phosdcslib)
+ADD_SUBDIRECTORY(src/phosgui)
