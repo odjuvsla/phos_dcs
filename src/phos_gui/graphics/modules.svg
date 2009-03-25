@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   inkscape:export-filename="/home/odjuvsla/Workspace/phos_dcs/src/phos_gui/graphics/5_mods_4_on.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300"
+   sodipodi:docname="modules.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="216.12505"
+     inkscape:cy="782.82994"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1143"
+     inkscape:window-x="-5"
+     inkscape:window-y="-3" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:0.75;fill:#666666;stroke:#000000;stroke-opacity:1"
+       id="rect2383"
+       width="131.31982"
+       height="57.578686"
+       x="308.09653"
+       y="335.65897"
+       inkscape:export-filename="/home/odjuvsla/Workspace/phos_dcs/src/phos_gui/graphics/5_mods_2_on.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <rect
+       style="opacity:0.5;stroke:#000000;stroke-width:0.99999988;stroke-opacity:1"
+       id="rect3169"
+       width="131.31982"
+       height="57.578678"
+       x="334.14252"
+       y="358.3671"
+       inkscape:export-filename="/home/odjuvsla/Workspace/phos_dcs/src/phos_gui/graphics/5_mods_3_on.png"
+       inkscape:export-xdpi="79.607063"
+       inkscape:export-ydpi="79.607063"
+       transform="matrix(0.9396926,-0.3420201,0.3420201,0.9396926,0,0)" />
+    <rect
+       style="opacity:0.5;stroke:#000000;stroke-width:0.99999994;stroke-opacity:1"
+       id="rect3173"
+       width="131.31982"
+       height="57.578682"
+       x="318.186"
+       y="496.7457"
+       inkscape:export-filename="/home/odjuvsla/Workspace/phos_dcs/src/phos_gui/graphics/5_mods_4_on.png"
+       inkscape:export-xdpi="79.607063"
+       inkscape:export-ydpi="79.607063"
+       transform="matrix(0.7660445,-0.6427876,0.6427876,0.7660445,0,0)" />
+    <rect
+       style="opacity:0.5;stroke:#000000;stroke-width:0.9999997;stroke-opacity:1"
+       id="rect3175"
+       width="131.31982"
+       height="57.578667"
+       x="-357.15979"
+       y="107.88284"
+       inkscape:export-filename="/home/odjuvsla/Workspace/phos_dcs/src/phos_gui/graphics/5_mods_3_on.png"
+       inkscape:export-xdpi="79.607063"
+       inkscape:export-ydpi="79.607063"
+       transform="matrix(-0.9396926,-0.3420201,-0.3420201,0.9396926,0,0)" />
+    <rect
+       style="opacity:0.5;stroke:#000000;stroke-width:1;stroke-opacity:1"
+       id="rect3177"
+       width="131.31982"
+       height="57.578693"
+       x="-245.75507"
+       y="24.92824"
+       inkscape:export-filename="/home/odjuvsla/Workspace/phos_dcs/src/phos_gui/graphics/5_mods_3_on.png"
+       inkscape:export-xdpi="79.607063"
+       inkscape:export-ydpi="79.607063"
+       transform="matrix(-0.7660445,-0.6427876,-0.6427876,0.7660445,0,0)" />
+    <rect
+       style="opacity:0.5;stroke:#000000;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3281"
+       width="131.31982"
+       height="57.578671"
+       x="302.1619"
+       y="223.27942"
+       inkscape:export-filename="/home/odjuvsla/Workspace/phos_dcs/src/phos_gui/graphics/5_mods_3_on.png"
+       inkscape:export-xdpi="79.607063"
+       inkscape:export-ydpi="79.607063" />
+  </g>
+</svg>

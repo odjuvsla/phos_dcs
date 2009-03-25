@@ -30,7 +30,7 @@ class FeeCard : public PhosDcsBase
  public:
   FeeCard(PhosFeeClient *feecClientPtr, char *fName, const int mod, const int rcuId, const int br, const int card);
   void InitMapping();
-  int ApplyApdSettings(char *messageBuffer);
+  int ApplyApdSettings();
   void DisableHamming();
   void SetState(int state);
   int* GetState();

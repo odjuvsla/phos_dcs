@@ -26,6 +26,7 @@
 #include "PhosConst.h"
 //using namespace PhosConst;
 #include <iostream>
+#include <string>
 
 using namespace PhosConst;
 using namespace std;
@@ -53,9 +54,9 @@ class ModNumber_t : public  PhosSimpleDataType_t
   ~ModNumber_t();
   //  const int GetIntValue() const {return fVal;};
   void SetIntValue(const int value);
-
- private:
   ModNumber_t();
+ private:
+  
   //  void SetIntValue(const int value);
   //  ModNumber_t();
   //  int fVal;
@@ -190,7 +191,7 @@ class ZeroSupressionTreshold_t
 class ZeroSupressionMode_t
 {
  public:
-  ZeroSupressionMode_t();    
+  ZeroSupressionMode_t() {}
   ZeroSupressionMode_t(const unsigned long int n);
   ~ ZeroSupressionMode_t(); 
   void SetIntValue(const int val);
@@ -430,7 +431,7 @@ class ReadoutConfig_t
 class ConfigInfo_t
 {
  public:
-  const ConfigInfo_t & operator = (const ConfigInfo_t &t);
+  const ConfigInfo_t & operator= (const ConfigInfo_t &t);
   char fInfo[1024];
   int fID; 
   int fIDLimit;
@@ -458,11 +459,14 @@ private:
   bool fReadOnly;
 };
 
-class TRUSettings_t
+ class TRUSettings_t
 {
  public:
   TRUSettings_t();
   ~TRUSettings_t();
+  TRUSettings_t& operator=(const TRUSettings_t&)
+  {
+  }
   const TRURegister_t GetRegister(const int index) const;
   const int GetRegisterCount() const { return fRegCnt; };
   const int AddRegister(const TRURegister_t reg);
@@ -472,7 +476,19 @@ class TRUSettings_t
   const int fNRegisters;
   int fRegCnt;
   TRURegister_t fRegisters[N_TRU_REGS];
+  
+  
+  
 
+};
+
+struct FeeServer
+{
+  string fName;
+  int fModId;
+  int fRcuId;
+  int fZ;
+  int fX;
 };
 
 

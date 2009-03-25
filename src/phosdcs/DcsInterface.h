@@ -22,31 +22,37 @@
 
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
-
-
-
+#include <vector>
+#include <string>
 class FeeCard;
 class PhosDetector;
 class PhosModule;
 class DatabaseDummy;
 class Rcu;
+class FeeServer;
+
+
 
 struct ConfigInfo_t;
 
-class  DcsInterface : public PhosDcsBase
+class DcsInterface : public PhosDcsBase
 {
  public:
                   DcsInterface();
   virtual         ~DcsInterface();
-  void            ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card, char *messageBuffer) const;
-  void            ApplyTruSettings(int modID, int RcuID, char *Mesbuf, unsigned long *regAddr, unsigned long *regVal, bool *verify, int nTruRegs);
+
+  int             Init(vector<FeeServer> feeServers);
+  int             DeInit();
+
+  void            ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const;
+  void            ApplyTruSettings(int modID, int RcuID, unsigned long *regAddr, unsigned long *regVal, bool *verify, int nTruRegs);
   //  void            ApplyTruSettings(int modID, int RcuID, char *Mesbuf, unsigned long *regAddr, unsigned long *regVal, bool *verify, int nTruRegs);
 
 
   int             ArmTrigger(const int modID) const;
-  unsigned int    CheckFeeState(const int mod,  const int rcu , const int branch , const int cardId, char *tmpMessage);
+  unsigned int    CheckFeeState(const int mod,  const int rcu , const int branch , const int cardId);
  
-  void            DisArmTrigger(const int modID, const int RcuID, char *messageBuffer) const;
+  void            DisArmTrigger(const int modID, const int RcuID) const;
  
   void            EnableTrigger(int modID);
   void            EnableTrigger_ttcrx(int modID);  
@@ -54,6 +60,7 @@ class  DcsInterface : public PhosDcsBase
   void            GetConfigComment(char *text, const int id);
   FeeCard*        GetFeeCard(const int mod, const int rcu, const int branch, const int cardId) const;
   int             GetLatestConfigId();
+  std::string     GetLogViewerString();
   Rcu*            GetRcuPtr(const int modID, const int rcuID) const;
 
   void            LoadApdConfig(ConfigInfo_t *info);
@@ -71,19 +78,24 @@ class  DcsInterface : public PhosDcsBase
   void            SetAllApds(const int modID, const int rcuId, const int branch, const int card, const int apdValue);
   void            SetApdValues(const int mod, const int rcu, const int branch, const int card, const unsigned long *values);
   void            SetPhosBit(const int modID) const;
-  void            SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig , char *messageBuf) const;
+  void            SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig) const;
 
 
-  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  //  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU]);
+  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate);
+  unsigned int    ToggleOnOffTru(const int mod, const int rcu, const int truId);
   void            TurnOnAllFee(const int  modID, const int rcuId) const ;
-  void            TurnOnAllTru( const int  modID, const int rcuId, char *message = 0) const; 
-  unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
-  unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  void            TurnOnAllTru( const int  modID, const int rcuId) const; 
+  //unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  //  unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]) {}
+  //unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  //  unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]);
   void            TurnOffAllFee(const int modID, const int rcuId) const;
-  void            TurnOffAllTru(const int  modID, const int rcuId, char *message = 0) const; 
-  unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
-  unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  void            TurnOffAllTru(const int  modID, const int rcuId) const; 
+  unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]) {}
+  unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]) {}
   void            UpdateAFL(const int mod, const int rcu) const;
+  vector<int>     UpdateFeeStatus(const int mod, const int rcu);
 
  private:
   DatabaseDummy   *fDatabasePtr;

@@ -58,7 +58,8 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
   int ExecuteBinary(const char* feeServerName, const vector<unsigned long> & binData, vector<unsigned long> & resultBuffer);
   void ExecuteInstruction(const char* feeServerName);
   
-  const unsigned int CheckFeeState(const char *feeServerName,  const int branch, const int cardNumber, char *message, unsigned long int *pcmv = 0);
+  const unsigned int CheckFeeState(const char *feeServerName,  const int branch, const int cardNumber, unsigned long int *pcmv = 0);
+  const unsigned int CheckTruState(const char *feeServerName, const int tru);
 
   unsigned int ActivateFee(unsigned long afl, const char* serverName, const unsigned long branch, const unsigned long cardIndex, const int onOff);
   

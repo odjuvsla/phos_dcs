@@ -33,7 +33,7 @@ class PhosModule : public PhosDcsBase
  public:
   ~PhosModule();
   PhosModule(PhosFeeClient *fClientPtr, const ModNumber_t  id);
-  void ApplyApdSettings(const int rcuId, const int branch, const int card, char *messageBuffer) const;
+  void ApplyApdSettings(const int rcuId, const int branch, const int card) const;
   //  void ApplyPattern
   const int ArmTrigger(const char *triggerScriptFileName);
   void DisArmTrigger(const int rcuId) const ;
@@ -44,7 +44,7 @@ class PhosModule : public PhosDcsBase
   void CreateRcu(const char *serverName, const int mId, const int rcuId, const int zCoord, const int xCoord);
   void LoadApdValues() const;
   void SetAllApds(const int value) const;
-  void SetReadoutConfig(const ReadoutConfig_t rdoConfig , char *messageBuf);
+  void SetReadoutConfig(const ReadoutConfig_t rdoConfig);
   Rcu *GetRcuPtr(const int Id) const;
   int**  fFeeState[RCUS_PER_MODULE];
 

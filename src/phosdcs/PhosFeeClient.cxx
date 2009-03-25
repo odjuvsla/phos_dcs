@@ -389,11 +389,10 @@ PhosFeeClient::ExecuteScript(const char *scriptFilename, const char *feeServerNa
 	std::string serverName    = feeServerName;
 	
 	size_t size               = (1+(cnt/4)+1)*4;
-	cout << "cnt: " << cnt << " size: " << size << endl;
 	unsigned short flags = 0;
 	short errorCode      = 0;
 	short status         = 0;
-	
+
 	writeReadData(serverName, size, data, flags, errorCode, status);
 
 	for(int i=0; i< N-1; i++)
@@ -466,7 +465,7 @@ PhosFeeClient::ExecuteInstruction(const char* feeServerName)
 }
 
 const unsigned int
-PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const int cardNumber,  char *message, unsigned long int *pcmv)
+PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const int cardNumber, unsigned long int *pcmv)
 {
   unsigned long pcmversion = 0;
   unsigned long address = BCVERSION;
@@ -521,6 +520,12 @@ PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const 
 
       return FEE_STATE_ERROR;
     }
+}
+
+const unsigned int 
+PhosFeeClient::CheckTruState(const char *feeServerName, const int tru)
+{
+  return FEE_STATE_ON;
 }
 
 unsigned int

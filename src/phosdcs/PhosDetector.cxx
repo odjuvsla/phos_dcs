@@ -52,14 +52,14 @@ PhosDetector::PhosDetector(PhosDetector const&): PhosDcsBase(),
 
 
 void 
-PhosDetector::ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card, char *messageBuffer) const
+PhosDetector::ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const
 {
-  phosModulePtr[modID]->ApplyApdSettings(rcuId, branch, card, messageBuffer);
+  phosModulePtr[modID]->ApplyApdSettings(rcuId, branch, card);
 }
 
 
 void 
-PhosDetector::DisArmTrigger(const int modId, const int  rcuId, char *messageBuffer) const
+PhosDetector::DisArmTrigger(const int modId, const int  rcuId) const
 {
   phosModulePtr[modId]->DisArmTrigger(rcuId);
   stringstream log;
@@ -95,19 +95,24 @@ PhosDetector::ArmTrigger(const int moduleId) const
 
 
 void 
-PhosDetector::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig , char *messageBuf) 
+PhosDetector::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig) 
 {
-  phosModulePtr[modID.GetIntValue()]->SetReadoutConfig(rdoConfig, messageBuf);
+  phosModulePtr[modID.GetIntValue()]->SetReadoutConfig(rdoConfig);
   fRadoutConfig = rdoConfig; 
 }
 
 
-void
+int
 PhosDetector::StartFeeClient() const
 {
-  fFeeClientPtr->startFeeClient();
+  return fFeeClientPtr->startFeeClient();
 }
 
+int
+PhosDetector::StopFeeClient() const
+{
+  return fFeeClientPtr->stopFeeClient();
+}
 
 void
 PhosDetector::SetPhosBit(const int moduleId) const

@@ -22,6 +22,7 @@
 
 namespace PhosConst
 {
+  
   const unsigned int DEBUG	=  0;  //0/1/2/3 - Level for debugging details
  
   const int RAMP_PATTERN = 0;
@@ -85,6 +86,7 @@ namespace PhosConst
 
   /*Electronics/Hardware constatns*/
   const unsigned int PHOS_MODS	= 5; // Number of PHOS modules
+  const unsigned int TORS_PER_MODULE = 1;
   const unsigned int RCUS_PER_MODULE = 4;   ///// Number of RCUs per Module///
   const unsigned int BRANCHES_PER_RCU = 2;
   const unsigned int CARDS_PER_BRANCH  = 14; 	// Number of FECs per one RCU branch

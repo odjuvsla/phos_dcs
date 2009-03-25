@@ -139,15 +139,13 @@ PhosModule::ArmTrigger(const char *triggerScriptFileName)
   int nTrials =0;
   int status[RCUS_PER_MODULE];
   int initialized = true;
-  char messageBuff[300];
 
   for(int i=0;  i<RCUS_PER_MODULE; i++  )
     {
       if( fReadoutConfig.GetAltroConfig().GetApplyPattern() == true )
 	{
-	  char mbuff[256];
 
-	  fRcuPtr[i]->ApplyPattern(fReadoutConfig.GetAltroConfig().GetPattern(), mbuff);
+	  fRcuPtr[i]->ApplyPattern(fReadoutConfig.GetAltroConfig().GetPattern());
 	  //	  printf("\n%s", mbuff);
 	    
 	}
@@ -158,7 +156,7 @@ PhosModule::ArmTrigger(const char *triggerScriptFileName)
     {
       status[i] = -1;
       fRcuPtr[i]->SetReadoutRegion(fAfls[i], fAclMaps[i]); 
-      fRcuPtr[i]->ArmTrigger(triggerScriptFileName, messageBuff); 
+      fRcuPtr[i]->ArmTrigger(triggerScriptFileName); 
 
       while((nTrials <= MAX_TRIALS) && (status[i] != REG_OK))
  	{
@@ -246,14 +244,14 @@ PhosModule::CreateRcu(const char *serverName, const int mId, const int rcuId, co
 
 
 void 
-PhosModule::ApplyApdSettings(const int rcuId, const int branch, const int card, char *messageBuffer) const
+PhosModule::ApplyApdSettings(const int rcuId, const int branch, const int card) const
 {
-  fRcuPtr[rcuId]->ApplyApdSettings(branch, card, messageBuffer);
+  fRcuPtr[rcuId]->ApplyApdSettings(branch, card);
 }
 
 
 void
-PhosModule::SetReadoutConfig(const ReadoutConfig_t rdoConfig, char *messageBuf)
+PhosModule::SetReadoutConfig(const ReadoutConfig_t rdoConfig)
 {
   fReadoutConfig = rdoConfig;
 }

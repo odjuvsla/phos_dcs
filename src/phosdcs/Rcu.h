@@ -37,24 +37,25 @@ class Rcu : public PhosDcsBase
  public: 
   virtual ~Rcu();
   Rcu(PhosFeeClient *feeClientPtr, const char *feeServerName, const int mId, const int rId, const int z, const int x);
-  void ApplyPattern(const Pattern_t pattern, char *message) const;
-  unsigned int CheckFeeState(const int branch, const int cardNumber, char *message);
+  void ApplyPattern(const Pattern_t pattern) const;
+  unsigned int CheckFeeState(const int branch, const int cardNumber);
   void SetPcmVersion(const unsigned long pcmversion, const int branch, const int card) const ;
   void SetReadoutRegion(const unsigned long int afl, const int aclMaps[RcuRegisterMap::Active_Channel_List_Length]);  
   void SetAllApds(const int value);
   unsigned int  ActivateFee(const int branch, const int card);
   unsigned int  DeActivateFee(const int branch, const int card);
-  void ArmTrigger(const char *triggerScriptFilename, char *message);
+  void ArmTrigger(const char *triggerScriptFilename);
   void EnableTrigger() const ;
   void EnableTrigger_ttcrx() const;
   void DisArmTrigger() const ;
   const int  ApplyReadoutRegion() const ;
-  int  ApplyApdSettings(char *messageBuffer) const;
-  int  ApplyApdSettings(const int branch, const int card, char *messageBuffer) const;
+  int  ApplyApdSettings() const;
+  int  ApplyApdSettings(const int branch, const int card) const;
   void ApplyTruSettings(const unsigned long regAddr[N_TRU_REGS], const unsigned long regVal[N_TRU_REGS], const bool verify[N_TRU_REGS], 
-			const int N,  char *message) const;
+			const int N) const;
   void ExecuteScript(const char *fileName) const;
   int  ToggleFeeOnOff(const int branch, const int card);
+  int  ToggleTruOnOff(const int tru);
   void InitFeeCards();
   void LoadApdValues();
   void TurnOnAllFee(); 
@@ -77,6 +78,7 @@ class Rcu : public PhosDcsBase
   FeeCard *fFeeCardPtr[MAX_CARDS_PER_RCU]; //each RCU has 28 Front end Cards
   char fFeeServerName[100];
   int *fFeeState[CARDS_PER_RCU];
+  int fTruState[TRUS_PER_RCU];
 
   //  int fActiveChList[256]; 
   int fActiveChList[RcuRegisterMap::Active_Channel_List_Length]; 
