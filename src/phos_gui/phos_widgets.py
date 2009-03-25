@@ -15,13 +15,14 @@ class ModuleTabWidget(QtGui.QWidget):
 
         self.moduleId = moduleId
         self.idConverter = PhosIdConverter()
-
+        
         self.initRcus()
         self.initLogViewer()
         self.initModuleIndicator()
         self.initModuleButtons()
         self.initConnections()
-
+        self.enableTab(False, 0)
+        
     def emit_signal(self, *args):
         print "emmiting signal: " + args[0]
         print "with ID: " + str(args[1])
@@ -152,7 +153,7 @@ class RcuTopFrame(QtGui.QFrame):
         self.setFrameShape(QtGui.QFrame.StyledPanel)
         self.setFixedWidth(650)
         self.setFixedHeight(40)
-        
+
     def initSeparatorLines(self):
 
         self.firstSep = QtGui.QFrame(self)
@@ -215,6 +216,7 @@ class Rcu(QtGui.QWidget):
         self.initConnections()
 
         self.setFixedHeight(110)
+        self.enableRcu(False)
 
     def emit_signal(self,*args):
         self.emit(QtCore.SIGNAL(args[0]), *args)
@@ -447,8 +449,14 @@ class ConnectionSettingsModuleTabWidget(QtGui.QWidget):
         for i in range(RCUS_PER_MODULE):
             self.connect(self.enabledRcuBoxes[i], QtCore.SIGNAL("stateChanged"), self.feeServerRcuLineEdit[i].setEnabled)
 
+class StatusTabWidget(QtGui.QWidget):
     
+    def __init__(self, width, height, parent=None):
+        super(QtGui.QWidget, self).__init__(parent)
 
+        self.setGeometry(10, 10, width - 25, height - 90)
+        self.setFixedSize(width - 25, height - 90)
+        self.setEnabled(False)
 
 class ConnectionSettingsBusyboxTabWidget(QtGui.QWidget):
 
@@ -457,6 +465,7 @@ class ConnectionSettingsBusyboxTabWidget(QtGui.QWidget):
        
         self.setGeometry(10, 10, width - 25, height - 90)
         self.setFixedSize(width - 25, height - 90)
+
 
     
         

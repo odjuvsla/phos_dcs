@@ -127,3 +127,20 @@ class RcuDialog(QtGui.QDialog):
         super(QtGui.QDialog, self).__init__(parent)
 
         self.resize(640, 480)
+
+        self.initRegistersFrame()
+        self.initRdoInfoFrame()
+        self.initCloseButton()
+        
+    def initRegistersFrame(self):
+        
+        print 'init registers frame'
+        
+    def initRdoInfoFrame(self):
+        
+        print 'init readout info frame'
+
+    def initCloseButton(self):
+        
+        print 'init close button'
+        

@@ -389,11 +389,10 @@ PhosFeeClient::ExecuteScript(const char *scriptFilename, const char *feeServerNa
 	std::string serverName    = feeServerName;
 	
 	size_t size               = (1+(cnt/4)+1)*4;
-	cout << "cnt: " << cnt << " size: " << size << endl;
 	unsigned short flags = 0;
 	short errorCode      = 0;
 	short status         = 0;
-	
+
 	writeReadData(serverName, size, data, flags, errorCode, status);
 
 	for(int i=0; i< N-1; i++)

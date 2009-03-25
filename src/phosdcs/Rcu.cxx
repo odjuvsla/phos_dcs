@@ -540,9 +540,7 @@ Rcu::EnableTrigger() const
   char resultBuffer[50];
   char tmpFileName[1024];  
   sprintf(tmpFileName,"%s/s_enabletrigger.txt" ,fPhosDcsScriptDir ); 
-  //sprintf(tmpFileName,"s_enabletrigger.txt"); 
   fFeeClientPtr->ExecuteScript(tmpFileName, fFeeServerName, resultBuffer, 50);
-  //  cout <<   "Enabeling external RCU trigger for : %s  ...... Done ! "  << endl;
   
   stringstream log;
   log << "Rcu::EnableTrigger: Enabling external RCU trigger for : " << fFeeServerName << " ...... Done ! ";
@@ -572,7 +570,12 @@ Rcu::DisArmTrigger() const
   char resultBuffer[50];
   sprintf(tmpFileName,"%s/s_disarmtrigger.txt" ,fPhosDcsScriptDir );
   //sprintf(tmpFileName,"s_disarmtrigger.txt");
+  
   fFeeClientPtr->ExecuteScript(tmpFileName,  fFeeServerName, resultBuffer, 50);
+
+  stringstream log;
+  log << "Rcu::DisArmTrigger: disarming trigger for : " << fFeeServerName << " ...... Done ! ";
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
 }
 
 
