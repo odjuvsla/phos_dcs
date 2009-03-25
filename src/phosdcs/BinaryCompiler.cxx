@@ -44,7 +44,7 @@ BinaryCompiler::MakeWriteReadRegisterBinary(const unsigned int regType, vector<u
   if(regType == REGTYPE_ALTRO)
     {
     }
-  if(regType == REGTYPE_BC)
+  if(regType == REGTYPE_BC || regType == REGTYPE_ALTRO)
     {
       ret = MakeWriteReadFeeRegisterBinary(regType, binData, reg, value, verify, N, branch, card, 1, writeZeroes);
     }

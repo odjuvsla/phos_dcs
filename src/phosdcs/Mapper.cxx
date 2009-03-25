@@ -112,7 +112,7 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
   //TRU
   for(int rcu = 0; rcu < RCUS_PER_MODULE; rcu++)
     {
-      for(int tru = 0; tru < 2; tru++) //CRAP
+      for(int tru = 0; tru < 2; tru++) //TODO: don't use hardcoded values
 	{
 	  for(int channel = 0; channel < CHANNELS_PER_ALTRO; channel++)
 	    {

@@ -35,15 +35,15 @@ DcsInterface::DcsInterface()
 //   tmpPhosModulePtr->CreateRcu("tpc-fee_0_17_3", MODULE_2, RCU_2, Z_0, X_1);
 //   tmpPhosModulePtr->CreateRcu("alphsdcs0280", MODULE_2, RCU_3, Z_1, X_1);
  
-//  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_0, Z_0, X_0);
-//  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_1, Z_1, X_0);
-//  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_2, Z_0, X_1);
-//  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_3, Z_1, X_1);
+ tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_0, Z_0, X_0);
+ tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_1, Z_1, X_0);
+ tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_2, Z_0, X_1);
+ tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_3, Z_1, X_1);
 
- tmpPhosModulePtr->CreateRcu("alphsdcs0282", MODULE_2, RCU_0, Z_0, X_0);
- tmpPhosModulePtr->CreateRcu("alphsdcs0279", MODULE_2, RCU_1, Z_1, X_0);
- tmpPhosModulePtr->CreateRcu("alphsdcs0281", MODULE_2, RCU_2, Z_0, X_1);
- tmpPhosModulePtr->CreateRcu("alphsdcs0280", MODULE_2, RCU_3, Z_1, X_1);
+//  tmpPhosModulePtr->CreateRcu("alphsdcs0282", MODULE_2, RCU_0, Z_0, X_0);
+//  tmpPhosModulePtr->CreateRcu("alphsdcs0279", MODULE_2, RCU_1, Z_1, X_0);
+//  tmpPhosModulePtr->CreateRcu("alphsdcs0281", MODULE_2, RCU_2, Z_0, X_1);
+//  tmpPhosModulePtr->CreateRcu("alphsdcs0280", MODULE_2, RCU_3, Z_1, X_1);
 
  fPhosDetectorPtr->StartFeeClient();
  fDatabasePtr = new DatabaseDummy();

@@ -44,12 +44,12 @@ ScriptCompiler::MakeTriggerConfigScript(const char *filename,  TriggerMode_t tri
   // int tmp;
 
   //fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROIF, (altroconfig.GetNSamples()).GetIntValue() | 1<<10 | 3<<14); 
-  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROIF, 501 | 1<<10 | 3<<14); 
+  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROIF, 100 | 1<<10 | 3<<14); 
   
   //  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::RDOMOD, (altroconfig.GetReadoutMode()).GetIntValue());
   //if(ZS_ON == 1) fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::RDOMOD, 0x1 << 3 | 0x1 << 1); //ZS
   //else 
-  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::RDOMOD, 0x1 << 3);
+  //  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::RDOMOD, 0x1 << 3);
   
   //  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROCFG1, (altroconfig.GetReadoutMode()).GetIntValue());
   // fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROCFG1, (0x1 << 3));
@@ -58,11 +58,12 @@ ScriptCompiler::MakeTriggerConfigScript(const char *filename,  TriggerMode_t tri
   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::ALTROCFG2, altroconfig.GetNPreSamples().GetIntValue());  
 
   // The L1 latency and L1 msg latency. Hardcoded for the moment...
-  //fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_LATENCY, 0x20e0); //224 bunch crossings (5.3 us)
-  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_LATENCY, 0x2104);  // 260 bunch crossings (6.5 us)
+  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_LATENCY, 0x20e0); //224 bunch crossings (5.6 us)
+  //  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_LATENCY, 0x2104);  // 260 bunch crossings (6.5 us)
 
-  // fprintf(fp, "w 0x%x  0x%x\n", 0x400a, 0xe04e20);  
+  fprintf(fp, "w 0x%x  0x%x\n", 0x400a, 0xe04e20);  
   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_MSG_LATENCY, 0x1040c80);   //More correct value? 
+  //  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::L1_MSG_LATENCY, 0xe0c800104);   //More correct value? 
 
   fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM     ,MakeMS20Instruction(REGTYPE_ALTRO, false, AltroRegisterMap::TRCFG));
   //  fprintf(fp, "w 0x%x  0x%x\n", RcuRegisterMap::Instruction_MEM + 1 ,MakeLS20Instruction(false, (altroconfig.GetNSamples()).GetIntValue()));
