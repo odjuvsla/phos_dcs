@@ -18,7 +18,7 @@ class ConnectSettingsDialog(QtGui.QDialog):
         self.initButtons()
         self.initConnections()
 
-        self.feeServerFile = "configurationFiles/feeServerNames.cfg"
+        self.feeServerFile = "../GuiConfigurationFiles/feeServerNames.cfg"
 
         self.feeServerNames = [" "]*(PHOS_MODS*RCUS_PER_MODULE+PHOS_MODS)
         self.feeServerEnabled = [False]*(PHOS_MODS*RCUS_PER_MODULE+PHOS_MODS)

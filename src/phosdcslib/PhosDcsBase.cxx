@@ -25,13 +25,13 @@ PhosDcsBase::PhosDcsBase()
       if(tmpDcsDir != 0)
 	{
 	  //	  sprintf(fPhosDcsDir, "%s", tmpDcsDir);
-	  sprintf(fPhosDcsDir, "../../");
+	  sprintf(fPhosDcsDir, "../");
 	}
       else
 	{
 	  cout <<"WARNING: environment variable PHOS_DCS_DIR not set "<< endl;
-	  cout <<"assuming the DCS directory is "<< getenv("HOME") <<endl;
-	  sprintf(fPhosDcsDir, "%s", getenv("HOME"));
+	  cout <<"assuming the DCS directory is "<< getenv("HOME") << "/phos_dcs" << endl;
+	  sprintf(fPhosDcsDir, "%s%s", getenv("HOME"), "/phos_dcs");
 	}
 
       if(tmpConfigDataDir != 0) 
@@ -41,7 +41,7 @@ PhosDcsBase::PhosDcsBase()
       else
 	{
 	  //	  sprintf(fDatabaseFolder, "%s/data/",getenv("PWD"));
-	  sprintf(fDatabaseFolder, "../../data/");
+	  sprintf(fDatabaseFolder, "../data/");
 	  cout <<"WARNING: environment variable PHOS_DCS_CONFIGDATA not set "<< endl;
 	  cout <<"assuming the data is contained in directory"<< fDatabaseFolder <<endl; 
 	}
@@ -49,7 +49,7 @@ PhosDcsBase::PhosDcsBase()
       sprintf(fSandboxFolder,"%s/APD_settings/", fDatabaseFolder);
       strcat(fDatabaseFolder,  "/ConfigurationFiles/");
 
-      sprintf(fPhosDcsScriptDir, "%s/",fPhosDcsDir);
+      sprintf(fPhosDcsScriptDir, "%s/scripts/",fPhosDcsDir);
 
       fParamIsSet = true;  
     }

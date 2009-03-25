@@ -54,7 +54,7 @@ class ModuleTabWidget(QtGui.QWidget):
         self.moduleIndicatorFrame.setFixedWidth(330)
         self.moduleIndicatorFrame.setFixedHeight(100)
 
-        picFile = "graphics/5_mods_" + str(self.moduleId) + "_on.png"
+        picFile = "../graphics/5_mods_" + str(self.moduleId) + "_on.png"
         image = QtGui.QImage(picFile)
         self.moduleIndicator = QtGui.QLabel(self.moduleIndicatorFrame)
         self.moduleIndicator.setPixmap(QtGui.QPixmap.fromImage(image))

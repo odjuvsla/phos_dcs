@@ -32,7 +32,7 @@ PhosDcsLogging::PhosDcsLogging() :
   stringstream datestamp;
   
   GetTimeStamp(timestamp, datestamp); 
-   filename << "log/" << datestamp.str() << "_" << timestamp.str() << ".log";
+   filename << "../log/" << datestamp.str() << "_" << timestamp.str() << ".log";
   
   fLogFile.open(filename.str().c_str());
   //fLogFile.open("log/test.log");
@@ -40,7 +40,7 @@ PhosDcsLogging::PhosDcsLogging() :
   if(fLogFile.is_open() == false)
     {
       cerr << "Could not open log file!" << endl;
-      cerr << "Check permissions and if log/ directory exists in current directory" << endl;
+      cerr << "Check permissions and if ../log/ directory exists in current directory" << endl;
       cerr << "Exiting..." << endl;
       exit(1);
     }
