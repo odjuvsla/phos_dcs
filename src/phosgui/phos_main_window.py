@@ -89,7 +89,9 @@ class PhosGui(QtGui.QMainWindow):
         self.connect(self, QtCore.SIGNAL("enableTriggerModule"), self.moduleHandler.enableTrigger)
         self.connect(self, QtCore.SIGNAL("disableTriggerModule"), self.moduleHandler.disableTrigger)
 
-        self.connect(self, QtCore.SIGNAL("feeServerStarted"), self.enableConnectedFeeServers)
+        self.connect(self, QtCore.SIGNAL("FeeServerStarted"), self.enableConnectedFeeServers)        
+
+        self.connect(self.detectorHandler, QtCore.SIGNAL("FeeServerStarted"), self.enableConnectedFeeServers)
 
         for i in range(PHOS_MODS):
 
@@ -114,6 +116,8 @@ class PhosGui(QtGui.QMainWindow):
             self.connect(self.moduleTabs[i], QtCore.SIGNAL("disableTriggerModule"), self.extractSignal)
 
             self.connect(self, QtCore.SIGNAL("cardToggled" + str(i)), self.moduleTabs[i].updateFeeCard)
+
+
 
         self.connect(self.feeCardHandler, QtCore.SIGNAL("cardToggled"), self.translateFeeSignal)
         self.connect(self.rcuHandler, QtCore.SIGNAL("cardToggled"), self.translateFeeSignal)
@@ -177,20 +181,20 @@ class PhosGui(QtGui.QMainWindow):
         self.detectorHandler.connectToFeeServers(feeServerNames, feeServerEnabled)
         
     def enableConnectedFeeServers(self, res):
-        
+
         feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
         for i in range(PHOS_MODS):
             for j in range(RCUS_PER_MODULE):
                 if feeServerEnabled[i*(RCUS_PER_MODULE+1) + j] == True:
                     if res > 0:
-                        self.moduleTabs[i].enableTab(True, j)
+                        self.moduleTabs[i].enableRcu(True, j)
+                        self.moduleTabs[i].setEnabled(True)
                     else:
-                        self.moduleTabs[i].enableTab(False, j)
+                        self.moduleTabs[i].enableRcu(False, j)
+                        self.moduleTabs[i].SetEnabled(False)
                 else:
-                    self.moduleTabs[i].enableTab(False, j)
+                    self.moduleTabs[i].enableRcu(False, j)
                     
-
-        self.update()
         # Need to enable TORs also ...
 
     def fetchLog(self, signal, moduleId):

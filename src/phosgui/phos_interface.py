@@ -369,13 +369,16 @@ class DetectorHandler(PHOSHandler):
 
     def connectToFeeServers(self, feeServerNames, feeServerEnabled):
         
+        self.connect(self, QtCore.SIGNAL("feeServerStarted"), self.emit_signal)
+       # self.connect(self, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+
         for i in range(len(feeServerNames)):
             if feeServerEnabled[i] == True:
                 self.addFeeServer(feeServerNames[i], i)
 
         #res = self.startFeeClient()
         res = 1
-        self.emit(QtCore.SIGNAL("feeServerStarted"), "feeServerStarted", res)
+        self.emit(QtCore.SIGNAL("feeServerStarted"), "FeeServerStarted", res)
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
         
 class LogHandler(PHOSHandler):

@@ -21,7 +21,8 @@ class ModuleTabWidget(QtGui.QWidget):
         self.initModuleIndicator()
         self.initModuleButtons()
         self.initConnections()
-        self.enableTab(False, 0)
+#        self.enableRcu(False, 0)
+        self.setEnabled(False)
         
     def emit_signal(self, *args):
         print "emmiting signal: " + args[0]
@@ -120,6 +121,7 @@ class ModuleTabWidget(QtGui.QWidget):
         self.connect(self.moduleEnableTriggerButton, QtCore.SIGNAL("enableTriggerModule"), self.emit_signal)
         self.connect(self.moduleDisableTriggerButton, QtCore.SIGNAL("disableTriggerModule"), self.emit_signal)
 
+
     def addLogString(self, logString):
                 
 #        self.logViewer.append(logString)
@@ -131,12 +133,11 @@ class ModuleTabWidget(QtGui.QWidget):
         module, rcu, branch, fee = self.idConverter.GetFeeLogicalIDs(feeId)
 
         self.rcus[rcu].updateFeeCard(branch, fee, state)
-        self.update()
 
-    def enableTab(self, enable, rcuId):
+    def enableRcu(self, enable, rcuId):
         
-        self.setEnabled(enable)
         self.rcus[rcuId].enableRcu(enable)
+        self.update()
 
 class RcuTopFrame(QtGui.QFrame):
     """Top frame for the RCUs"""
