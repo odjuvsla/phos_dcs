@@ -89,6 +89,8 @@ class PhosGui(QtGui.QMainWindow):
         self.connect(self, QtCore.SIGNAL("enableTriggerModule"), self.moduleHandler.enableTrigger)
         self.connect(self, QtCore.SIGNAL("disableTriggerModule"), self.moduleHandler.disableTrigger)
 
+        self.connect(self, QtCore.SIGNAL("feeServerStarted"), self.enableConnectedFeeServers)
+
         for i in range(PHOS_MODS):
 
             self.connect(self.moduleTabs[i], QtCore.SIGNAL("toggleFee"), self.extractSignal)
@@ -174,13 +176,21 @@ class PhosGui(QtGui.QMainWindow):
         feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
         self.detectorHandler.connectToFeeServers(feeServerNames, feeServerEnabled)
         
-    def enableConnectedFeeServers(self):
+    def enableConnectedFeeServers(self, res):
         
         feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
         for i in range(PHOS_MODS):
             for j in range(RCUS_PER_MODULE):
                 if feeServerEnabled[i*(RCUS_PER_MODULE+1) + j] == True:
-                    self.moduleTabs[i].enableTab(j)
+                    if res > 0:
+                        self.moduleTabs[i].enableTab(True, j)
+                    else:
+                        self.moduleTabs[i].enableTab(False, j)
+                else:
+                    self.moduleTabs[i].enableTab(False, j)
+                    
+
+        self.update()
         # Need to enable TORs also ...
 
     def fetchLog(self, signal, moduleId):

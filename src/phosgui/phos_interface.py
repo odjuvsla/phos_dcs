@@ -373,7 +373,8 @@ class DetectorHandler(PHOSHandler):
             if feeServerEnabled[i] == True:
                 self.addFeeServer(feeServerNames[i], i)
 
-        res = self.startFeeClient()
+        #res = self.startFeeClient()
+        res = 1
         self.emit(QtCore.SIGNAL("feeServerStarted"), "feeServerStarted", res)
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
         
