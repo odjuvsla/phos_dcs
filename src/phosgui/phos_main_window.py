@@ -66,7 +66,7 @@ class PhosGui(QtGui.QMainWindow):
 
         self.connect(self.feeCardHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
         self.connect(self.truCardHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
-        self.connect(self.rcuHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
+        self.connect(self.rcuHandler, QtCore.SIGNAL("fetchLog"), self.logHandler.getLogString)
         self.connect(self.moduleHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
         self.connect(self.detectorHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
         self.connect(self.logHandler, QtCore.SIGNAL("gotLog"), self.updateLogViewer)
@@ -116,19 +116,30 @@ class PhosGui(QtGui.QMainWindow):
             self.connect(self.moduleTabs[i], QtCore.SIGNAL("disableTriggerModule"), self.extractSignal)
 
             self.connect(self, QtCore.SIGNAL("cardToggled" + str(i)), self.moduleTabs[i].updateFeeCard)
-
+            self.connect(self, QtCore.SIGNAL("feeStateUpdated" + str(i)), self.moduleTabs[i].updateFeeCard)
+            self.connect(self, QtCore.SIGNAL("statusUpdated" + str(i)), self.moduleTabs[i].updateRcu)
 
 
         self.connect(self.feeCardHandler, QtCore.SIGNAL("cardToggled"), self.translateFeeSignal)
         self.connect(self.rcuHandler, QtCore.SIGNAL("cardToggled"), self.translateFeeSignal)
+        self.connect(self.rcuHandler, QtCore.SIGNAL("feeStateUpdated"), self.translateFeeSignal)
+
+        self.connect(self.rcuHandler, QtCore.SIGNAL("statusUpdated"), self.translateRcuSignal)
 
     def translateFeeSignal(self, *args):
         
-        print 'translating'
         feeId = args[1]
         res = args[2]
         module = feeId/(RCUS_PER_MODULE*CARDS_PER_RCU)
         self.emit(QtCore.SIGNAL(args[0] + str(module)), feeId, res)
+        print args[0]
+
+    def translateRcuSignal(self, *args):
+
+        rcuId = args[1]
+        res = args[2]
+        module = rcuId/(RCUS_PER_MODULE)
+        self.emit(QtCore.SIGNAL(args[0] + str(module)), rcuId, res)
         print args[0]
 
     def extractSignal(self, *args):
@@ -198,7 +209,6 @@ class PhosGui(QtGui.QMainWindow):
         # Need to enable TORs also ...
 
     def fetchLog(self, signal, moduleId):
-        print 'fetch log!'
         self.logHandler.getLogString(moduleId)
         
     def updateLogViewer(self, tmpSignal, logString):

@@ -88,19 +88,52 @@ PhosFeeClient::WriteReadRegisters(const int regType, const char *feeServerName, 
       
       if(*verify)
 	{
-
-	  binaryData.clear();
-	  int resultIndex = binaryCompilerPtr->MakeReadRegisterBinary(regType, binaryData, regs, N, branch, card, 0);
-	  int ret = ExecuteBinary(feeServerName, binaryData, resultData); 
 	  
-	  ExecuteInstruction(feeServerName);
-	  int res = GetExecutionResult(feeServerName, 2);
-     
-	  ReadExecutionResult(feeServerName, resultData, N);
-	  res = VerifyValues(resultData, values, verify, N);
-	  log.str("");
-	  log << "PhosFeeClient::WriteReadRegister: Result from value verification: 0x" << hex << res << dec;
-	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+	  if(regType == REGTYPE_ALTRO)
+	    {
+	      for(int chip = 0; chip < ALTROS_PER_FEE; chip++)
+		{
+		  //		  for(int channel = 0; channel < CHANNELS_PER_ALTRO; channel++)
+		  // {
+		  int channel = 0;
+		      binaryData.clear();
+		      resultIndex = binaryCompilerPtr->MakeReadFeeRegisterBinary(regType, binaryData, regs, N, branch, card, 
+										 chip, channel);
+		      ret = ExecuteBinary(feeServerName, binaryData, resultData); 
+	      
+		      ExecuteInstruction(feeServerName);
+		      res = GetExecutionResult(feeServerName, 2);
+	      
+		      ReadExecutionResult(feeServerName, resultData, N);
+		      res = VerifyValues(resultData, values, verify, N);
+		      log.str("");
+		      log << "PhosFeeClient::WriteReadRegister: Result from value verification: 0x" << hex << res << dec;
+		      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+		      if(res != REG_OK)
+			{
+			  log.str("");
+			  log << "PhosFeeClient::WriteReadRegister: Result from value verification: 0x" << hex << res << dec;
+			  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+			  break;
+			}			
+		      //}
+		}
+	    }
+	  else
+	    {
+	      binaryData.clear();
+	      int resultIndex = binaryCompilerPtr->MakeReadRegisterBinary(regType, binaryData, regs, N, branch, card, 0);
+	      int ret = ExecuteBinary(feeServerName, binaryData, resultData); 
+	      
+	      ExecuteInstruction(feeServerName);
+	      int res = GetExecutionResult(feeServerName, 2);
+	      
+	      ReadExecutionResult(feeServerName, resultData, N);
+	      res = VerifyValues(resultData, values, verify, N);
+	      log.str("");
+	      log << "PhosFeeClient::WriteReadRegister: Result from value verification: 0x" << hex << res << dec;
+	      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+	    }
 	}
       iRet = res;
     }
@@ -389,10 +422,11 @@ PhosFeeClient::ExecuteScript(const char *scriptFilename, const char *feeServerNa
 	std::string serverName    = feeServerName;
 	
 	size_t size               = (1+(cnt/4)+1)*4;
+
 	unsigned short flags = 0;
 	short errorCode      = 0;
 	short status         = 0;
-
+	
 	writeReadData(serverName, size, data, flags, errorCode, status);
 
 	for(int i=0; i< N-1; i++)
@@ -425,7 +459,13 @@ PhosFeeClient::ExecuteBinary(const char* feeServerName, const vector<unsigned lo
     }
   
   int ret = writeReadData(serverName, size, data, flags, errorCode, status);
-  
+
+//   SendWaitCommand(10000, feeServerName);
+//   Reset(feeServerName, 1);
+//   SendWaitCommand(10000, feeServerName);
+//   Reset(feeServerName, 2);
+//   SendWaitCommand(10000, feeServerName);
+
   resultBuffer.clear();
   for(int i=0; i< size/4; i++)
     {
@@ -462,10 +502,15 @@ PhosFeeClient::ExecuteInstruction(const char* feeServerName)
   PhosDcsLogging::Instance()->Logging("PhosFeeClient::ExecuteInstruction: Executing instruction...", LOG_LEVEL_VERBOSE);
   writeReadData(serverName, size, data, flags, errorCode, status);  
   
+ //   SendWaitCommand(10000, feeServerName);
+//   Reset(feeServerName, 1);
+//   SendWaitCommand(10000, feeServerName);
+//   Reset(feeServerName, 2);
+//  SendWaitCommand(10000, feeServerName);
 }
 
 const unsigned int
-PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const int cardNumber, unsigned long int *pcmv)
+PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const int cardNumber,  unsigned long int *pcmv)
 {
   unsigned long pcmversion = 0;
   unsigned long address = BCVERSION;
@@ -491,7 +536,7 @@ PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const 
   if(pcmversion == 0xffff || pcmversion == 0)
     {
       log.str("");
-      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << pcmversion << ", FEE_STATE_ERROR";
+      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << hex << pcmversion << dec << ", FEE_STATE_ERROR";
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
       
       return FEE_STATE_ERROR;
@@ -499,7 +544,7 @@ PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const 
   else if(pcmversion == PCMVERSION)
     {
       log.str("");
-      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << pcmversion << ", FEE_STATE_ON";
+      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << hex << pcmversion << dec << ", FEE_STATE_ON";
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
       
       return FEE_STATE_ON;
@@ -507,7 +552,7 @@ PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const 
   else if(pcmversion == OLD_PCMVERSION)
     {
       log.str("");
-      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << pcmversion << ", FEE_STATE_WARNING";
+      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << hex << pcmversion << dec << ", FEE_STATE_WARNING";
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
       
      return FEE_STATE_WARNING;
@@ -515,19 +560,18 @@ PhosFeeClient::CheckFeeState(const char *feeServerName, const int branch, const 
   else
     {
       log.str("");
-      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << pcmversion << ", FEE_STATE_ERROR";
+      log << "PhosFeeClient::CheckFeeState: Checking.. branch " << branch << ", card " << cardNumber << ", pcmversion = " << hex << pcmversion << dec << ", FEE_STATE_ERROR";
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
 
       return FEE_STATE_ERROR;
     }
 }
 
-const unsigned int 
+const unsigned int
 PhosFeeClient::CheckTruState(const char *feeServerName, const int tru)
 {
   return FEE_STATE_ON;
 }
-
 unsigned int
 PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const unsigned long branch, 
 			   const unsigned long cardIndex, const int onOff) 
@@ -557,7 +601,7 @@ PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const u
       PhosDcsLogging::Instance()->Logging(string("PhosFeeClient::ActivateFee: In activating card, branch has invalid value"), LOG_LEVEL_ERROR);	
     }
 
-  tmpFeeList = 1<<(cardIndex+shift);
+  tmpFeeList = 1<<((cardIndex)+shift);
 
   if(onOff == TURN_OFF)
    {
@@ -573,7 +617,7 @@ PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const u
     }
   
   stringstream log;
-  log << "PhosFeeClient::ActivateFee: Active FEE List: " << activeFeeList;
+  log << "PhosFeeClient::ActivateFee: Active FEE List: " << hex << activeFeeList << dec;
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);	
   vector<unsigned int> data;
   std::string serverName = feeServerName;
@@ -587,7 +631,7 @@ PhosFeeClient::ActivateFee(unsigned long afl, const char* feeServerName, const u
   data.push_back(RcuRegisterMap::CE_CMD_TRAILER);    
 
   writeReadData(serverName, size, data, flags, errorCode, status);  
-
+  SendWaitCommand(4000, feeServerName);
   return res;
 
 }
@@ -742,7 +786,7 @@ PhosFeeClient::GetExecutionResult(const char* feeServerName, int N)
 
   stringstream log;
 
-  for(int i = 0; i < size/4; i++)
+  for(int i = 0; i < size/4 - 2; i++)
     {
       log.str("");
       log << "PhosFeeClient::GetExecutionResult: data[" << i << "] = 0x" << hex << data[i] << dec;
@@ -751,7 +795,7 @@ PhosFeeClient::GetExecutionResult(const char* feeServerName, int N)
       if((data[i]&(0x100000)) != 0) 
 	{
 	  log.str("");
-	  log << "PhosFeeClient::GetExecutionResult: Error bit set for " << i << " data = " << data[i];
+	  log << "PhosFeeClient::GetExecutionResult: Error bit set for " << i <<  " data = 0x" << hex << data[i] << dec;
 	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
 	  return -1; //Error bit set
 	}

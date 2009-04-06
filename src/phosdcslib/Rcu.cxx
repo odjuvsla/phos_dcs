@@ -125,7 +125,7 @@ Rcu::ActivateFee(const int branch, const int cardIndex)
   
   fFeeClientPtr->ActivateFee(fActiveFeeList, fFeeServerName, branch, cardIndex, TURN_ON);
   
-  fFeeClientPtr->ReadRegisters(REGTYPE_BC, fFeeServerName, &pcmversionReg, &pcmversion, 1, branch, cardIndex +1);
+  fFeeClientPtr->ReadRegisters(REGTYPE_BC, fFeeServerName, &pcmversionReg, &pcmversion, 1, branch, cardIndex);
   
   if(pcmversion == 0xdead)
     {
@@ -243,6 +243,7 @@ Rcu::ToggleFeeOnOff(const int branch, const int cardNumber)
 	    }
 	}	
     }
+  state = *fFeeState[branch*14+cardIndex];
 
   return state;
 }
@@ -646,6 +647,11 @@ Rcu::IsActiveFee(const int branch, const int card) const
 unsigned long 
 Rcu::GetActiveFeeList()
 {
+
+  unsigned long tmpAddr = RcuRegisterMap::AFL;
+
+  fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList, 1); 
+
   return fActiveFeeList;
 }
 

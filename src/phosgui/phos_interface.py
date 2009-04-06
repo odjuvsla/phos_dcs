@@ -20,7 +20,7 @@ class PHOSHandler(QtCore.QObject):
 #    def emit_signal(self, signal, *args):
     def emit_signal(self, *args):
         """Function for forwarding the signals from the thread"""      
-        print 'emitting ' + args[0]
+#        print 'emitting ' + args[0]
         self.emit(QtCore.SIGNAL(args[0]), *args)
     #-----------------------------------------------------
 
@@ -76,6 +76,26 @@ class FeeCardHandler(PHOSHandler):
         self.connect(onOffThread, QtCore.SIGNAL("cardToggled"), self.emit_signal)
         onOffThread.start()
     #-----------------------------------------------------
+        
+    def toggleOn(self, feeId):
+        """Function for toggling cards"""
+        # Start a thread for the toggling
+        self.feeId = feeId
+        onOffThread = self.__ToggleOnOffThread(self.feeId, self.dcs_interface_wrapper, True, True)
+        self.connect(onOffThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+        self.connect(onOffThread, QtCore.SIGNAL("cardToggled"), self.emit_signal)
+        onOffThread.start()
+    #-----------------------------------------------------
+        
+    def toggleOff(self, feeId):
+        """Function for toggling cards"""
+        # Start a thread for the toggling
+        self.feeId = feeId
+        onOffThread = self.__ToggleOnOffThread(self.feeId, self.dcs_interface_wrapper, True, False)
+        self.connect(onOffThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+        self.connect(onOffThread, QtCore.SIGNAL("cardToggled"), self.emit_signal)
+        onOffThread.start()
+    #-----------------------------------------------------
 
     def applyApdSettings(self, feeId):
         """Apply APD settings for this card"""
@@ -89,11 +109,13 @@ class FeeCardHandler(PHOSHandler):
     class __ToggleOnOffThread(Thread, PHOSHandler):
         """Member threading class"""
         
-        def __init__(self, feeId, dcs_interface_wrapper):
+        def __init__(self, feeId, dcs_interface_wrapper, override = False, on = False):
             """init takes DcsInterfaceThreadWrapper and FEE ID (absolute number) as arguments"""
-
+            
             self.feeId = feeId
             self.dcs_interface_wrapper = dcs_interface_wrapper
+            self.override = override
+            self.on = on
             Thread.__init__(self)
             PHOSHandler.__init__(self)
         #------------------------------------------------
@@ -103,17 +125,22 @@ class FeeCardHandler(PHOSHandler):
 
             # Get the DcsInterface object
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
-
+            
             moduleId, rcuId, branchId, feeId = self.idConverter.GetFeeLogicalIDs(self.feeId)
             print 'toggling card'
             currentstate = 0
 #            tmpStates = [0]*CARDS_PER_RCU
             state = 0
-            
+            dcs_interface.UpdateAFL(moduleId, rcuId)
             # Here we do the toggling
- #           state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate, tmpStates)
-            state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate)
-            
+            if self.override and self.on == True:
+                state = dcs_interface.TurnOnFee(moduleId, rcuId, branchId, feeId, currentstate)
+            elif self.override and self.on == False:
+                state = dcs_interface.TurnOffFee(moduleId, rcuId, branchId, feeId, currentstate)
+#           state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate, tmpStates)
+            else:
+                state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate)
+            print 'state is ' + str(state)
             # Emitting signal for fetching log information
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
 
@@ -238,12 +265,12 @@ class RcuHandler(PHOSHandler):
         self.feeHandler = FeeCardHandler(self.dcs_interface_wrapper)
     #-------------------------------------------------
 
-    def toggleOnOff(self, rcuId):
+    def toggleOnOff(self, rcuId, on):
         """Function for toggling on/off all FEE cards and TRU cards on the RCU"""
 #        self.emit(QtCore.SIGNAL("cardToggled"), "cardToggled", 1, FEE_STATE_ON)         
         
         # Start a thread for the toggling        
-        onOffThread = self.__ToggleOnOffThread(rcuId, self.dcs_interface_wrapper, self.feeHandler)
+        onOffThread = self.__ToggleOnOffThread(rcuId, self.dcs_interface_wrapper, self.feeHandler, on)
         self.connect(onOffThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
         self.connect(onOffThread, QtCore.SIGNAL("cardsToggled"), self.emit_signal)
         self.connect(self.feeHandler, QtCore.SIGNAL("cardToggled"), self.emit_signal)
@@ -256,6 +283,7 @@ class RcuHandler(PHOSHandler):
         updateStatusThread = self.__UpdateStatusThread(rcuId, self.dcs_interface_wrapper)
         self.connect(updateStatusThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
         self.connect(updateStatusThread, QtCore.SIGNAL("statusUpdated"), self.emit_signal)
+        self.connect(updateStatusThread, QtCore.SIGNAL("feeStateUpdated"), self.emit_signal)
         updateStatusThread.start()
         
     #------------------------------------------------
@@ -263,23 +291,37 @@ class RcuHandler(PHOSHandler):
     class __ToggleOnOffThread(Thread, PHOSHandler):
         """Member threading class for toggle on/off all cards on RCU"""
         
-        def __init__(self, rcuId, dcs_interface_wrapper, feeHandler):
+        def __init__(self, rcuId, dcs_interface_wrapper, feeHandler, on):
             """init takes a DcsInterfaceThreadWrapper object as argument"""
             Thread.__init__(self)
             PHOSHandler.__init__(self)
             self.rcuId = rcuId
             self.dcs_interface_wrapper = dcs_interface_wrapper
             self.feeHandler = feeHandler
+            self.on = on
             
         def run(self):
             """Run the thread"""
             
-            for i in range(CARDS_PER_RCU):
-                feeId = self.rcuId*CARDS_PER_RCU + i
-                self.feeHandler.toggleOnOff(feeId)
+#            for i in range(CARDS_PER_RCU):
+#                feeId = self.rcuId*CARDS_PER_RCU + i
+#                self.feeHandler.toggleOnOff(feeId)
+#             for i in range(CARDS_PER_BRANCH-2):
+#                 feeId = self.rcuId*CARDS_PER_RCU + i
+#                 self.feeHandler.toggleOnOff(feeId)
+                
+            for j in range(CARDS_PER_BRANCH):
+                feeId = self.rcuId*CARDS_PER_RCU + CARDS_PER_BRANCH + j
+                if self.on == True:
+                    self.feeHandler.toggleOn(feeId)
+                    time.sleep(0.1)
+                else:
+                    self.feeHandler.toggleOff(feeId)
+                    time.sleep(0.1)
             # Emitting the cards toggled signal 
             self.emit(QtCore.SIGNAL("cardsToggled"), "cardsToggled")
-            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", self.moduleId)
+#            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", self.moduleId)
+            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0)
             
     #################################################################### End of __ToggleOnOffThread class
 
@@ -292,6 +334,7 @@ class RcuHandler(PHOSHandler):
             PHOSHandler.__init__(self)
 
             self.rcuId = rcuId
+            self.moduleId = rcuId/RCUS_PER_MODULE
             self.dcs_interface_wrapper = dcs_interface_wrapper
             
         def run(self):
@@ -300,13 +343,31 @@ class RcuHandler(PHOSHandler):
             
             moduleId, rcuId = self.idConverter.GetRcuLogicalIDs(self.rcuId)
 
-            status = dcs_interface.UpdateFeeStatus(moduleId, rcuId)
-            
-            self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
-            
-            self.emit(QtCore.SIGNAL("statusUpdated"), "statusUpdated", status)
+            dcs_interface.UpdateAFL(moduleId, rcuId)
 
+            for i in range(CARDS_PER_BRANCH):
+                
+                status = dcs_interface.UpdateSingleFeeStatus(moduleId, rcuId, BRANCH_A, i+1)
+                feeId = self.idConverter.FeeAbsoluteID(self.moduleId, rcuId, BRANCH_A, i+1)
+                self.emit(QtCore.SIGNAL("feeStateUpdated"), "feeStateUpdated", feeId, status)
+                self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
+                time.sleep(0.05)
+                
+            for j in range(CARDS_PER_BRANCH):
+                
+                status = dcs_interface.UpdateSingleFeeStatus(moduleId, rcuId, BRANCH_B, j+1)
+                feeId = self.idConverter.FeeAbsoluteID(self.moduleId, rcuId, BRANCH_B, j+1)
+                self.emit(QtCore.SIGNAL("feeStateUpdated"), "feeStateUpdated", feeId, status)
+                self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
+                time.sleep(0.05)
             self.dcs_interface_wrapper.releaseDcsInterface()
+#             status = dcs_interface.UpdateFeeStatus(moduleId, rcuId)
+            
+#             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
+            
+#             self.emit(QtCore.SIGNAL("statusUpdated"), "statusUpdated", self.rcuId, status)
+
+#self.dcs_interface_wrapper.releaseDcsInterface()
 
 class ModuleHandler(PHOSHandler):
     
@@ -376,8 +437,8 @@ class DetectorHandler(PHOSHandler):
             if feeServerEnabled[i] == True:
                 self.addFeeServer(feeServerNames[i], i)
 
-        #res = self.startFeeClient()
-        res = 1
+        res = self.startFeeClient()
+        #res = 1
         self.emit(QtCore.SIGNAL("feeServerStarted"), "FeeServerStarted", res)
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
         

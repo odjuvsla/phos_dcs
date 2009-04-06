@@ -44,8 +44,9 @@ BinaryCompiler::MakeWriteReadRegisterBinary(const unsigned int regType, vector<u
     }
   if(regType == REGTYPE_ALTRO)
     {
+      //      ret = MakeWriteReadFeeRegisterBinary(regType, binData, reg, value, verify, N, branch, card, 1, writeZeroes);
     }
-  if(regType == REGTYPE_BC || regType == REGTYPE_ALTRO)
+  if(regType == REGTYPE_BC || REGTYPE_ALTRO)
     {
       ret = MakeWriteReadFeeRegisterBinary(regType, binData, reg, value, verify, N, branch, card, 1, writeZeroes);
     }
@@ -142,7 +143,6 @@ BinaryCompiler::MakeWriteReadFeeRegisterBinary(const unsigned int registerType, 
 
       for(int i=0; i<N; i++)
 	{
-	  
 	  binData.push_back(InstructionMaker::MakeMS20Instruction(registerType, false, reg[j], branch, card));
 	  binData.push_back(InstructionMaker::MakeLS20Instruction(false, value[j]));
 	  j++;
@@ -204,7 +204,15 @@ BinaryCompiler::MakeReadFeeRegisterBinary(const int registerType, vector<unsigne
 
   for(int i=0; i<N;i++)
     {
-      binData.push_back(InstructionMaker::MakeMS20Instruction(registerType, true, reg[i], branch, card));
+      if(registerType == REGTYPE_ALTRO)
+	{
+	  binData.push_back(InstructionMaker::MakeMS20Instruction(registerType, true, reg[i], branch, card, chip, channel));
+	}
+      else 
+	{
+	  binData.push_back(InstructionMaker::MakeMS20Instruction(registerType, true, reg[i], branch, card));
+	}
+
     }
 
   binData.push_back(RcuRegisterMap::END);

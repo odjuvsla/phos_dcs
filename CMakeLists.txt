@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT(phos_dcs)
 
+SET(CMAKE_BUILD_TYPE Debug)
+
 ENABLE_TESTING()
 
 SET(ROOTSYS $ENV{ROOTSYS})

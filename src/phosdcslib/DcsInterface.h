@@ -24,6 +24,7 @@
 #include "PhosDataTypes.h"
 #include <vector>
 #include <string>
+
 class FeeCard;
 class PhosDetector;
 class PhosModule;
@@ -86,16 +87,17 @@ class DcsInterface : public PhosDcsBase
   unsigned int    ToggleOnOffTru(const int mod, const int rcu, const int truId);
   void            TurnOnAllFee(const int  modID, const int rcuId) const ;
   void            TurnOnAllTru( const int  modID, const int rcuId) const; 
-  //unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
+  unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState);
   //  unsigned int    TurnOnFee (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]) {}
   //unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU], char *tmpMessage);
   //  unsigned int    TurnOnTru (const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]);
   void            TurnOffAllFee(const int modID, const int rcuId) const;
   void            TurnOffAllTru(const int  modID, const int rcuId) const; 
-  unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]) {}
-  unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpStates[CARDS_PER_RCU]) {}
+  unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState); 
+  unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState){;}
   void            UpdateAFL(const int mod, const int rcu) const;
   vector<int>     UpdateFeeStatus(const int mod, const int rcu);
+  int             UpdateSingleFeeStatus(const int mod, const int rcu, const int branch, const int fee);
 
  private:
   DatabaseDummy   *fDatabasePtr;

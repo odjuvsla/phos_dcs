@@ -120,25 +120,50 @@ class ModuleTabWidget(QtGui.QWidget):
         
         self.connect(self.moduleEnableTriggerButton, QtCore.SIGNAL("enableTriggerModule"), self.emit_signal)
         self.connect(self.moduleDisableTriggerButton, QtCore.SIGNAL("disableTriggerModule"), self.emit_signal)
-
-
+    
     def addLogString(self, logString):
                 
 #        self.logViewer.append(logString)
         self.logViewer.setText(self.logViewer.toPlainText() + logString)
-
+#        self.logViewer.verticalScrollBar().setPosition(self.logViewer.verticalScrollBar().maximum())
+        
     def updateFeeCard(self, feeId, state):
         
         print 'update card ' + str(feeId) + ' with state ' + str(state)
         module, rcu, branch, fee = self.idConverter.GetFeeLogicalIDs(feeId)
-
         self.rcus[rcu].updateFeeCard(branch, fee, state)
+        if fee == 13:
+            self.rcus[rcu].updateFeeCard(branch, 2, state)
 
+        if fee == 14:
+            self.rcus[rcu].updateFeeCard(branch, 1, state)
+
+        if fee == 1:
+            self.rcus[rcu].updateFeeCard(branch, 14, state)
+
+        if fee == 2:
+            self.rcus[rcu].updateFeeCard(branch, 13, state)
+
+        self.update()
+        
+    def updateRcu(self, rcuId, state):
+
+        module, rcu = self.idConverter.GetRcuLogicalIDs(rcuId)
+        
+        for i in range(CARDS_PER_BRANCH):
+            print 'update card ' + str(i) + ' with state ' + str(state[i])
+            self.rcus[rcu].updateFeeCard(BRANCH_A, i+1, state[i])
+        
+        for j in range(CARDS_PER_BRANCH):
+            print 'update card ' + str(j) + ' with state ' + str(state[j + CARDS_PER_BRANCH])
+            self.rcus[rcu].updateFeeCard(BRANCH_B, j+1, state[j+CARDS_PER_BRANCH])
+            
     def enableRcu(self, enable, rcuId):
         
         self.rcus[rcuId].enableRcu(enable)
+#        self.emit(QtCore.SIGNAL("rcuUpdateStatus"), "rcuUpdateStatus", rcuId)
         self.update()
-
+        
 class RcuTopFrame(QtGui.QFrame):
     """Top frame for the RCUs"""
 
@@ -300,10 +325,14 @@ class Rcu(QtGui.QWidget):
         self.rcuUpdateStatusButton.geometry().setX(510)
         self.rcuUpdateStatusButton.geometry().setY(10)
 
-        self.rcuToggleButton = RcuToggleOnOffPushButton(self, self.moduleId, self.rcuId)
+        self.rcuToggleButtonOn = RcuToggleOnOffPushButton(self, self.moduleId, self.rcuId, True)
+        self.rcuToggleButtonOff = RcuToggleOnOffPushButton(self, self.moduleId, self.rcuId, False)
 
-        self.rcuToggleButton.geometry().setX(510)
-        self.rcuToggleButton.geometry().setY(40)
+        self.rcuToggleButtonOn.geometry().setX(510)
+        self.rcuToggleButtonOn.geometry().setY(40)
+
+        self.rcuToggleButtonOff.geometry().setX(567)
+        self.rcuToggleButtonOff.geometry().setY(40)
         
         self.rcuViewButton = RcuViewPushButton(self, self.moduleId, self.rcuId)
         
@@ -333,7 +362,8 @@ class Rcu(QtGui.QWidget):
             self.connect(self.truButtons[i], QtCore.SIGNAL("viewTru"), self.emit_signal)
 
         self.connect(self.rcuUpdateStatusButton, QtCore.SIGNAL("rcuUpdateStatus"), self.emit_signal)
-        self.connect(self.rcuToggleButton, QtCore.SIGNAL("rcuToggleOnOff"), self.emit_signal)
+        self.connect(self.rcuToggleButtonOn, QtCore.SIGNAL("rcuToggleOnOff"), self.emit_signal)
+        self.connect(self.rcuToggleButtonOff, QtCore.SIGNAL("rcuToggleOnOff"), self.emit_signal)
         self.connect(self.rcuViewButton, QtCore.SIGNAL("viewRcu"), self.emit_signal)
 
     def updateFeeCard(self, branchId, feeId, state):
@@ -342,7 +372,8 @@ class Rcu(QtGui.QWidget):
         feeId = feeId - 1 + branchId*CARDS_PER_BRANCH
         
         self.feeButtons[feeId].setState(state)
-   
+        self.update()
+        
     def enableRcu(self, enable):
         
         for i in range(CARDS_PER_BRANCH*2):
@@ -352,7 +383,8 @@ class Rcu(QtGui.QWidget):
             self.truButtons[i].setEnabled(enable)
 
         self.rcuUpdateStatusButton.setEnabled(enable)
-        self.rcuToggleButton.setEnabled(enable)
+        self.rcuToggleButtonOn.setEnabled(enable)
+        self.rcuToggleButtonOff.setEnabled(enable)
         self.rcuViewButton.setEnabled(enable)
 
 

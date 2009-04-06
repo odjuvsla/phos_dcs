@@ -315,6 +315,17 @@ DcsInterface::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t r
   fPhosDetectorPtr->SetReadoutConfig(modID,  rdoConfig);
 }
 
+unsigned int
+DcsInterface::TurnOnFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState)
+{
+  return fPhosDetectorPtr->GetRcuPtr(mod, rcu)->ActivateFee(branch, cardSlot);
+}
+
+unsigned int
+DcsInterface::TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState)
+{
+  return fPhosDetectorPtr->GetRcuPtr(mod, rcu)->DeActivateFee(branch, cardSlot);
+}
 
 unsigned int 
 //DcsInterface::ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate, unsigned int tmpStates[CARDS_PER_RCU])
@@ -388,6 +399,8 @@ DcsInterface::UpdateFeeStatus(const int mod, const int rcu)
 {
   vector<int> status;
 
+  UpdateAFL(mod, rcu);
+
   status.clear();
   for(int i = 0; i < CARDS_PER_BRANCH; i++)
     {
@@ -399,6 +412,14 @@ DcsInterface::UpdateFeeStatus(const int mod, const int rcu)
       status.push_back(CheckFeeState(mod, rcu, BRANCH_B, i+1));
       //status.push_back(i);
     }
+  return status;
+}
+
+int
+DcsInterface::UpdateSingleFeeStatus(const int mod, const int rcu, const int branch, const int fee)
+{
+  int status = CheckFeeState(mod, rcu, branch, fee);
+
   return status;
 }
 

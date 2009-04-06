@@ -144,3 +144,12 @@ class RcuDialog(QtGui.QDialog):
         
         print 'init close button'
         
+class ConfigureElectronicsDialog(QtGui.QDialog):
+    """Dialog for setting up the electronics configuration"""
+
+    def __init__(self, parent=None):
+        super(QtGui.QDialog, self).__init__(parent)
+
+        self.resize(640, 480)
+
+    
