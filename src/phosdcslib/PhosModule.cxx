@@ -155,15 +155,18 @@ PhosModule::ArmTrigger(const char *triggerScriptFileName)
   for(int i=0; i<RCUS_PER_MODULE; i++)
     {
       status[i] = -1;
-      fRcuPtr[i]->SetReadoutRegion(fAfls[i], fAclMaps[i]); 
-      fRcuPtr[i]->ArmTrigger(triggerScriptFileName); 
-
-      while((nTrials <= MAX_TRIALS) && (status[i] != REG_OK))
- 	{
-	  status[i] = fRcuPtr[i]->ApplyReadoutRegion();     
-	  nTrials ++;
+      if(fRcuPtr[i] != 0)
+	{
+	  fRcuPtr[i]->SetReadoutRegion(fAfls[i], fAclMaps[i]); 
+	  fRcuPtr[i]->ArmTrigger(triggerScriptFileName); 
+	  
+	  while((nTrials <= MAX_TRIALS) && (status[i] != REG_OK))
+	    {
+	      status[i] = fRcuPtr[i]->ApplyReadoutRegion();     
+	      nTrials ++;
+	    }
+	  nTrials =0;
 	}
-      nTrials =0;
    }
 
   initialized = true;
@@ -237,8 +240,8 @@ PhosModule::CreateRcu(const char *serverName, const int mId, const int rcuId, co
   else
     {
       stringstream log;
-      log << "PhosModule::CreateRcu: fFeeClientPtr == NULL !!!!!!!!"  <<endl;
-      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+      log << "PhosModule::CreateRcu: fFeeClientPtr == NULL"  <<endl;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
     }    
 } 
 

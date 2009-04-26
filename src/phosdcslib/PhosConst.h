@@ -61,6 +61,9 @@ namespace PhosConst
   const int N_ZROWS_MOD      =  56;                    /**<Number of rows per module*/       
   const int N_XCOLUMNS_MOD   =  64;  
 
+  const int N_ZROWS_BRANCH      =  N_ZROWS_BRANCH/2;                    /**<Number of rows per module*/       
+  const int N_XCOLUMNS_BRANCH   =  N_XCOLUMNS_BRANCH/4;  
+
   const unsigned int PHOS_GAINS	= 2;  // Number of gains per one PHOS crystal
   const unsigned int HIGH_GAIN    =   1;
   const unsigned int LOW_GAIN     =   0;

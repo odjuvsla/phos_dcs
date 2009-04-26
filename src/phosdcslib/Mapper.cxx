@@ -65,16 +65,16 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
   int csp = 99;
 
 
- //  for(int i =  readoutregion.GetStartZ().GetIntValue(); i <=  readoutregion.GetEndZ().GetIntValue(); i++)
-//     {
-//       for(int j = readoutregion.GetStartX().GetIntValue(); j <=  readoutregion.GetEndX().GetIntValue(); j++)
-// 	{
-
-//FEE
-  for(int i = 0; i <=  55; i++)
+  for(int i =  readoutregion.GetStartZ().GetIntValue(); i <=  readoutregion.GetEndZ().GetIntValue(); i++)
     {
-      for(int j = 0; j <= 63; j++)
-	{
+      for(int j = readoutregion.GetStartX().GetIntValue(); j <=  readoutregion.GetEndX().GetIntValue(); j++)
+ 	{
+
+// //FEE
+//   for(int i = 0; i <=  55; i++)
+//     {
+//       for(int j = 0; j <= 63; j++)
+// 	{
 	  for(int k = PHOS_GAINS - 1  ; k > -1; k--)
 	    {
 	      index = geo2hdw[modID][k][j][i]; 
@@ -109,7 +109,7 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 	}
     }
 
-  //TRU
+  //TRU // TODO: need to configure region for TRUs as well
   for(int rcu = 0; rcu < RCUS_PER_MODULE; rcu++)
     {
       for(int tru = 0; tru < 2; tru++) //TODO: don't use hardcoded values
@@ -277,7 +277,9 @@ Mapper::InitAltroMapping(int saveMapping)
 		hdw2geo[m][r][b][f][a][c]=-1; 
 	      }
   //
-  // Fill all FEE cards via formula
+  // Fill all FEE cards via formula 
+  // Be aware of crazyness! When we talk of rows and columns here it is oppisite of what is defined in 
+  // the module
   //
   int index=0;
   for(int m=0; m < PHOS_MODS;   m++)
@@ -287,9 +289,11 @@ Mapper::InitAltroMapping(int saveMapping)
 	  for(int a=0; a< ALTROS_PER_FEE ;  a++)
 	    for(int c=0; c< CHANNELS_PER_ALTRO;   c++)
 	      {
-		int row  = (r/2)*32 + b*16 + CSP_MAP[a][c].row;
-		int col  = (r%2)*28 + f*2  + CSP_MAP[a][c].col;
-		int gain = CSP_MAP[a][c].gain;
+		//		int row  = (r/2)*32 + b*16 + CSP_MAP[a][c].row;
+		//		int col  = (r%2)*28 + f*2  + CSP_MAP[a][c].col;
+		int row  = r*N_XCOLUMNS_MOD/RCUS_PER_MODULE + CSP_MAP[a][c].row; // New RCU geometrical configuration
+		int col  = b*CARDS_PER_BRANCH*2 + f*2  + CSP_MAP[a][c].col; // New RCU geometrical configuration
+ 		int gain = CSP_MAP[a][c].gain;
 		int csp  = CSP_MAP[a][c].csp;
 		int num  = CSP_MAP[a][c].num;
 		ALTRO_MAP[index].mod=m;
@@ -305,12 +309,15 @@ Mapper::InitAltroMapping(int saveMapping)
 		ALTRO_MAP[index].num=num;
 		ALTRO_MAP[index].hid=Geo2hid(m,gain,row,col);
 		hdw2geo[m][r][b][f][a][c]=index;
+
 		if((row>=0)&&(row<  N_XCOLUMNS_MOD ))
-		  if((col>=0)&&(col<  N_ZROWS_MOD ))
-		    if((gain>=0)&&(gain< PHOS_GAINS)) geo2hdw[m][gain][row][col]=index;
+		    if((col>=0)&&(col<  N_ZROWS_MOD ))
+			if((gain>=0)&&(gain< PHOS_GAINS)) 
+			  {
+			    geo2hdw[m][gain][row][col]=index;
+			  }
 		index++;
 	      }
- 
   //
   // Check if geo2hdw map table is filled
   //
@@ -319,6 +326,8 @@ Mapper::InitAltroMapping(int saveMapping)
       for(int r=0; r < N_XCOLUMNS_MOD; r++)
 	for(int c=0; c < N_ZROWS_MOD; c++) 
 	  {
+	    //	    cout << "Module: " << m << " - Gain: " << g << " - X: " << r << " - Z: " << c << " - index: ";
+	    // cout << geo2hdw[m][g][r][c] << endl;
 	    assert(geo2hdw[m][g][r][c] >= 0);
 	  }
   //

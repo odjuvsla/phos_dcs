@@ -158,7 +158,7 @@ DatabaseDummy::LoadApdConfig(char *description, int id)
 
 
 void 
-DatabaseDummy::SaveRadoutConfiguration(const ReadoutConfig_t rdoConfig) const
+DatabaseDummy::SaveRadoutConfiguration(const ReadoutConfig_t rdoConfig, const ModNumber_t modNumber) const
 {
  
 
@@ -166,7 +166,7 @@ DatabaseDummy::SaveRadoutConfiguration(const ReadoutConfig_t rdoConfig) const
   char fileName[200];
   char postfix[50];
   SetPostfix(postfix, id);
-  sprintf(fileName, "%sconfiguration_%s_readoutsettings.txt", fDatabaseFolder, postfix);
+  sprintf(fileName, "%sconfiguration_%s_readoutsettings_module_%d.txt", fDatabaseFolder, postfix, modNumber.GetIntValue());
   FILE *fp;
 
   //  cout << "DatabaseDummy::SaveRadoutConfiguration, filename ="  <<  fileName << endl,
@@ -181,6 +181,7 @@ DatabaseDummy::SaveRadoutConfiguration(const ReadoutConfig_t rdoConfig) const
       fprintf(fp, "endZ:\t %d\n",   rdoConfig.GetReadoutRegion().GetEndZ().GetIntValue());
       fprintf(fp, "startX:\t %d\n",  rdoConfig.GetReadoutRegion().GetStartX().GetIntValue());
       fprintf(fp, "endX:\t %d\n",   rdoConfig.GetReadoutRegion().GetEndX().GetIntValue());
+      fprintf(fp, "enableTruReadout:\t %d\n",   rdoConfig.GetReadoutRegion().IsTruReadoutEnabled());
       fclose(fp);
     }
 }
@@ -218,13 +219,14 @@ DatabaseDummy::SaveTruSettings(const TRUSettings_t t) const
 }
 
 void
-DatabaseDummy::LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig) const
+DatabaseDummy::LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig, const ModNumber_t modNumber) const
 {
+
   int id=GetLatestConfigId();
   char fileName[200];
   char postfix[50];
   SetPostfix(postfix, id);
-  sprintf(fileName, "%sconfiguration_%s_readoutsettings.txt", fDatabaseFolder, postfix);
+  sprintf(fileName, "%sconfiguration_%s_readoutsettings_module_%d.txt", fDatabaseFolder, postfix, modNumber.GetIntValue());
   FILE *fp = 0;
 
   if( CheckFile(fileName, "r" ) == 0 )
@@ -248,18 +250,20 @@ DatabaseDummy::LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig) const
       int tmpEndZ = 0;
       int tmpStartX = 0;
       int tmpEndX = 0;  
+      bool tmpTruEnable = false;
       
       fscanf(fp, "startZ:\t %d\n", &tmpStartZ);
       fscanf(fp, "endZ:\t %d\n", &tmpEndZ); 
       fscanf(fp, "startX:\t %d\n", &tmpStartX);
       fscanf(fp, "endX:\t %d\n", &tmpEndX); 
+      fscanf(fp, "enableTruReadout:\t %d\n", &tmpTruEnable); 
 
       StartZ_t *startz = new StartZ_t(tmpStartZ);
       EndZ_t *endz = new EndZ_t(tmpEndZ);
       StartX_t *startx = new StartX_t(tmpStartX);
       EndX_t *endx = new EndX_t(tmpEndX);
       
-      ReadoutRegion_t *rdoregion = new ReadoutRegion_t(*startz, *endz, *startx, *endx);
+      ReadoutRegion_t *rdoregion = new ReadoutRegion_t(*startz, *endz, *startx, *endx, tmpTruEnable);
       rdoConfig->SetReadoutRegion(*rdoregion);
 
       delete  startz;

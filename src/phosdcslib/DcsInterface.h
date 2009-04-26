@@ -67,8 +67,8 @@ class DcsInterface : public PhosDcsBase
   void            LoadApdConfig(ConfigInfo_t *info);
   void            LoadApdConfig(ConfigInfo_t *info, int id);
   void            LoadApdValues(int modID);
-  void            LoadReadoutConfiguration(ReadoutConfig_t *rdoconfigPtr) const; 
-  void            SaveReadoutConfiguration(const ReadoutConfig_t rdoconfig) const;
+  void            LoadReadoutConfiguration(ReadoutConfig_t *rdoconfigPtr, ModNumber_t modNumber) const; 
+  void            SaveReadoutConfiguration(const ReadoutConfig_t rdoconfig, ModNumber_t modNumber) const;
 
   void            SaveTRUSettings(const TRUSettings_t trusettings);
   void            LoadTruSettings(TRUSettings_t *trusettings) const;

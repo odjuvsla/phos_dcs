@@ -37,8 +37,8 @@ class DatabaseDummy : public PhosDcsBase
   int LoadApdConfig(char *description);
   int LoadApdConfig(char *description, int id);
   int SaveApdConfig(char *description);
-  void SaveRadoutConfiguration(const ReadoutConfig_t rdoConfig) const;
-  void LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig) const;
+  void SaveRadoutConfiguration(const ReadoutConfig_t rdoConfig, const ModNumber_t modNumber) const;
+  void LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig, const ModNumber_t modnumber_t) const;
 
   void SaveTruSettings(const TRUSettings_t t) const;
   void LoadTruSettings(TRUSettings_t *t)const;

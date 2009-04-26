@@ -51,8 +51,8 @@ class PhosIdConverter():
         moduleId = feeServerId/(RCUS_PER_MODULE+TORS_PER_MODULE)
         rcuIdLog = feeServerId%(RCUS_PER_MODULE+TORS_PER_MODULE)
         
-        x = rcuIdLog%(RCUS_PER_MODULE/2)
-        z = rcuIdLog/(RCUS_PER_MODULE/2)
+        x = rcuIdLog%(RCUS_PER_MODULE)
+        z = 0
         return moduleId, rcuIdLog, x, z
 
     def GetTruLogicalIDs(self, truId):

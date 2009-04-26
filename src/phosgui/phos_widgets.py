@@ -22,7 +22,7 @@ class ModuleTabWidget(QtGui.QWidget):
         self.initModuleButtons()
         self.initConnections()
 #        self.enableRcu(False, 0)
-        self.setEnabled(False)
+#        self.setEnabled(False)
         
     def emit_signal(self, *args):
         print "emmiting signal: " + args[0]
@@ -294,7 +294,8 @@ class Rcu(QtGui.QWidget):
 
         for i in range(CARDS_PER_BRANCH):
             
-            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
+#            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
+            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_B, CARDS_PER_BRANCH - i)
             self.feeButtons[i] = FeePushButton(self, feeId)
             self.feeButtons[i].geometry().setX(50 + i*(self.feeButtons[i].geometry().width()-4))
             self.feeButtons[i].geometry().setWidth(16)
@@ -303,10 +304,10 @@ class Rcu(QtGui.QWidget):
             
             n = i + CARDS_PER_BRANCH
 
-            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_B, i+1)
+            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
             self.feeButtons[n] = FeePushButton(self, feeId)
             self.feeButtons[n].geometry().setX(240 + i*(self.feeButtons[i].geometry().width()-4))
-            self.feeButtons[i].geometry().setWidth(16)
+            self.feeButtons[n].geometry().setWidth(16)
 
     def initTruButtons(self):
         
@@ -441,11 +442,6 @@ class ConnectionSettingsModuleTabWidget(QtGui.QWidget):
 #            self.feeServerRcuLineEdit[i].setEnabled(0)
             self.feeServerNameLayout.addWidget(self.feeServerRcuLineEdit[i])
         
-        self.feeServerTorLineEdit = QtGui.QLineEdit(self.feeNameLayoutWidget)
-        self.feeServerTorLineEdit.setFixedSize(230, 30)
-#        self.feeServerTorLineEdit.setEnabled(0)
-        self.feeServerNameLayout.addWidget(self.feeServerTorLineEdit)
-
         self.feeNameLayoutWidget.setLayout(self.feeServerNameLayout)
         
     def initCheckBoxes(self):
@@ -462,10 +458,6 @@ class ConnectionSettingsModuleTabWidget(QtGui.QWidget):
             self.enabledRcuBoxes[i] = QtGui.QCheckBox(self.enabledLayoutWidget)
             self.enabledRcuBoxes[i].setText("RCU " + str(i))
             self.enabledLayout.addWidget(self.enabledRcuBoxes[i])
-
-        self.enabledTorBox = QtGui.QCheckBox(self.enabledLayoutWidget)
-        self.enabledTorBox.setText("TOR")
-        self.enabledLayout.addWidget(self.enabledTorBox)
 
         self.enabledLayoutWidget.setLayout(self.enabledLayout)
         
@@ -499,6 +491,211 @@ class ConnectionSettingsBusyboxTabWidget(QtGui.QWidget):
         self.setGeometry(10, 10, width - 25, height - 90)
         self.setFixedSize(width - 25, height - 90)
 
+class ReadoutRegionSettingsWidget(QtGui.QWidget):
 
-    
+    def __init__(self, width, height, parent = None):
+        super(QtGui.QWidget, self).__init__(parent)
+        
+        self.setFixedSize(width, height)
+
+        self.initLabels()
+
+        self.initSpinBoxes()
+#        self.initDetailedSelectionButton()
+
+    def initLabels(self):
+        
+        self.regionLabel = QtGui.QLabel("Read out region:", self)
+        self.regionLabel.setGeometry(10, 10, 130, 20)
+
+        self.fromLabel = QtGui.QLabel("From:", self)
+        self.fromLabel.setGeometry(45, 40, 30, 20)
+
+        self.toLabel = QtGui.QLabel("To:", self)
+        self.toLabel.setGeometry(self.fromLabel.x() + self.fromLabel.width() + 35, self.fromLabel.y(), 30, 20)
+
+        self.xLabel = QtGui.QLabel("X:", self)
+        self.xLabel.setGeometry(15, 65, 10, 20)
+
+        self.zLabel = QtGui.QLabel("Z:", self)
+        self.zLabel.setGeometry(self.xLabel.x(), self.xLabel.y() + self.xLabel.height() + 5, self.xLabel.width(), self.xLabel.height())
+        
+        self.regionLabel = QtGui.QLabel("Read out region:", self)
+        self.regionLabel.setGeometry(10, 10, 130, 20)
+        
+        self.regionLabel = QtGui.QLabel("Read out region:", self)
+        self.regionLabel.setGeometry(10, 10, 130, 20)
+        
+
+    def initSpinBoxes(self):
+
+        self.xSpinboxFirst = QtGui.QSpinBox(self)
+        self.xSpinboxFirst.setGeometry(self.fromLabel.x(), 65, 40, 20)
+        self.xSpinboxFirst.setMinimum(0)
+        self.xSpinboxFirst.setMaximum(N_XCOLUMNS_MOD - 1)
+        
+        self.xSpinboxLast = QtGui.QSpinBox(self)
+        self.xSpinboxLast.setGeometry(self.toLabel.x(), self.xSpinboxFirst.y(), self.xSpinboxFirst.width(), self.xSpinboxFirst.height())
+        self.xSpinboxLast.setValue(N_XCOLUMNS_MOD - 1)
+        self.xSpinboxLast.setMinimum(0)
+        self.xSpinboxLast.setMaximum(N_XCOLUMNS_MOD - 1)
+        
+        self.zSpinboxFirst = QtGui.QSpinBox(self)
+        self.zSpinboxFirst.setGeometry(self.xSpinboxFirst.x(), self.xSpinboxFirst.y() + self.xSpinboxFirst.height() + 5, self.xSpinboxFirst.width(), self.xSpinboxFirst.height())
+        self.xSpinboxFirst.setMinimum(0)
+        self.xSpinboxFirst.setMaximum(N_ZROWS_MOD - 1)
+        
+        self.zSpinboxLast = QtGui.QSpinBox(self)
+        self.zSpinboxLast.setGeometry(self.xSpinboxLast.x(), self.zSpinboxFirst.y(), self.xSpinboxFirst.width(), self.xSpinboxFirst.height())
+        self.zSpinboxLast.setValue(N_ZROWS_MOD - 1)
+        self.zSpinboxLast.setMinimum(0)
+        self.zSpinboxLast.setMaximum(N_ZROWS_MOD - 1)
+
+    def getReadOutRegion(self):
+        
+        xFirst = self.xSpinboxFirst.value()
+        xLast = self.xSpinboxLast.value()
+        zFirst = self.zSpinboxFirst.value()
+        zLast = self.zSpinboxLast.value()                
+        
+        return xFirst, xLast, zFirst, zLast
+
+    def initDetailedSelectionButton(self):
+
+        print 'test'
+        
+
+class ReadoutSamplesSettingsWidget(QtGui.QWidget):
+
+    def __init__(self, width, height, parent = None):
+        super(QtGui.QWidget, self).__init__(parent)
+        
+        self.setFixedSize(width, height)
+
+        self.initLabels()
+        self.initSpinBoxes()
+        
+    def initLabels(self):
+
+
+        self.titleLabel = QtGui.QLabel("Number of samples:", self)
+        self.titleLabel.setGeometry(10, 15, 130, 20)
+
+        self.preLabel = QtGui.QLabel("Pre-samples:", self)
+        self.preLabel.setGeometry(15, 45, 80, 20)
+
+        self.samplesLabel = QtGui.QLabel("Samples:", self)
+        self.samplesLabel.setGeometry(self.preLabel.x() + self.preLabel.width() + 15, self.preLabel.y(), 50, 20)
+        
+
+    def initSpinBoxes(self):
+
+        print 'initSpinBoxes'
+
+        self.preSpinbox = QtGui.QSpinBox(self)
+        self.preSpinbox.setGeometry(self.preLabel.x(), 65, 60, 20)
+        self.preSpinbox.setMinimum(0)
+        self.preSpinbox.setMaximum(MAX_ALTRO_PRESAMPLES)
+        self.preSpinbox.setValue(11)
+        
+        self.samplesSpinbox = QtGui.QSpinBox(self)
+        self.samplesSpinbox.setGeometry(self.samplesLabel.x(), self.preSpinbox.y(), self.preSpinbox.width(), self.preSpinbox.height())
+        self.samplesSpinbox.setValue(81)
+        self.samplesSpinbox.setMinimum(0)
+        self.samplesSpinbox.setMaximum(MAX_ALTRO_SAMPLES)
+
+    def getSamplesSettings(self):
+        
+        nSamples = self.samplesSpinbox.value()
+        nPreSamples = self.preSpinbox.value()
+
+        return nPreSamples, nSamples
+
+class ReadoutZeroSuppressionWidget(QtGui.QWidget):
+
+    def __init__(self, width, height, parent=None):
+        super(QtGui.QWidget, self).__init__(parent)
+
+        self.initLabels()
+        self.initSpinBoxes()
+        self.initZsSparseSelectors()
+        
+    def initLabels(self):
+
+        self.zsLabel = QtGui.QLabel("Zero Suppression:", self)
+        self.zsLabel.setGeometry(10, 15, 130, 20)
+
+        self.thresholdLabel = QtGui.QLabel("Threshold:", self)
+        self.thresholdLabel.setGeometry(15, 45, 80, 20)
+
+        self.offsetLabel = QtGui.QLabel("Offset:", self)
+        self.offsetLabel.setGeometry(self.thresholdLabel.x() + self.thresholdLabel.width() + 15, self.thresholdLabel.y(), 50, 20)
+
+    def initSpinBoxes(self):
+
+        print 'initSpinBoxes'
+
+        self.thresholdSpinbox = QtGui.QSpinBox(self)
+        self.thresholdSpinbox.setGeometry(self.thresholdLabel.x(), 65, 60, 20)
+        self.thresholdSpinbox.setMinimum(0)
+        self.thresholdSpinbox.setMaximum(1023)
+        self.thresholdSpinbox.setValue(1)
+        
+        self.offsetSpinbox = QtGui.QSpinBox(self)
+        self.offsetSpinbox.setGeometry(self.offsetLabel.x(), self.thresholdSpinbox.y(), self.thresholdSpinbox.width(), self.thresholdSpinbox.height())
+        self.offsetSpinbox.setValue(2)
+        self.offsetSpinbox.setMinimum(0)
+        self.offsetSpinbox.setMaximum(1023)
+
+    def initZsSparseSelectors(self):
+
+        self.zsCheckBox = QtGui.QCheckBox(self)
+        self.zsCheckBox.setText("Enable Zero Suppression")
+        self.zsCheckBox.setGeometry(self.thresholdSpinbox.x(), self.thresholdSpinbox.y() + self.thresholdSpinbox.height() + 8, 200, 20)
+
+        self.sparseCheckBox = QtGui.QCheckBox(self)
+        self.sparseCheckBox.setText("Enable Sparse Readout")
+        self.sparseCheckBox.setGeometry(self.thresholdSpinbox.x(), self.zsCheckBox.y() + self.zsCheckBox.height() + 8, 200, 20)
+
+    def isZeroSuppressionOn(self):
+        
+        return self.zsCheckBox.isChecked()
+
+    def isSparseReadout(self):
+        
+        return self.sparseCheckBox.isChecked()
+
+    def getZSThreshold(self):
+        
+        return self.thresholdSpinbox.value()
+
+    def getOffset(self):
+        
+        return self.offsetSpinbox.value()
+        
+
+class ReadoutMEBWidget(QtGui.QWidget):
+
+    def __init__(self, width, height, parent=None):
+        super(QtGui.QWidget, self).__init__(parent)
+
+        self.initLabels()
+        self.initComboBox()
+            
+    def initLabels(self):
+
+        self.mebLabel = QtGui.QLabel("Multi Event Buffers:", self)
+        self.mebLabel.setGeometry(10, 15, 120, 20)
+
+    def initComboBox(self):
+
+        self.mebComboBox = QtGui.QComboBox(self)
+        self.mebComboBox.setGeometry(self.mebLabel.x() + self.mebLabel.width(), self.mebLabel.y(), 40, 20)
+
+        self.mebComboBox.addItem("4")
+        self.mebComboBox.addItem("8")
+
+    def getNumberOfMEB(self):
+        
+        return int(self.mebComboBox.currentText())
         

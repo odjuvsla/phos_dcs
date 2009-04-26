@@ -125,20 +125,20 @@ FeeCard::ApplyApdSettings()
 	      if(apdStatus == REG_OK)
 		{
 		  log.str("");
-		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = SUCCESS !";
+		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = SUCCESS";
 		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 		}
  	      else if(apdStatus == REG_DEAD)
 		{
 		  log.str("");
-		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = NO response from FEE, please check that card is ON !";
+		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = NO response from FEE, please check that card is ON";
 		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
 		}
       
 	      else if(apdStatus == REG_ZERO)
 		{
 		  log.str("");
-		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = Cannot access RCU, check that DCS is master !!\n";
+		  log << "FeeCard::ApplyApdSetting: Applying APD values to " << feeServerName << ", branch " << branch << ", card " << cardNumber << ", trials " << trials << ", status = " << apdStatus << " = Cannot access RCU, check that DCS is master";
 		  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
 		}
       

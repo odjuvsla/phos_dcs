@@ -22,6 +22,7 @@ class PhosGui(QtGui.QMainWindow):
         self.initConnections()
 
         self.rcuDialog = RcuDialog()
+        self.configureElectronicsDialog = ConfigureElectronicsDialog()
 
     def initTabs(self):
         
@@ -171,7 +172,7 @@ class PhosGui(QtGui.QMainWindow):
 
     def showRcuDialog(self, feeId):
         
-        self.rcuDialog.show()
+        self.rcuDialog.exec_()
 
     def showModulePropertiesDialog(self, moduleId):
         
@@ -179,7 +180,7 @@ class PhosGui(QtGui.QMainWindow):
 
     def showElectronicsConfigDialog(self, moduleId):
         
-        print 'Dialog not yet made...'
+        self.configureElectronicsDialog.start(self.moduleHandler, moduleId)
         
     def showConnectDialog(self):
         

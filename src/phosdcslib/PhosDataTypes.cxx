@@ -131,6 +131,13 @@ RcuNumber_t::RcuNumber_t(const int value): fVal(0),
 					   fIsinitialized(false)
 {
   SetIntValue(value);
+  
+  fXMin = value * N_XCOLUMNS_BRANCH;
+  fXMax = fXMin + N_XCOLUMNS_BRANCH;
+
+  fZMin = value % BRANCHES_PER_RCU * N_ZROWS_BRANCH;
+  fZMax = fZMin + N_ZROWS_BRANCH;
+  
 }
 
 
@@ -770,7 +777,8 @@ EndX_t::SetIntValue(const int value)
 ReadoutRegion_t::ReadoutRegion_t():fStartZ(0), 
 				   fEndZ(0), 
 				   fStartX(0), 
-				   fEndX(0)
+				   fEndX(0),
+				   fIsTruEnabled(false)
 {
   // CheckConsistency(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx );
 
@@ -780,14 +788,15 @@ ReadoutRegion_t::ReadoutRegion_t():fStartZ(0),
 
 
 
-ReadoutRegion_t::ReadoutRegion_t(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx):fStartZ(0), 
-														     fEndZ(0), 
-														     fStartX(0), 
-														     fEndX(0) 
+ReadoutRegion_t::ReadoutRegion_t(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx, const bool enableTRUFakeAltro):fStartZ(0), 
+																		    fEndZ(0), 
+																		    fStartX(0), 
+																		    fEndX(0),
+																		    fIsTruEnabled(enableTRUFakeAltro)
 {
   if(CheckConsistency(startz, endz, startx, endx) == true )
     {
-      SetReadoutRegion(startz, endz, startx, endx);
+      SetReadoutRegion(startz, endz, startx, endx); 
     }
 }
 
@@ -797,6 +806,26 @@ ReadoutRegion_t::~ReadoutRegion_t()
   
 }
 
+const bool
+ReadoutRegion_t::IsRcuEnabled(const RcuNumber_t rcu) const
+{
+  return fStartX.GetIntValue() >= rcu.GetMinX() && fEndX.GetIntValue() <= rcu.GetMaxX() 
+    && fStartZ.GetIntValue() >= rcu.GetMinZ() && fEndZ.GetIntValue() <= rcu.GetMaxZ();
+}
+
+const bool
+ReadoutRegion_t::IsBranchEnabled(const RcuNumber_t rcu, const BranchNumber_t branch) const
+{
+  return IsRcuEnabled(rcu) 
+    && fStartZ.GetIntValue() >= rcu.GetMinZ() + N_ZROWS_BRANCH*branch.GetIntValue()
+    && fEndZ.GetIntValue() <= rcu.GetMaxZ() + (branch.GetIntValue() - 1)*N_ZROWS_BRANCH;
+}
+
+const bool
+ReadoutRegion_t::IsTruReadoutEnabled(const RcuNumber_t rcu, const BranchNumber_t branch) const
+{
+  return IsBranchEnabled(rcu, branch);
+}
 
 bool 
 ReadoutRegion_t::CheckConsistency(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx ) const 
@@ -911,8 +940,7 @@ ReadoutConfig_t::ReadoutConfig_t()
 
 
 ReadoutConfig_t::ReadoutConfig_t(const AltroConfig_t altroconfig, const ReadoutRegion_t rdoregion, const TriggerMode_t triggerMode)
-{
-   fAltroConfig = altroconfig;
+{   fAltroConfig = altroconfig;
    fReadoutRegion = rdoregion;
    fTriggerMode = triggerMode;
 }

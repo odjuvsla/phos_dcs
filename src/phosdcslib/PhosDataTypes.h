@@ -69,11 +69,19 @@ class RcuNumber_t
   RcuNumber_t(const int value);
   ~RcuNumber_t();
   const int GetIntValue() const {return fVal;};
+  const int GetMinX() const { return fXMin; }
+  const int GetMinZ() const { return fZMin; }
+  const int GetMaxX() const { return fXMax; }
+  const int GetMaxZ() const { return fZMax; }
 
  private:
   void SetIntValue(const int value);
   RcuNumber_t();
   int fVal;
+  int fXMin;
+  int fZMin;
+  int fXMax;
+  int fZMax;
   bool fIsinitialized; 
 };
 
@@ -106,6 +114,18 @@ class FeeSlotNumber_t
   int fVal;
   bool fIsinitialized; 
 };
+
+// class TruSlotNumber_t
+// {
+//  public:
+//   TruSlotNumber_t(const int value);
+//   const int GetIntValue() const {return  fVal;};
+//  private: 
+//   TruSlotNumber_t(); 
+//   void SetIntValue(const int value);
+//   int fVal;
+//   bool fIsinitialized; 
+// };
 
 
 class FeePos_t
@@ -343,7 +363,7 @@ class ReadoutRegion_t
 {
  public:
   ReadoutRegion_t();
-  ReadoutRegion_t(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx);
+  ReadoutRegion_t(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx, const bool enableTRUFakeAltro);
   ~ReadoutRegion_t();
   void PrintInfo(const char *message = 0) const ;
   void SetReadoutRegion(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx);
@@ -352,15 +372,22 @@ class ReadoutRegion_t
   const EndZ_t    GetEndZ() const {   return fEndZ;} ;
   const StartX_t  GetStartX() const { return fStartX;};
   const EndX_t    GetEndX() const {   return fEndX;}; 
+  const bool IsRcuEnabled(const RcuNumber_t rcu) const;
+  const bool IsBranchEnabled(const RcuNumber_t rcu, const BranchNumber_t branch) const;
+  const bool IsTruReadoutEnabled(const RcuNumber_t rcu, const BranchNumber_t branch) const;
+
+  const bool IsTruReadoutEnabled() const { return fIsTruEnabled; }
 
   
 
  private:
   bool CheckConsistency(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx) const;
+
   StartZ_t  fStartZ;
   EndZ_t    fEndZ;
   StartX_t  fStartX;
   EndX_t    fEndX;
+  bool      fIsTruEnabled; 
 };
 
 

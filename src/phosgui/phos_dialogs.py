@@ -1,6 +1,7 @@
 import copy
 from PyQt4 import QtCore, QtGui
 from PhosConst import *
+from PhosDataTypes import *
 from phos_widgets import *
 
 
@@ -96,10 +97,8 @@ class ConnectSettingsDialog(QtGui.QDialog):
 
         for i in range(PHOS_MODS):
             for j in range(RCUS_PER_MODULE):
-                self.settingsTabs[i].feeServerRcuLineEdit[j].setText(self.feeServerNames[i*(RCUS_PER_MODULE+1) + j])
-                self.settingsTabs[i].enabledRcuBoxes[j].setChecked(self.feeServerEnabled[i*(RCUS_PER_MODULE+1) + j])
-            self.settingsTabs[i].feeServerTorLineEdit.setText(self.feeServerNames[i*(RCUS_PER_MODULE+1) + RCUS_PER_MODULE])
-            self.settingsTabs[i].enabledTorBox.setChecked(self.feeServerEnabled[i*(RCUS_PER_MODULE+1) + RCUS_PER_MODULE])
+                self.settingsTabs[i].feeServerRcuLineEdit[j].setText(self.feeServerNames[i*RCUS_PER_MODULE + j])
+                self.settingsTabs[i].enabledRcuBoxes[j].setChecked(self.feeServerEnabled[i*RCUS_PER_MODULE + j])
 
     def settingsOk(self):
         
@@ -114,10 +113,8 @@ class ConnectSettingsDialog(QtGui.QDialog):
         
         for i in range(PHOS_MODS):
             for j in range(RCUS_PER_MODULE):
-                self.feeServerNames[i*(RCUS_PER_MODULE+1) + j] = self.settingsTabs[i].feeServerRcuLineEdit[j].text()
-                self.feeServerEnabled[i*(RCUS_PER_MODULE+1) + j] = bool(self.settingsTabs[i].enabledRcuBoxes[j].checkState())
-            self.feeServerNames[i*(RCUS_PER_MODULE+1) + RCUS_PER_MODULE] = self.settingsTabs[i].feeServerTorLineEdit.text()
-            self.feeServerEnabled[i*(RCUS_PER_MODULE+1) + RCUS_PER_MODULE] = bool(self.settingsTabs[i].enabledTorBox.checkState())
+                self.feeServerNames[i*RCUS_PER_MODULE + j] = self.settingsTabs[i].feeServerRcuLineEdit[j].text()
+                self.feeServerEnabled[i*RCUS_PER_MODULE + j] = bool(self.settingsTabs[i].enabledRcuBoxes[j].checkState())
         return self.feeServerNames, self.feeServerEnabled
     
 class RcuDialog(QtGui.QDialog):
@@ -150,6 +147,147 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         super(QtGui.QDialog, self).__init__(parent)
 
-        self.resize(640, 480)
+        self.resize(700, 560)
 
-    
+        self.initButtons()
+        self.initConnections()
+        self.initFrames()
+
+
+
+    def start(self, moduleHandler, moduleId):
+
+        self.moduleHandler = moduleHandler
+        self.moduleId = moduleId
+        self.exec_()
+        
+    def initButtons(self):
+
+        self.buttonLayoutWidget = QtGui.QWidget(self)
+        self.buttonLayoutWidget.setGeometry(QtCore.QRect(self.width() - 330, self.height() - 50, 330, 60))
+
+        self.buttonLayout = QtGui.QHBoxLayout(self.buttonLayoutWidget)
+
+        self.saveButton = QtGui.QPushButton(self.buttonLayoutWidget)
+        self.saveButton.setText("&Save")
+        
+        self.configureButton = QtGui.QPushButton(self.buttonLayoutWidget)
+        self.configureButton.setText("C&onfigure")
+
+        self.cancelButton = QtGui.QPushButton(self.buttonLayoutWidget)
+        self.cancelButton.setText("&Cancel")
+
+        self.buttonLayout.addWidget(self.saveButton)
+        self.buttonLayout.addWidget(self.configureButton)
+        self.buttonLayout.addWidget(self.cancelButton)
+
+        self.buttonLayoutWidget.setLayout(self.buttonLayout)
+
+    def initConnections(self):
+
+        self.connect(self.saveButton, QtCore.SIGNAL("clicked()"), self.saveToFile)
+        self.connect(self.configureButton, QtCore.SIGNAL("clicked()"), self.doConfigure)
+        self.connect(self.cancelButton, QtCore.SIGNAL("clicked()"), self.cancelConfiguration)
+
+    def saveToFile(self):
+
+        print 'saveToFile'
+
+    def doConfigure(self):
+
+        rdoConfig = self.getReadoutConfig()
+
+        self.moduleHandler.configureElectronics(self.moduleId, rdoConfig)
+
+    def getReadoutConfig(self):
+
+        altroConfig = self.getAltroConfig()
+        
+        rdoRegion = self.getReadoutRegion()
+
+        triggerMode = self.getTriggerMode()
+
+        rdoConfig = ReadoutConfig_t(altroConfig, rdoRegion, triggerMode)
+
+        return rdoConfig
+
+    def getAltroConfig(self):
+        
+        preSamples, samples = self.samplesWidget.getSamplesSettings()
+        
+        readoutMode = self.mebWidget.getNumberOfMEB()/5
+        
+        
+        
+
+    def cancelConfiguration(self):
+
+        self.close()
+        
+    def initFrames(self):
+        
+        self.readoutFrame = QtGui.QFrame(self)
+        self.readoutFrame.setGeometry(10, 10, self.width()/2 - 15, self.height() - 60)
+        self.readoutFrame.setFixedSize(self.width()/2 - 40, self.height() - 60)
+        self.readoutFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.readoutFrame.setFrameShadow(QtGui.QFrame.Raised)
+
+        self.apdFrame = QtGui.QFrame(self)
+        self.apdFrame.setGeometry(self.width()/2 - 15, 10, self.width()/2 - 10, self.height()/2 - 40)
+        self.apdFrame.setFixedSize(self.width()/2 + 5, self.height()/2 - 35)
+        self.apdFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.apdFrame.setFrameShadow(QtGui.QFrame.Raised)
+
+        self.truFrame = QtGui.QFrame(self)
+        self.truFrame.setGeometry(self.width()/2 - 15, self.height()/2 - 15, self.width()/2 - 10, self.height()/2 - 30)
+        self.truFrame.setFixedSize(self.width()/2 + 5, self.height()/2 - 35)
+        self.truFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.truFrame.setFrameShadow(QtGui.QFrame.Raised)
+        
+        self.readoutLabel = QtGui.QLabel("READ OUT SETTINGS", self.readoutFrame)
+        self.readoutLabel.setGeometry(self.readoutFrame.width()/2 - self.readoutLabel.width()/2 - 15, 10, 130, 20)
+
+        self.initReadoutWidgets()
+
+    def initReadoutWidgets(self):
+
+
+        self.readoutSep = QtGui.QFrame(self.readoutFrame)
+        self.readoutSep.setGeometry(0, 35, self.readoutFrame.width(), self.readoutFrame.width())
+        self.readoutSep.setFixedWidth(self.readoutFrame.width())
+        self.readoutSep.setFixedHeight(1)
+        self.readoutSep.setFrameShadow(QtGui.QFrame.Raised)
+        self.readoutSep.setFrameShape(QtGui.QFrame.HLine)
+
+        self.regionWidget = ReadoutRegionSettingsWidget(self.readoutFrame.width() - 30, 130, self)
+        self.regionWidget.setGeometry(10, 45, self.readoutFrame.width() - 30, 130)
+
+        self.regionSep = QtGui.QFrame(self.readoutFrame)
+        self.regionSep.setGeometry(0, self.readoutSep.y() + self.regionWidget.height(), self.readoutFrame.width(), self.readoutFrame.width())
+        self.regionSep.setFixedWidth(self.readoutFrame.width())
+        self.regionSep.setFixedHeight(1)
+        self.regionSep.setFrameShadow(QtGui.QFrame.Raised)
+        self.regionSep.setFrameShape(QtGui.QFrame.HLine)
+
+        self.samplesWidget = ReadoutSamplesSettingsWidget(self.readoutFrame.width() - 30, 100, self)
+        self.samplesWidget.setGeometry(10, self.regionSep.y() + 5, self.readoutFrame.width() - 30, 100)
+
+        self.samplesSep = QtGui.QFrame(self.readoutFrame)
+        self.samplesSep.setGeometry(0, self.regionSep.y() + self.samplesWidget.height(), self.readoutFrame.width(), self.readoutFrame.width())
+        self.samplesSep.setFixedWidth(self.readoutFrame.width())
+        self.samplesSep.setFixedHeight(1)
+        self.samplesSep.setFrameShadow(QtGui.QFrame.Raised)
+        self.samplesSep.setFrameShape(QtGui.QFrame.HLine)
+
+        self.zsWidget = ReadoutZeroSuppressionWidget(self.readoutFrame.width() - 30, 150, self)
+        self.zsWidget.setGeometry(10, self.samplesSep.y() + 5, self.readoutFrame.width() - 30, 150)
+
+        self.zsSep = QtGui.QFrame(self.readoutFrame)
+        self.zsSep.setGeometry(0, self.samplesSep.y() + self.zsWidget.height(), self.readoutFrame.width(), self.readoutFrame.width())
+        self.zsSep.setFixedWidth(self.readoutFrame.width())
+        self.zsSep.setFixedHeight(1)
+        self.zsSep.setFrameShadow(QtGui.QFrame.Raised)
+        self.zsSep.setFrameShape(QtGui.QFrame.HLine)
+
+        self.mebWidget = ReadoutMEBWidget(self.readoutFrame.width() - 30, 150, self)
+        self.mebWidget.setGeometry(10, self.zsSep.y() + 5, self.readoutFrame.width() - 30, 150)

@@ -30,24 +30,7 @@
 DcsInterface::DcsInterface()
 {
   fPhosDetectorPtr = new PhosDetector();
- 
 
-//   tmpPhosModulePtr->CreateRcu("tpc-fee_0_17_3", MODULE_2, RCU_0, Z_0, X_0);
-//   tmpPhosModulePtr->CreateRcu("tpc-fee_0_17_3", MODULE_2, RCU_1, Z_1, X_0);
-//   tmpPhosModulePtr->CreateRcu("tpc-fee_0_17_3", MODULE_2, RCU_2, Z_0, X_1);
-//   tmpPhosModulePtr->CreateRcu("alphsdcs0280", MODULE_2, RCU_3, Z_1, X_1);
- 
-//  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_0, Z_0, X_0);
-//  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_1, Z_1, X_0);
-//  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_2, Z_0, X_1);
-//  tmpPhosModulePtr->CreateRcu("dcs0327", MODULE_2, RCU_3, Z_1, X_1);
-
-//   tmpPhosModulePtr->CreateRcu("alphsdcs0282", MODULE_2, RCU_0, Z_0, X_0);
-//   tmpPhosModulePtr->CreateRcu("alphsdcs0279", MODULE_2, RCU_1, Z_1, X_0);
-//   tmpPhosModulePtr->CreateRcu("alphsdcs0281", MODULE_2, RCU_2, Z_0, X_1);
-//   tmpPhosModulePtr->CreateRcu("alphsdcs0280", MODULE_2, RCU_3, Z_1, X_1);
-  
-//  fPhosDetectorPtr->StartFeeClient();
 //  fDatabasePtr = new DatabaseDummy();
 
 }
@@ -82,12 +65,17 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
     }
   
   ret = fPhosDetectorPtr->StartFeeClient();
-  if(ret > 0) 
+  log.str("");
+  log << "DcsInterface::Init: StartFeeClient() returned: " << ret;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
+
+  if(ret > 20) 
     {
       PhosDcsLogging::Instance()->Logging("FEE Client successfully started.", LOG_LEVEL_INFO);
       server = feeServers.begin();
       while(server != feeServers.end())
 	{
+	  log.str("");
 	  log << (*server).fName << "Module #: " << (*server).fModId 
 	      << " and RCU ID: " << (*server).fRcuId << ". Coord: x = " 
 	      << (*server).fX << ", z = " << (*server).fZ;
@@ -95,6 +83,41 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
 	  DisArmTrigger((*server).fModId, (*server).fRcuId);
 	  server++;
 	}
+    }
+  else if(ret == 0)
+    {
+      log.str("");
+      log << "Could not start FEE Client for FEE servers: ";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+      server = feeServers.begin();
+      while(server != feeServers.end())
+	{
+	  log.str("");
+	  log << (*server).fName << "Module #: " << (*server).fModId 
+	      << " and RCU ID: " << (*server).fRcuId << ". Coord: x = " 
+	      << (*server).fX << ", z = " << (*server).fZ;
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+	  server++;
+	}
+      PhosDcsLogging::Instance()->Logging("No services available", LOG_LEVEL_INFO);
+      fPhosDetectorPtr->StopFeeClient();
+    }
+  else if(ret < -1)
+    {
+      log.str("");
+      log << "Could not start FEE Client for FEE servers: ";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+      server = feeServers.begin();
+      while(server != feeServers.end())
+	{
+	  log.str("");
+	  log << (*server).fName << "Module #: " << (*server).fModId 
+	      << " and RCU ID: " << (*server).fRcuId << ". Coord: x = " 
+	      << (*server).fX << ", z = " << (*server).fZ;
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+	  server++;
+	}
+      PhosDcsLogging::Instance()->Logging("FEE Client already running", LOG_LEVEL_INFO);
     }
   else
     {
@@ -104,12 +127,15 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
       server = feeServers.begin();
       while(server != feeServers.end())
 	{
+	  log.str("");
 	  log << (*server).fName << "Module #: " << (*server).fModId 
 	      << " and RCU ID: " << (*server).fRcuId << ". Coord: x = " 
 	      << (*server).fX << ", z = " << (*server).fZ;
 	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 	  server++;
 	}
+      PhosDcsLogging::Instance()->Logging("Strange, FEE Client is returning to small number of services", LOG_LEVEL_INFO);
+      fPhosDetectorPtr->StopFeeClient();
     }
   fDatabasePtr = new DatabaseDummy();
 
@@ -228,20 +254,20 @@ DcsInterface::LoadApdValues(int modID)  //Load apd values into Feecard objects
 {
   fPhosDetectorPtr->phosModulePtr[modID]->LoadApdValues();
 }
-
+ 
 
 void            
-DcsInterface::LoadReadoutConfiguration(ReadoutConfig_t *rdoconfigPtr) const
+DcsInterface::LoadReadoutConfiguration(ReadoutConfig_t *rdoconfigPtr, ModNumber_t modNumber) const
 {
-  fDatabasePtr->LoadReadoutConfiguration(rdoconfigPtr);
+  fDatabasePtr->LoadReadoutConfiguration(rdoconfigPtr, modNumber);
   rdoconfigPtr->PrintInfo("DcsInterface::LoadReadoutConfiguration ");
 } 
 
 
 void       
-DcsInterface::SaveReadoutConfiguration(const ReadoutConfig_t rdoconfig) const
+DcsInterface::SaveReadoutConfiguration(const ReadoutConfig_t rdoconfig, const ModNumber_t modNumber) const
 {
-  fDatabasePtr->SaveRadoutConfiguration(rdoconfig);
+  fDatabasePtr->SaveRadoutConfiguration(rdoconfig, modNumber);
 }
 
 void            
