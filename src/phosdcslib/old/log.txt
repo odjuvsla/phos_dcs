@@ -1,1 +1,0 @@
-Fri Aug 03 23:29:48 2007: Phos APD bias controll was initialized successfully
