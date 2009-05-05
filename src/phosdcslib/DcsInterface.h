@@ -42,7 +42,7 @@ class DcsInterface : public PhosDcsBase
                   DcsInterface();
   virtual         ~DcsInterface();
 
-  int             Init(vector<FeeServer> feeServers);
+  int             Init(std::vector<FeeServer> feeServers);
   int             DeInit();
 
   void            ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const;
@@ -96,7 +96,7 @@ class DcsInterface : public PhosDcsBase
   unsigned int    TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState); 
   unsigned int    TurnOffTru(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState){;}
   void            UpdateAFL(const int mod, const int rcu) const;
-  vector<int>     UpdateFeeStatus(const int mod, const int rcu);
+  std::vector<int>     UpdateFeeStatus(const int mod, const int rcu);
   int             UpdateSingleFeeStatus(const int mod, const int rcu, const int branch, const int fee);
 
  private:

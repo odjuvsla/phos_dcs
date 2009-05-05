@@ -24,12 +24,14 @@
 
 //#include "PhosDataTypes.h"
 #include "PhosConst.h"
+#include "RcuRegisterMap.h"
 //using namespace PhosConst;
 #include <iostream>
 #include <string>
+#include <cstdio>
 
 using namespace PhosConst;
-using namespace std;
+
 
 class PhosSimpleDataType_t
 {
@@ -503,15 +505,11 @@ private:
   const int fNRegisters;
   int fRegCnt;
   TRURegister_t fRegisters[N_TRU_REGS];
-  
-  
-  
-
 };
 
 struct FeeServer
 {
-  string fName;
+  std::string fName;
   int fModId;
   int fRcuId;
   int fZ;

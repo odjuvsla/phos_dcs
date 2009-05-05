@@ -418,7 +418,7 @@ class ModuleHandler(PHOSHandler):
             modId = ModNumber_t(self.moduleId)
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
 
-#            dcs_interface.SetReadoutConfig(modId, self.readoutConfiguration)
+            dcs_interface.SetReadoutConfig(modId, self.readoutConfiguration)
             dcs_interface.ArmTrigger(self.moduleId)
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", self.moduleId)
 
@@ -474,6 +474,16 @@ class DetectorHandler(PHOSHandler):
         res = self.startFeeClient()
         #res = 1
         self.emit(QtCore.SIGNAL("feeServerStarted"), "FeeServerStarted", res)
+        self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
+
+    def disconnectFromFeeServers(self, feeServerNames, feeServerEnabled):
+        
+        self.connect(self, QtCore.SIGNAL("feeServerStopped"), self.emit_signal)
+       # self.connect(self, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+
+        res = self.stopFeeClient()
+
+        self.emit(QtCore.SIGNAL("feeServerStopped"), "FeeServerStopped", res)
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
         
 class LogHandler(PHOSHandler):

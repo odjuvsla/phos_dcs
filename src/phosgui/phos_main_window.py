@@ -43,7 +43,9 @@ class PhosGui(QtGui.QMainWindow):
         
         self.connectAction = QtGui.QAction("Connect &Now", self)
         self.connectSettingsAction = QtGui.QAction("Connection &Settings...", self)
+        self.disconnectAction = QtGui.QAction("&Disconnect", self)
         self.connectMenu.addAction(self.connectAction)
+        self.connectMenu.addAction(self.disconnectAction)
         self.connectMenu.addAction(self.connectSettingsAction)
 
     def initDialogs(self):
@@ -55,6 +57,7 @@ class PhosGui(QtGui.QMainWindow):
 
         self.connect(self.connectSettingsAction, QtCore.SIGNAL("triggered()"), self.showConnectDialog)
         self.connect(self.connectAction, QtCore.SIGNAL("triggered()"), self.connectToFeeServers)
+        self.connect(self.disconnectAction, QtCore.SIGNAL("triggered()"), self.disconnectFromFeeServers)
 
         self.dcsInterface = DcsInterfaceThreadWrapper(DcsInterface())
         
@@ -191,6 +194,10 @@ class PhosGui(QtGui.QMainWindow):
         
         feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
         self.detectorHandler.connectToFeeServers(feeServerNames, feeServerEnabled)
+
+    def disconnectFromFeeServers(self):
+        
+        self.detectorHandler.disconnectFromFeeServers()
         
     def enableConnectedFeeServers(self, res):
 
