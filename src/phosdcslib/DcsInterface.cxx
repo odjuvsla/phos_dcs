@@ -455,6 +455,14 @@ DcsInterface::GetLogViewerString()
   return PhosDcsLogging::Instance()->GetLogViewerString();
 }
 
+// int 
+// DcsInterface::ApplyReadoutConfiguration(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig)
+// {
+//   PhosDetector* tmpPhosModulePtr = fPhosDetectorPtr->GetModulePtr((*server).fModId);
+//   return tmpPhosModulePtr->ApplyReadoutConfiguration(const ReadoutConfig_t rdoConfig);
+// }
+
+
 // unsigned int    
 // TurnOnTru(const int mod,  const int rcu , const int truId)
 // {

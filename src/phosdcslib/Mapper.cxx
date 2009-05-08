@@ -84,7 +84,7 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 	      altro = ALTRO_MAP[index].chip;  
 	      channel = ALTRO_MAP[index].chan;
 	      csp = ALTRO_MAP[index].csp;
-	  
+	 
 	      if(altro > 0)
 		{
 		   altro = altro + 1; //to fix bug in mp
@@ -114,16 +114,18 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
     {
       for(int tru = 0; tru < 2; tru++) //TODO: don't use hardcoded values
 	{
-	  for(int channel = 0; channel < CHANNELS_PER_ALTRO; channel++)
+	  for(int altro = 0; altro < 8; altro++)
 	    {
-	      
-	      acl[rcu][aclIndex[rcu]] = (branch << 11)  |((tru*(MAX_CARDS_PER_BRANCH-1)) << 7) | (channel) ;
-	      //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
-	      aclIndex[rcu] ++;
-	  
+	      for(int channel = 0; channel < CHANNELS_PER_ALTRO; channel++)
+		{
+		  unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
+		  acl[rcu][aclIndex[rcu]] = (branch << 11)  |((tru*(MAX_CARDS_PER_BRANCH-1)) << 7) | (tmpGlobalFeeChannel) ;
+		  //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
+		  aclIndex[rcu] ++;
+		  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(tru*(MAX_CARDS_PER_BRANCH-1)) +(long int)tru*MAX_CARDS_PER_BRANCH));
+		}
 	    }
 	  //	  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(0) +(long int)branch*MAX_CARDS_PER_BRANCH));
-	  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(tru*(MAX_CARDS_PER_BRANCH-1)) +(long int)tru*MAX_CARDS_PER_BRANCH));
 	}
     }
 }
