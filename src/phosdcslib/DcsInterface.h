@@ -80,7 +80,7 @@ class DcsInterface : public PhosDcsBase
   void            SetApdValues(const int mod, const int rcu, const int branch, const int card, const unsigned long *values);
   void            SetPhosBit(const int modID) const;
   void            SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig) const;
-
+  void            ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters) const;
 
   //  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU]);
   unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate);

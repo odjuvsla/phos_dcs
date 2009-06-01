@@ -74,8 +74,11 @@ PhosFeeClient::WriteReadRegisters(const int regType, const char *feeServerName, 
 {
   int iRet =0;
   stringstream log;
+
   if( (regType == REGTYPE_BC) || (regType ==  REGTYPE_ALTRO) || (regType == REGTYPE_TRU))
     {
+
+
 
       vector<unsigned long> binaryData;
       vector<unsigned long> resultData;
@@ -250,7 +253,7 @@ PhosFeeClient::VerifyValues(vector<unsigned long> values1, const unsigned long *
 	{
 	  log.str("");
 	  log << "PhosFeeClient::VerifyValues: Value read " << values1[i+1] << " does not match with written value " << values2[j];
-	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
 
 	  if(values1[i] == 0xdead)
 	    {

@@ -45,6 +45,7 @@ class PhosModule : public PhosDcsBase
   void LoadApdValues() const;
   void SetAllApds(const int value) const;
   void SetReadoutConfig(const ReadoutConfig_t rdoConfig);
+  void ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters);
   Rcu *GetRcuPtr(const int Id) const;
   int**  fFeeState[RCUS_PER_MODULE];
 

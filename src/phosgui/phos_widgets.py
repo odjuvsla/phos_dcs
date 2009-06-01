@@ -212,9 +212,9 @@ class RcuTopFrame(QtGui.QFrame):
 
     def initTextLabels(self):
 
-        self.feeALabel = QtGui.QLabel("Front End Cards Branch A", self)
+        self.feeALabel = QtGui.QLabel("Front End Cards Branch B", self)
         self.feeALabel.setGeometry(65, 10, 160, 20)
-        self.feeBLabel = QtGui.QLabel("Front End Cards Branch B", self)
+        self.feeBLabel = QtGui.QLabel("Front End Cards Branch A", self)
         self.feeBLabel.setGeometry(255, 10, 160, 20)
         self.truLabel = QtGui.QLabel("TRU A/B", self)
         self.truLabel.setGeometry(430, 10, 60, 20)
@@ -293,17 +293,30 @@ class Rcu(QtGui.QWidget):
 
 
         for i in range(CARDS_PER_BRANCH):
+            n = i + CARDS_PER_BRANCH
             
+# #            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
+#             feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_B, CARDS_PER_BRANCH - i)
+#             self.feeButtons[n] = FeePushButton(self, feeId)
+# #            self.feeButtons[n] = FeePushButton(self, n)
+#             self.feeButtons[n].geometry().setX(50 + i*(self.feeButtons[n].geometry().width()-4))
+#             self.feeButtons[n].geometry().setWidth(16)
 #            feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
+
+
             feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_B, CARDS_PER_BRANCH - i)
-            self.feeButtons[i] = FeePushButton(self, feeId)
-            self.feeButtons[i].geometry().setX(50 + i*(self.feeButtons[i].geometry().width()-4))
-            self.feeButtons[i].geometry().setWidth(16)
+            index = feeId - self.rcuId*CARDS_PER_BRANCH*2 - self.moduleId*112
+            print "index: " + str(index)
+            print "feeId: " + str(feeId)
+            self.feeButtons[index] = FeePushButton(self, feeId)
+#            self.feeButtons[n] = FeePushButton(self, n)
+            self.feeButtons[index].geometry().setX(50 + i*(self.feeButtons[index].geometry().width()-4))
+            self.feeButtons[index].geometry().setWidth(16)
 
         for i in range(CARDS_PER_BRANCH):
             
-            n = i + CARDS_PER_BRANCH
-
+#            n = i + CARDS_PER_BRANCH
+            n = i
             feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
             self.feeButtons[n] = FeePushButton(self, feeId)
             self.feeButtons[n].geometry().setX(240 + i*(self.feeButtons[i].geometry().width()-4))

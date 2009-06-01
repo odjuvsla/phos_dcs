@@ -2,6 +2,59 @@
 #include "PhosRegisters.h"
 #include <iostream>
 
+ReadoutRegisters_t::ReadoutRegisters_t(RcuALTROIF_t altroif, RcuRDOMOD_t rdoMod, RcuALTROCFG1_t altrocfg1, 
+		     RcuALTROCFG2_t altrocfg2)
+{
+  SetRcuALTROIF(altroif);
+  SetRcuRDOMOD(rdoMod);
+  SetRcuALTROCFG(altrocfg1, altrocfg2);
+}
+
+const unsigned long* ReadoutRegisters_t::GetRcuRegisterValues() 
+{
+  fRcuRegisterValues[0] = fRcuALTROIF.GetRegisterValue();
+  fRcuRegisterValues[1] = fRcuRDOMOD.GetRegisterValue();
+  fRcuRegisterValues[2] = fRcuALTROCFG1.GetRegisterValue();
+  fRcuRegisterValues[3] = fRcuALTROCFG2.GetRegisterValue();
+  return fRcuRegisterValues;
+}
+
+const unsigned long* ReadoutRegisters_t::GetAltroRegisterValues() 
+{
+  fAltroRegisterValues[0] = fAltroZSTHR.GetRegisterValue();
+  fAltroRegisterValues[1] = fAltroTRCFG.GetRegisterValue();
+  fAltroRegisterValues[2] = fAltroDPCFG.GetRegisterValue();
+  fAltroRegisterValues[3] = fAltroDPCFG2.GetRegisterValue();
+  return fAltroRegisterValues;
+}
+
+void ReadoutRegisters_t::SetRcuALTROIF(RcuALTROIF_t altroif)
+{
+  fRcuALTROIF = altroif;
+  fAltroTRCFG.SetNSamples(altroif.GetNumberOfSamples());
+}
+
+void ReadoutRegisters_t::SetRcuRDOMOD(RcuRDOMOD_t rdomod)
+{
+  fRcuRDOMOD = rdomod;
+  fAltroDPCFG2.SetMEBMode(rdomod.GetMEBMode());
+}
+
+void ReadoutRegisters_t::SetRcuALTROCFG(RcuALTROCFG1_t altrocfg1, RcuALTROCFG2_t altrocfg2)
+{
+  fRcuALTROCFG1 = altrocfg1;
+
+  fAltroZSTHR.SetThreshold(altrocfg1.GetThreshold());
+  fAltroZSTHR.SetOffset(altrocfg1.GetOffset());
+
+  fAltroDPCFG.SetZeroSuppressed(altrocfg1.IsZeroSuppressionEnabled());
+  fAltroDPCFG.SetAutomaticBaselineSubtraction(altrocfg1.UsingAutomaticBaselineSubtraction());
+
+  fRcuALTROCFG2 = altrocfg2;
+  
+  fAltroDPCFG2.SetNPreSamples(altrocfg2.GetNPreSamples());
+
+}
 
 RcuALTROIF_t::RcuALTROIF_t() :
   fNSamples(81),
@@ -9,6 +62,7 @@ RcuALTROIF_t::RcuALTROIF_t() :
   fCstbDelay(2),
   fInstructionErrorCheck(0)
 {
+  
 }
 
 RcuALTROIF_t::RcuALTROIF_t(short nSamples, int sampleFreq, short cstbDelay, short instructionErrorCheck) :
@@ -119,12 +173,12 @@ int RcuTRGCONF_t::GetRegisterValue()
     fL2LatencyWrtL1 & 0xfff;
 
 }
-
+ 
 void RcuTRGCONF_t::SetByRegisterValue(int value)
 {
   short triggerSource = value >> 14 & 0x3;
   fPHOSTriggerMode = value >> 13 & 0x1;
-  fL2LatencyWrtL1 = value & 0xaaa;
+  fL2LatencyWrtL1 = value & 0xfff;
   
   switch(triggerSource)
     {
@@ -223,4 +277,69 @@ void RcuALTROCFG2_t::SetByRegisterValue(short value)
   fNPreSamples = value & 0xf;
 }
 
+int AltroZSTHR_t::GetRegisterValue() const
+{
+  return fOffset << 10 | fThreshold;
+}
 
+void AltroZSTHR_t::SetByRegisterValue(int value)
+{
+  fThreshold = value & 0x3ff;
+  fOffset = value >> 10 & 0x3ff;
+}
+
+
+int AltroTRCFG_t::GetRegisterValue() const
+{
+  return fStart << 10 | fStop;
+}
+
+void AltroTRCFG_t::SetByRegisterValue(int value)
+{
+  fStart = value >> 10 & 0x3ff;
+  fStop = value & 0x3ff;
+}
+
+int AltroDPCFG_t::GetRegisterValue() const
+{
+
+  return fFirstBaselineCorrection |
+    fPolarity << 4 |
+    fPreExcluded2 << 5 | 
+    fPostExcluded2 << 7 | 
+    fSecondBaselineCorrection << 11 | 
+    fGlitchFilterConfig << 12 | 
+    fPostExcludedZS << 14 | 
+    fPreExcludedZS << 17 |
+    fZeroSuppression << 19;
+
+}
+
+void AltroDPCFG_t::SetByRegisterValue(int value)
+{
+  fFirstBaselineCorrection = value & 0xf;
+  fPolarity = value >> 4 & 0x1;
+  fPreExcluded2 = value >> 5 & 0x3;
+  fPostExcluded2 = value >> 7 & 0xf;
+  fSecondBaselineCorrection = value >> 11 & 0x1;
+  fGlitchFilterConfig = value >> 12 & 0x3;
+  fPostExcludedZS = value >> 14 & 0x7;
+  fPreExcludedZS = value >> 17 & 0x3;
+  fZeroSuppression = value >> 19 & 0x1;
+}
+
+short AltroDPCFG2_t::GetRegisterValue()
+{
+  return fNPreSamples |
+    fMEBMode << 4 | 
+    fDigitalFilterEnabled << 5 |
+    fPreExcludedZS << 6;
+}
+
+void AltroDPCFG2_t::SetByRegisterValue(short value)
+{
+  fNPreSamples = value & 0xf;
+  fMEBMode = value >> 4 & 0x1;
+  fDigitalFilterEnabled = value >> 5 & 0x1;
+  fPreExcludedZS = value >> 6 & 0x1;
+}

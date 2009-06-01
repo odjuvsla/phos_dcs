@@ -69,7 +69,7 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
   log << "DcsInterface::Init: StartFeeClient() returned: " << ret;
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
 
-  if(ret > 20) 
+  if(ret > 0) 
     {
       PhosDcsLogging::Instance()->Logging("FEE Client successfully started.", LOG_LEVEL_INFO);
       server = feeServers.begin();
@@ -339,6 +339,12 @@ DcsInterface::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t r
 {
   //  rdoConfig.PrintInfo("DcsInterface::SetReadoutConfig"); 
   fPhosDetectorPtr->SetReadoutConfig(modID,  rdoConfig);
+}
+
+void
+DcsInterface::ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters) const
+{
+  fPhosDetectorPtr->ApplyReadoutRegisters(modID, readoutRegisters);
 }
 
 unsigned int

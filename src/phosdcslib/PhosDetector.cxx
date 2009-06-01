@@ -100,7 +100,12 @@ PhosDetector::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t r
   phosModulePtr[modID.GetIntValue()]->SetReadoutConfig(rdoConfig);
   fRadoutConfig = rdoConfig; 
 }
-
+void
+PhosDetector::ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters)
+{
+  phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegister(readoutRegisters);
+  fReadoutRegisters = readoutRegisters;
+}
 
 int
 PhosDetector::StartFeeClient() const

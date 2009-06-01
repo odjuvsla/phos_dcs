@@ -534,6 +534,13 @@ Rcu::ApplyTruSettings(const unsigned long regAddr[N_TRU_REGS], const unsigned lo
 }
 
 
+void
+Rcu::ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters)
+{
+  iRet =  fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU, fFeeServerName, readoutRegisters.GetRcuRegisterAddresses(), 
+					    readoutRegisters.GetRcuRegisterValues(), readoutRegisters.GetRcuVerify(), 
+					    readoutRegisters.GetNRcuRegisters());
+}
 
 void
 Rcu::EnableTrigger() const

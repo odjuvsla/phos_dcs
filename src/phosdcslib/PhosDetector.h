@@ -46,6 +46,7 @@ class PhosDetector : public PhosDcsBase
   void LoadApdValues();
   void SetAllApds(const int value);
   void SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig);
+  void ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters);
   void ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const;
   PhosFeeClient *fFeeClientPtr;
 
@@ -53,6 +54,7 @@ class PhosDetector : public PhosDcsBase
   PhosDetector(const PhosDetector & );
   PhosDetector & operator = (const PhosDetector &){return *this;}
   ReadoutConfig_t fRadoutConfig; 
+  ReadoutRegisters_t fReadoutRegisters;
 };
 
 #endif

@@ -258,3 +258,18 @@ PhosModule::SetReadoutConfig(const ReadoutConfig_t rdoConfig)
 {
   fReadoutConfig = rdoConfig;
 }
+
+
+void 
+PhosModule::ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters)
+{
+  int n = 0;
+
+  for(int n = 0; n < RCUS_PER_MODULE; n++)
+    {
+      if(fRcuPtr[n] != 0)
+	{
+	  fRcuPtr[n]->ApplyReadoutRegisters(readoutRegisters);
+	}
+    }
+}

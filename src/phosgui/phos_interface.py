@@ -135,11 +135,14 @@ class FeeCardHandler(PHOSHandler):
             # Here we do the toggling
             if self.override and self.on == True:
                 state = dcs_interface.TurnOnFee(moduleId, rcuId, branchId, feeId, currentstate)
+                #state = 1
             elif self.override and self.on == False:
                 state = dcs_interface.TurnOffFee(moduleId, rcuId, branchId, feeId, currentstate)
+                #state = 1
 #           state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate, tmpStates)
             else:
                 state = dcs_interface.ToggleOnOffFee(moduleId, rcuId, branchId, feeId, currentstate)
+                #state = 1
             print 'state is ' + str(state)
             # Emitting signal for fetching log information
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
