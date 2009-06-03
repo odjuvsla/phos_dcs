@@ -306,8 +306,7 @@ class Rcu(QtGui.QWidget):
 
             feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_B, CARDS_PER_BRANCH - i)
             index = feeId - self.rcuId*CARDS_PER_BRANCH*2 - self.moduleId*112
-            print "index: " + str(index)
-            print "feeId: " + str(feeId)
+
             self.feeButtons[index] = FeePushButton(self, feeId)
 #            self.feeButtons[n] = FeePushButton(self, n)
             self.feeButtons[index].geometry().setX(50 + i*(self.feeButtons[index].geometry().width()-4))
@@ -712,3 +711,8 @@ class ReadoutMEBWidget(QtGui.QWidget):
         
         return int(self.mebComboBox.currentText())
         
+    def getMEBMode(self):
+        
+        return self.mebComboBox.currentText() == '8'
+
+    

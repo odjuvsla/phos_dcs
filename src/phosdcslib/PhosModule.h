@@ -24,9 +24,11 @@
 #include "PhosDataTypes.h"
 #include "RcuRegisterMap.h"
 
+
 class Mapper;
 class Rcu;
 class PhosFeeClient;
+class ReadoutRegisters_t;
 
 class PhosModule : public PhosDcsBase 
 {
@@ -45,7 +47,10 @@ class PhosModule : public PhosDcsBase
   void LoadApdValues() const;
   void SetAllApds(const int value) const;
   void SetReadoutConfig(const ReadoutConfig_t rdoConfig);
-  void ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters);
+  void SetReadoutSettings(const ReadoutSettings_t rdoSettings);
+  void SetReadoutRegion(const ReadoutRegion_t rdoRegion);
+  int  ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters);
+  int  ApplyReadoutRegion(const ReadoutRegion_t readoutRegion);
   Rcu *GetRcuPtr(const int Id) const;
   int**  fFeeState[RCUS_PER_MODULE];
 
@@ -58,10 +63,11 @@ class PhosModule : public PhosDcsBase
   Mapper *fMapperPtr; 
   ModNumber_t fModuleId; //Geometrical position of the Module (The middle corresponds to ID = 2)
   ReadoutConfig_t fReadoutConfig; 
-
+  ReadoutSettings_t fReadoutSettings;
+  ReadoutRegion_t fReadoutRegion;
+  
   // int fAclMaps[RCUS_PER_MODULE][256];//256x16 active channel list for each RCU
-  
-  
+    
   int fAclMaps[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length];
 
   unsigned long int fAfls[RCUS_PER_MODULE]; //Active Frontend Card List (afl) for each RCU

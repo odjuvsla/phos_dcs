@@ -21,6 +21,8 @@
 #include "unistd.h"
 #include "BCRegisterMap.h"
 #include "PhosDcsLogging.h"
+#include "PhosRegisters.h"
+
 
 using namespace dcs::fee;
 using namespace BCRegisterMap;
@@ -448,22 +450,22 @@ Rcu::ApplyReadoutRegion() const
       tmpAfl[i]    = fActiveChList[i] ;
       tmpRegs[i]   = tmpAddress;
 
-      if(fActiveChList[i] !=0)
-	{
-	  tmpVerify[i] = false;
-	}
-      else
-	{
-	  tmpVerify[i] = false;
-	}
+//       if(fActiveChList[i] !=0)
+// 	{
+// 	  tmpVerify[i] = false;
+// 	}
+//       else
+// 	{
+// 	  tmpVerify[i] = false;
+// 	}
 
       tmpAddress ++;
     }
 
   char tmp[256];
-  sprintf(tmp,"s_afl_%s.txt", fFeeServerName);
+  //  sprintf(tmp,"s_afl_%s.txt", fFeeServerName);
 
-  fFeeClientPtr->SetScripFileName(tmp);
+  //  fFeeClientPtr->SetScripFileName(tmp);
 
   iRet = fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU_ACL, fFeeServerName, tmpRegs, tmpAfl, tmpVerify, RcuRegisterMap::Active_Channel_List_Length );   
 
@@ -534,12 +536,13 @@ Rcu::ApplyTruSettings(const unsigned long regAddr[N_TRU_REGS], const unsigned lo
 }
 
 
-void
-Rcu::ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters)
+int
+Rcu::ApplyReadoutRegisters(ReadoutRegisters_t readoutRegisters)
 {
-  iRet =  fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU, fFeeServerName, readoutRegisters.GetRcuRegisterAddresses(), 
+  int iRet =  fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU, fFeeServerName, readoutRegisters.GetRcuRegisterAddresses(), 
 					    readoutRegisters.GetRcuRegisterValues(), readoutRegisters.GetRcuVerify(), 
 					    readoutRegisters.GetNRcuRegisters());
+  return iRet;
 }
 
 void

@@ -1,94 +1,20 @@
+
+#ifndef PHOSREGISTERS_H
+#define PHOSREGISTERS_H
+
 #include "RcuRegisterMap.h" 
 #include "AltroRegisterMap.h"
+#include <iostream>
 
-class ReadoutRegisters_t
-{
-
-public:
-
-  ReadoutRegisters_t() {}
-  
-  ReadoutRegisters_t(RcuALTROIF_t altroif, RcuRDOMOD_t rdoMod, RcuALTROCFG1_t altrocfg1, 
-		     RcuALTROCFG2_t altrocfg2);
-
-  ReadoutRegisters_t(const ReadoutRegisters_t& v) :
-    fRcuALTROIF(v.GetRcuALTROIF()),
-    fRcuRDOMOD(v.GetRcuRDOMOD()),
-    fRcuALTROCFG1(v.GetRcuALTROCFG1()),
-    fRcuALTROCFG2(v.GetRcuALTROCFG2()),
-    fAltroZSTHR(v.GetAltroZSTHR()),
-    fAltroTRCFG(v.GetAltroTRCFG()),
-    fAltroDPCFG(v.GetAltroDPCFG()),
-    fAltroDPCFG2(v.GetAltroDPCFG2()),
-    fAltroVerify(v.GetAltroVerify())
-  {
-  }
-
-  ~ReadoutRegisters_t() {}
-  
-  const unsigned long* GetRcuRegisterAddresses() const { return fRcuRegisterAddresses; }
-  const unsigned long* GetRcuRegisterValues() const;
-
-  const int GetNRcuRegisters() const { return 4; }
-
-  const unsigned long* GetAltroRegisterAddresses() const { return fAltroRegisterAddresses; }
-  
-  const unsigned long* GetAltroRegisterValues();
-
-  const int GetNAltroRegisters() const { return 4; }
-
-  RcuALTROIF_t GetRcuALTROIF() const { return fRcuALTROIF; }
-  RcuRDOMOD_t GetRcuRDOMOD() const { return fRcuRDOMOD; }
-  RcuALTROCFG1_t GetRcuALTROCFG1() const { return fRcuALTROCFG1; }
-  RcuALTROCFG2_t GetRcuALTROCFG2() const { return fRcuALTROCFG2; }
-
-  bool GetAltroVerify() { return fAltroVerify; }
-
-  void SetRcuALTROIF(RcuALTROIF_t altroif);
-  void SetRcuRDOMOD(RcuRDOMOD_t rdomod);
-  void SetRcuALTROCFG(RcuALTROCFG1_t altrocfg1, RcuALTROCFG2_t altrocfg2);
-
-  AltroZSTHR_t GetAltroZSTHR() const { return fAltroZSTHR; }
-  AltroTRCFG_t GetAltroTRCFG() const { return fAltroTRCFG; }
-  AltroDPCFG_t GetAltroDPCFG() const { return fAltroDPCFG; }
-  AltroDPCFG2_t GetAltroDPCFG2() const { return fAltroDPCFG2; } 
-  
-  void SetAltroVerify(bool value = true) { fAltroVerify = value; }
-
-  void SetAltroZSTHR(AltroZSTHR_t zsthr);
-  void SetAltroTRCFG(AltroTRCFG_t trcfg);
-  void SetAltroDPCFG(AltroDPCFG_t dpcfg);
-  void SetAltroDPCFG2(AltroDPCFG2_t dpcfg2);
-  
-private:
-  
-  RcuALTROIF_t fRcuALTROIF;
-  RcuRDOMOD_t fRcuRDOMOD;
-  RcuALTROCFG1_t fRcuALTROCFG1;
-  RcuALTROCFG2_t fRcuALTROCFG2;
-
-  AltroZSTHR_t fAltroZSTHR;
-  AltroTRCFG_t fAltroTRCFG;
-  AltroDPCFG_t fAltroDPCFG;
-  AltroDPCFG2_t fAltroDPCFG2;
-  
-  const unsigned long fRcuRegisterAddresses[4] = { RcuALTROIF_t::fRegAddress, 
-						   RcuRDOMOD_t::fRegAddress,
-						   RcuALTROCFG1_t::fRegAddress,
-						   RcuALTROCFG2_t::fRegAddress };
-  
-  const unsigned long fAltroRegisterAddresses[4] = { AltroZSTHR_t::fRegAddress, 
-						     AltroTRCFG_t::fRegAddress,
-						     AltroDPCFG_t::fRegAddress,
-						     AltroDPCFG2_t::fRegAddress };
-
-  unsigned long fRcuRegisterValues[4];
-
-  unsigned long fAltroRegisterValues[4];
-  
-  bool fAltroVerify;
-
-};
+class RcuALTROIF_t;
+class RcuRDOMOD_t;
+class RcuALTROCFG1_t;
+class RcuALTROCFG2_t;
+class RcuTRGCONF_t;
+class AltroTRCFG_t;
+class AltroZSTHR_t;
+class AltroDPCFG_t;
+class AltroDPCFG2_t;
 
 class RcuALTROIF_t
 {
@@ -96,7 +22,7 @@ class RcuALTROIF_t
 public:
 
   RcuALTROIF_t();
-  RcuALTROIF_t(short nSamples, int sampleFreq, short cstbDelay = 2, short instructionErrorCheck = 0);
+  RcuALTROIF_t(short nSamples, int sampleFreq = 10000000, short cstbDelay = 2, short instructionErrorCheck = 0);
   
   RcuALTROIF_t(const RcuALTROIF_t& v):
     fNSamples(v.GetNumberOfSamples()),
@@ -125,6 +51,8 @@ public:
 
   void SetByRegisterValue(int value);
 
+  static const int fRegAddress = RcuRegisterMap::ALTROIF; // 0x5101
+
 private:
   
   short fNSamples;
@@ -132,7 +60,7 @@ private:
   short fCstbDelay;
   short fInstructionErrorCheck;
   
-  static const int fRegAddress = RcuRegisterMap::ALTROIF; // 0x5101
+
 };
 
 class RcuTRGCONF_t
@@ -202,7 +130,9 @@ public:
   void SetL2LatencyWrtL1(int latency) { fL2LatencyWrtL1 = latency; }
 
   void SetByRegisterValue(int value);
- 
+
+  static const int fRegAddress = RcuRegisterMap::TRCFG; //0x5102 
+
 private: 
 
   bool fSoftwareTrigger;
@@ -213,8 +143,6 @@ private:
   short fL2LatencyWrtL1;
 
   int fRegisterValue;
-
-  static const int fRegAddress = RcuRegisterMap::TRCFG; //0x5102
   
 };
 
@@ -253,6 +181,8 @@ public:
 
   void SetByRegisterValue(short value);
 
+  static const short fRegAddress = RcuRegisterMap::RDOMOD; //0x5103
+
 private:
   
   bool fMaskRDYRX;
@@ -261,8 +191,6 @@ private:
   bool fMEBMode;
 
   int fRegisterValue;
-
-  static const short fRegAddress = RcuRegisterMap::RDOMOD; //0x5103
 
 };
 
@@ -304,6 +232,8 @@ public:
 
   void SetByRegisterValue(short value);
 
+  static const short fRegAddress = RcuRegisterMap::ALTROCFG1; // 0x5104
+
 private:
   
   bool fZeroSuppressionEnabled; // 1 bit reserved
@@ -312,8 +242,6 @@ private:
   short fThreshold; // 10 bits reserved (may want to use threshold up to 1023 to test readout performance)
 
   int fRegisterValue;
-
-  static const short fRegAddress = RcuRegisterMap::ALTROCFG1; // 0x5104
 
 };
 
@@ -344,7 +272,7 @@ public:
   
   RcuALTROCFG2_t& operator=(const RcuALTROCFG2_t)
   {
-    return *this;rEnabled
+    return *this;
   }
 
   short GetNPreSamples() const { return fNPreSamples; }
@@ -355,12 +283,12 @@ public:
 
   void SetByRegisterValue(short value);
 
+  static const int fRegAddress = RcuRegisterMap::ALTROCFG2; // 0x5105
+
 private:
   
   short fNPreSamples; // 4 bits reserved
  
-  static const int fRegAddress = RcuRegisterMap::ALTROCFG2; // 0x5105
-
 };
 
 
@@ -376,7 +304,7 @@ public:
     fOffset(0)
     {
     }
-  AltroZSTHR_t(short threshold, short offset)
+  AltroZSTHR_t(short threshold, short offset):
     fThreshold(threshold),
     fOffset(offset)
     {
@@ -404,13 +332,13 @@ public:
   void SetOffset(short offset) { fOffset = offset; }
 
   void SetByRegisterValue(int value);
+
+  static const int fRegAddress = AltroRegisterMap::ZSTHR;
   
  private:
   
   short fThreshold; //10 bits
   short fOffset;  // 10 bits
-
-  static const int fRegAddress = AltroRegisterMap::ZSTHR;
 
 };
 
@@ -428,13 +356,13 @@ public:
     {
     }
 
-  AltroTRCFG_t(short start, short stop)
+  AltroTRCFG_t(short start, short stop) :
     fStart(start),
     fStop(stop)
     {
     }
   
-  AltroTRCFG_t(short nSamples)
+  AltroTRCFG_t(short nSamples) :
     fStart(0),
     fStop(nSamples)
     {
@@ -468,13 +396,13 @@ public:
     }
 
   void SetByRegisterValue(int value);
+
+  static const int fRegAddress = AltroRegisterMap::TRCFG;
   
  private:
   
   short fStart; //10 bits
   short fStop;  // 10 bits
-
-  static const int fRegAddress = AltroRegisterMap::TRCFG;
 
 };
 
@@ -519,13 +447,13 @@ public:
     return *this;
   }
 
-  short GetFirstBaselineCorrectionMode() { return fFirstBaselineCorrection; }
-  bool IsZeroSuppressed() { return fZeroSuppression; }
+  short GetFirstBaselineCorrectionMode() const { return fFirstBaselineCorrection; }
+  bool IsZeroSuppressed() const { return fZeroSuppression; }
   
-  bool IsAutomaticBaselineSubtracted() { return fFirstBaselineCorrection == 0x4; }
-  bool IsFixedBaselineSubtracted() { return fFirstBaselineCorrection == 0; }
+  bool IsAutomaticBaselineSubtracted() const { return fFirstBaselineCorrection == 0x4; }
+  bool IsFixedBaselineSubtracted() const { return fFirstBaselineCorrection == 0; }
 
-  int GetRegisterValue();
+  int GetRegisterValue() const;
 
   void SetFirstBaselineCorrectionMode(short mode) { fFirstBaselineCorrection = mode; } 
   void SetZeroSuppressed(bool value = true) { fZeroSuppression = value; }
@@ -536,6 +464,8 @@ public:
   }
 
   void SetByRegisterValue(int value);
+
+  static const int fRegAddress = AltroRegisterMap::DPCFG;
   
  private:
 
@@ -548,8 +478,6 @@ public:
   short fPostExcludedZS; /* Number of Postsamples excluded from suppression - 3 bits */
   short fPreExcludedZS; /* Number of Presamples excluded from suppression - 2 bits */
   bool fZeroSuppression; /* Enable Zero Suppression */
-
-  static const int fRegAddress = AltroRegisterMap::DPCFG;
 
 };
 
@@ -591,12 +519,12 @@ public:
     return *this;
   }
 
-  short GetNPreSamples() { return fNPreTriggerSamples; }
-  bool GetMEBMode() { return fMEBMode; } 
-  bool IsFilterEnabled() { return fDigitalFilterEnabled; }
-  bool IsPowerSaveEnabled() { return fPowerSaveEnabled; }
+  short GetNPreSamples() const { return fNPreTriggerSamples; }
+  bool GetMEBMode() const { return fMEBMode; } 
+  bool IsFilterEnabled() const { return fDigitalFilterEnabled; }
+  bool IsPowerSaveEnabled() const { return fPowerSaveEnabled; }
 
-  short GetRegisterValue();
+  short GetRegisterValue() const;
 
   void SetNPreSamples(short npresamples) { fNPreTriggerSamples = npresamples; }
   void SetMEBMode(bool mebmode) { fMEBMode = mebmode; }
@@ -605,6 +533,8 @@ public:
 
   void SetByRegisterValue(short value);
 
+  static const int fRegAddress = AltroRegisterMap::DPCFG2;
+
 private: 
   
   short fNPreTriggerSamples;
@@ -612,7 +542,98 @@ private:
   bool fDigitalFilterEnabled;
   bool fPowerSaveEnabled;
 
-  static const int fRegAddress = AltroRegisterMap::DPCFG2;
-
 }; 
 
+
+class ReadoutRegisters_t
+{
+
+public:
+
+  ReadoutRegisters_t() {}
+  
+  ReadoutRegisters_t(RcuALTROIF_t altroif, RcuRDOMOD_t rdoMod, RcuALTROCFG1_t altrocfg1, 
+		     RcuALTROCFG2_t altrocfg2);
+
+  ReadoutRegisters_t(const ReadoutRegisters_t& v) :
+    fRcuALTROIF(v.GetRcuALTROIF()),
+    fRcuRDOMOD(v.GetRcuRDOMOD()),
+    fRcuALTROCFG1(v.GetRcuALTROCFG1()),
+    fRcuALTROCFG2(v.GetRcuALTROCFG2()),
+    fAltroZSTHR(v.GetAltroZSTHR()),
+    fAltroTRCFG(v.GetAltroTRCFG()),
+    fAltroDPCFG(v.GetAltroDPCFG()),
+    fAltroDPCFG2(v.GetAltroDPCFG2())
+  {
+  }
+
+  ReadoutRegisters_t& operator=(const ReadoutRegisters_t)
+  {
+    return *this;
+  }
+
+  ~ReadoutRegisters_t() {}
+  
+  const unsigned long* GetRcuRegisterAddresses() const { return fRcuRegisterAddresses; }
+  const unsigned long* GetRcuRegisterValues();
+
+  const int GetNRcuRegisters() const { return 4; }
+
+  const unsigned long* GetAltroRegisterAddresses() const { return fAltroRegisterAddresses; }
+  
+  const unsigned long* GetAltroRegisterValues();
+
+  const int GetNAltroRegisters() const { return 4; }
+
+  RcuALTROIF_t GetRcuALTROIF() const { return fRcuALTROIF; }
+  RcuRDOMOD_t GetRcuRDOMOD() const { return fRcuRDOMOD; }
+  RcuALTROCFG1_t GetRcuALTROCFG1() const { return fRcuALTROCFG1; }
+  RcuALTROCFG2_t GetRcuALTROCFG2() const { return fRcuALTROCFG2; }
+
+  const bool* GetRcuVerify() const { return fRcuVerify; }
+
+  void SetRcuALTROIF(RcuALTROIF_t altroif);
+  void SetRcuRDOMOD(RcuRDOMOD_t rdomod);
+  void SetRcuALTROCFG(RcuALTROCFG1_t altrocfg1, RcuALTROCFG2_t altrocfg2);
+
+  AltroZSTHR_t GetAltroZSTHR() const { return fAltroZSTHR; }
+  AltroTRCFG_t GetAltroTRCFG() const { return fAltroTRCFG; }
+  AltroDPCFG_t GetAltroDPCFG() const { return fAltroDPCFG; }
+  AltroDPCFG2_t GetAltroDPCFG2() const { return fAltroDPCFG2; } 
+
+  const bool* GetAltroVerify() const { return fAltroVerify; }
+
+  void SetAltroZSTHR(AltroZSTHR_t zsthr);
+  void SetAltroTRCFG(AltroTRCFG_t trcfg);
+  void SetAltroDPCFG(AltroDPCFG_t dpcfg);
+  void SetAltroDPCFG2(AltroDPCFG2_t dpcfg2);
+
+  void Print(std::ostream& stream);
+  
+private:
+  
+  RcuALTROIF_t fRcuALTROIF;
+  RcuRDOMOD_t fRcuRDOMOD;
+  RcuALTROCFG1_t fRcuALTROCFG1;
+  RcuALTROCFG2_t fRcuALTROCFG2;
+
+  AltroZSTHR_t fAltroZSTHR;
+  AltroTRCFG_t fAltroTRCFG;
+  AltroDPCFG_t fAltroDPCFG;
+  AltroDPCFG2_t fAltroDPCFG2;
+  
+  static const unsigned long fRcuRegisterAddresses[];
+  static const unsigned long fAltroRegisterAddresses[];
+
+  static const bool fRcuVerify[];
+
+  static const bool fAltroVerify[];
+
+  unsigned long fRcuRegisterValues[4];
+
+  unsigned long fAltroRegisterValues[4];
+
+};
+
+
+#endif

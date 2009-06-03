@@ -2,6 +2,18 @@
 #include "PhosRegisters.h"
 #include <iostream>
 
+const unsigned long ReadoutRegisters_t::fRcuRegisterAddresses[] = { RcuALTROIF_t::fRegAddress, 
+								 RcuRDOMOD_t::fRegAddress,
+								 RcuALTROCFG1_t::fRegAddress,
+								 RcuALTROCFG2_t::fRegAddress };
+const unsigned long ReadoutRegisters_t::fAltroRegisterAddresses[] = { AltroZSTHR_t::fRegAddress, 
+								   AltroTRCFG_t::fRegAddress,
+								   AltroDPCFG_t::fRegAddress,
+								   AltroDPCFG2_t::fRegAddress };
+const bool ReadoutRegisters_t::fRcuVerify[] = {false, false, false, false};
+
+const bool ReadoutRegisters_t::fAltroVerify[] = {true, true, true, true};
+
 ReadoutRegisters_t::ReadoutRegisters_t(RcuALTROIF_t altroif, RcuRDOMOD_t rdoMod, RcuALTROCFG1_t altrocfg1, 
 		     RcuALTROCFG2_t altrocfg2)
 {
@@ -54,6 +66,37 @@ void ReadoutRegisters_t::SetRcuALTROCFG(RcuALTROCFG1_t altrocfg1, RcuALTROCFG2_t
   
   fAltroDPCFG2.SetNPreSamples(altrocfg2.GetNPreSamples());
 
+}
+
+void ReadoutRegisters_t::Print(std::ostream& stream)
+{
+//   std::cout << "ReadoutRegisters_t: " << std::endl;
+//   std::cout << "-------------------" << std::endl;
+//   std::cout << "RCU Registers: " << std::endl;
+//   std::cout << "ALTROIF   : 0x" << std::hex << fRcuALTROIF.GetRegisterValue() << std::endl;
+//   std::cout << "RDOMOD    : 0x" << fRcuRDOMOD.GetRegisterValue() << std::endl;
+//   std::cout << "ALTROCFG1 : 0x" << fRcuALTROCFG1.GetRegisterValue() << std::endl;
+//   std::cout << "ALTROCFG2 : 0x" << fRcuALTROCFG2.GetRegisterValue() << std::endl;
+//   std::cout << "-------------------" << std::endl;
+//   std::cout << "ALTRO Registers:" << std::endl;
+//   std::cout << "ZSTHR     : 0x" << fAltroZSTHR.GetRegisterValue() << std::endl;
+//   std::cout << "TRCFG     : 0x" << fAltroTRCFG.GetRegisterValue() << std::endl;
+//   std::cout << "DPCFG     : 0x" << fAltroDPCFG.GetRegisterValue() << std::endl;
+//   std::cout << "DPCFG     : 0x" << fAltroDPCFG2.GetRegisterValue() << std::dec << std::endl;
+
+  stream << "ReadoutRegisters_t: " << std::endl;
+  stream << "-------------------" << std::endl;
+  stream << "RCU Registers: " << std::endl;
+  stream << "ALTROIF   : 0x" << std::hex << fRcuALTROIF.GetRegisterValue() << std::endl;
+  stream << "RDOMOD    : 0x" << fRcuRDOMOD.GetRegisterValue() << std::endl;
+  stream << "ALTROCFG1 : 0x" << fRcuALTROCFG1.GetRegisterValue() << std::endl;
+  stream << "ALTROCFG2 : 0x" << fRcuALTROCFG2.GetRegisterValue() << std::endl;
+  stream << "-------------------" << std::endl;
+  stream << "ALTRO Registers:" << std::endl;
+  stream << "ZSTHR     : 0x" << fAltroZSTHR.GetRegisterValue() << std::endl;
+  stream << "TRCFG     : 0x" << fAltroTRCFG.GetRegisterValue() << std::endl;
+  stream << "DPCFG     : 0x" << fAltroDPCFG.GetRegisterValue() << std::endl;
+  stream << "DPCFG     : 0x" << fAltroDPCFG2.GetRegisterValue() << std::dec << std::endl;
 }
 
 RcuALTROIF_t::RcuALTROIF_t() :
@@ -328,18 +371,18 @@ void AltroDPCFG_t::SetByRegisterValue(int value)
   fZeroSuppression = value >> 19 & 0x1;
 }
 
-short AltroDPCFG2_t::GetRegisterValue()
+short AltroDPCFG2_t::GetRegisterValue() const
 {
-  return fNPreSamples |
+  return fNPreTriggerSamples |
     fMEBMode << 4 | 
     fDigitalFilterEnabled << 5 |
-    fPreExcludedZS << 6;
+    fPowerSaveEnabled << 6;
 }
 
 void AltroDPCFG2_t::SetByRegisterValue(short value)
 {
-  fNPreSamples = value & 0xf;
+  fNPreTriggerSamples = value & 0xf;
   fMEBMode = value >> 4 & 0x1;
   fDigitalFilterEnabled = value >> 5 & 0x1;
-  fPreExcludedZS = value >> 6 & 0x1;
+  fPowerSaveEnabled = value >> 6 & 0x1;
 }

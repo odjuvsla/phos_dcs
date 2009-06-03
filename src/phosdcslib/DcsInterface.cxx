@@ -335,16 +335,36 @@ DcsInterface::SetPhosBit(const int modId) const
 
 
 void 
-DcsInterface::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig) const
+DcsInterface::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig)
 {
   //  rdoConfig.PrintInfo("DcsInterface::SetReadoutConfig"); 
   fPhosDetectorPtr->SetReadoutConfig(modID,  rdoConfig);
 }
 
 void
+DcsInterface::SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings)
+{
+  // fPhosDetectorPtr->SetReadoutSettings(modId, rdoSettings);
+  fReadoutSettings = rdoSettings;
+}
+
+void
+DcsInterface::SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const
+{
+  fPhosDetectorPtr->SetReadoutRegion(modId, rdoRegion);
+}
+
+int
 DcsInterface::ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters) const
 {
-  fPhosDetectorPtr->ApplyReadoutRegisters(modID, readoutRegisters);
+
+  return fPhosDetectorPtr->ApplyReadoutRegisters(modID, readoutRegisters);
+}
+
+int
+DcsInterface::ApplyReadoutRegion(const ModNumber_t modID) const 
+{
+  return fPhosDetectorPtr->ApplyReadoutRegion(modID);
 }
 
 unsigned int
@@ -459,6 +479,61 @@ string
 DcsInterface::GetLogViewerString()
 {
   return PhosDcsLogging::Instance()->GetLogViewerString();
+}
+
+int 
+DcsInterface::Configure(const ModNumber_t modId)
+{
+  stringstream log;
+  
+  RcuALTROIF_t altroif(fReadoutSettings.GetNSamples().GetIntValue());
+  RcuRDOMOD_t rdomod(false, fReadoutSettings.IsSparseReadout(), false, fReadoutSettings.GetMEBMode());
+  RcuALTROCFG1_t altrocfg1(fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
+			 fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold());
+  RcuALTROCFG2_t altrocfg2(fReadoutSettings.GetNPreSamples().GetIntValue());
+
+  ReadoutRegisters_t readoutRegs(altroif, rdomod, altrocfg1, altrocfg2);
+  // cout << fReadoutSettings.GetNSamples().GetIntValue() << endl;  
+  log.str("");
+  readoutRegs.Print(log);
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+  
+  int res = ApplyReadoutRegisters(modId.GetIntValue(), readoutRegs);
+  
+  res += ApplyReadoutRegion(modId);
+
+  if(res != 0) 
+    {
+      log.str("");
+      log << "DcsInterface::Configure: Error in configuring module #: " << modId.GetIntValue();
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+    }
+  else
+    {
+      log.str("");
+      log << "DcsInterface::Configure: Successfully configured module #: " << modId.GetIntValue();
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+    }
+  return res;
+}
+
+int DcsInterface::Reset(const ModNumber_t modId)
+{
+  stringstream log;
+  int res = fPhosDetectorPtr->Reset(modId);
+  if(res != 0) 
+    {
+      log.str("");
+      log << "DcsInterface::Reset: Error in resetting module #: " << modId.GetIntValue();
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+    }
+  else
+    {
+      log.str("");
+      log << "DcsInterface::Reset: Successfully reset module #: " << modId.GetIntValue();
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+    }
+  return res;
 }
 
 // int 

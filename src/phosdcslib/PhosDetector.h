@@ -21,6 +21,7 @@
 
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
+#include "PhosRegisters.h"
 
 class PhosModule;
 class Rcu;
@@ -46,15 +47,20 @@ class PhosDetector : public PhosDcsBase
   void LoadApdValues();
   void SetAllApds(const int value);
   void SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig);
-  void ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters);
+  void SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings);
+  void SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const;
+  int  ApplyReadoutRegisters(const ModNumber_t modID, ReadoutRegisters_t readoutRegisters); 
+  int  ApplyReadoutRegion(const ModNumber_t modID) const;
   void ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const;
   PhosFeeClient *fFeeClientPtr;
+  int             Reset(const ModNumber_t modId);
 
  private:
   PhosDetector(const PhosDetector & );
   PhosDetector & operator = (const PhosDetector &){return *this;}
   ReadoutConfig_t fRadoutConfig; 
   ReadoutRegisters_t fReadoutRegisters;
+  ReadoutRegion_t fReadoutRegion;
 };
 
 #endif

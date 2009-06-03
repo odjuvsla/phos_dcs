@@ -100,11 +100,32 @@ PhosDetector::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t r
   phosModulePtr[modID.GetIntValue()]->SetReadoutConfig(rdoConfig);
   fRadoutConfig = rdoConfig; 
 }
+
 void
+PhosDetector::SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings)
+{
+  phosModulePtr[modId.GetIntValue()]->SetReadoutSettings(rdoSettings);
+}
+
+void
+PhosDetector::SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const
+{
+  phosModulePtr[modId.GetIntValue()]->SetReadoutRegion(rdoRegion);
+}
+
+int
 PhosDetector::ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters)
 {
-  phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegister(readoutRegisters);
+  int res = phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegisters(readoutRegisters);
   fReadoutRegisters = readoutRegisters;
+  return res;
+}
+
+int
+PhosDetector::ApplyReadoutRegion(const ModNumber_t modID) const
+{
+  int res = phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegion(fReadoutRegion);
+  return res;
 }
 
 int
@@ -170,3 +191,10 @@ PhosDetector::SetAllApds(const int Value)
     }
 }
 
+int  
+PhosDetector::Reset(const ModNumber_t modId)
+{
+  //  int res = phosModulePtr[modId.GetIntValue()]->Reset(modId);
+  int res = 0;
+  return res;
+}

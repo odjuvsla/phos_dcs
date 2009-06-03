@@ -24,13 +24,10 @@
 #include "PhosDataTypes.h"
 #include "RcuRegisterMap.h"
 
-
-
-
-
 class FeeCard;
 class FeeCard;
 class MainGui; 
+class ReadoutRegisters_t;
 
 class Rcu : public PhosDcsBase
 {
@@ -53,7 +50,7 @@ class Rcu : public PhosDcsBase
   int  ApplyApdSettings(const int branch, const int card) const;
   void ApplyTruSettings(const unsigned long regAddr[N_TRU_REGS], const unsigned long regVal[N_TRU_REGS], const bool verify[N_TRU_REGS], 
 			const int N) const;
-  void ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters);
+  int  ApplyReadoutRegisters(ReadoutRegisters_t readoutRegisters);
   void ExecuteScript(const char *fileName) const;
   int  ToggleFeeOnOff(const int branch, const int card);
   int  ToggleTruOnOff(const int tru);

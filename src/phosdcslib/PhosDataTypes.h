@@ -196,12 +196,12 @@ class NPreSamples_t
 };
 
 
-class ZeroSupressionTreshold_t
+class ZeroSuppressionTreshold_t
 {
  public:
-  ZeroSupressionTreshold_t(const unsigned long int n);
-  ZeroSupressionTreshold_t();   
-  ~ ZeroSupressionTreshold_t(); 
+  ZeroSuppressionTreshold_t(const unsigned long int n);
+  ZeroSuppressionTreshold_t();   
+  ~ ZeroSuppressionTreshold_t(); 
   void SetIntValue(const int val);
   const unsigned long  GetIntValue() const {return  fVal;};
 
@@ -210,15 +210,15 @@ class ZeroSupressionTreshold_t
 };
 
 
-class ZeroSupressionMode_t
+class ZeroSuppressionMode_t
 {
  public:
-  ZeroSupressionMode_t() {}
-  ZeroSupressionMode_t(const unsigned long int n);
-  ~ ZeroSupressionMode_t(); 
+  ZeroSuppressionMode_t() {}
+  ZeroSuppressionMode_t(const unsigned long int n);
+  ~ ZeroSuppressionMode_t(); 
   void SetIntValue(const int val);
   const unsigned long  GetIntValue() const {return  fVal;};
-
+  
  private:
   unsigned long fVal;
 };
@@ -274,22 +274,22 @@ class AltroConfig_t
  public:
   AltroConfig_t();
   AltroConfig_t(const NSamples_t nSamples, const NPreSamples_t  nPreSamples, 
-		const ReadoutMode_t readoutmode = 0, const  ZeroSupressionMode_t  zmode =0, 
-		const ZeroSupressionTreshold_t zthr =0);
+		const ReadoutMode_t readoutmode = 0, const  ZeroSuppressionMode_t  zmode =0, 
+		const ZeroSuppressionTreshold_t zthr =0);
   ~AltroConfig_t();
   void PrintInfo(const char *message = 0) const ;
   void SetNSamples(const  NSamples_t nSamples);
   void SetNPreSamples(const NPreSamples_t  nPreSamples);
-  void SetZerosSupressionTreshold(const ZeroSupressionTreshold_t  treshold);
-  void SetZerosSupressionMode(const  ZeroSupressionMode_t  mode);
+  void SetZerosSuppressionTreshold(const ZeroSuppressionTreshold_t  treshold);
+  void SetZerosSuppressionMode(const  ZeroSuppressionMode_t  mode);
   void SetReadoutMode(const  ReadoutMode_t  readoutmode);
   void SetPattern(const Pattern_t pattern) {fPattern = pattern;};
   void SetApplyPattern(bool  apply = true){fApplyPattern =apply;};
   //  bool GetApplyPattern()const {return fApplyPattern;};
   const NSamples_t   GetNSamples() const { return   fNSamples;};
   const NPreSamples_t    GetNPreSamples() const { return fNPreSamples;};
-  const ZeroSupressionTreshold_t    GetZerosSupressionTreshold() const { return fZeroSupressionThreshold;};
-  const ZeroSupressionMode_t    GetZerosSupressionMode() const { return fZeroSupressionMode;};
+  const ZeroSuppressionTreshold_t    GetZerosSuppressionTreshold() const { return fZeroSuppressionThreshold;};
+  const ZeroSuppressionMode_t    GetZerosSuppressionMode() const { return fZeroSuppressionMode;};
   const ReadoutMode_t  GetReadoutMode() const { return fReadoutMode;}; 
   const Pattern_t GetPattern() const {return fPattern;};
   const bool GetApplyPattern() const {return fApplyPattern; };
@@ -297,8 +297,8 @@ class AltroConfig_t
  private:
   NSamples_t  fNSamples;
   NPreSamples_t   fNPreSamples;
-  ZeroSupressionTreshold_t  fZeroSupressionThreshold;
-  ZeroSupressionMode_t  fZeroSupressionMode;  
+  ZeroSuppressionTreshold_t  fZeroSuppressionThreshold;
+  ZeroSuppressionMode_t  fZeroSuppressionMode;  
   ReadoutMode_t  fReadoutMode;
   Pattern_t fPattern;
   bool fApplyPattern;
@@ -419,8 +419,10 @@ class  TriggerMode_t
 	};
     }
 
-  const int GetIntValue() const {return fVal;}; 
+  const int GetIntValue() const { return fVal; }
+
  private:
+  
   int fVal;
 
 };
@@ -456,6 +458,77 @@ class ReadoutConfig_t
   TriggerMode_t fTriggerMode;
 };
 
+class ReadoutSettings_t
+{
+
+public:
+
+  ReadoutSettings_t() :
+    fNPreSamples(11),
+    fNSamples(81),
+    fIsZeroSuppressed(false),
+    fZeroSuppressionThreshold(0),
+    fZeroSuppressionOffset(0),
+    fIsSparseReadout(false),
+    fIsAutoBaselineSubtracted(false),
+    fMEBMode(false)
+  {
+
+  }
+
+  ReadoutSettings_t(const NPreSamples_t npresamples, NSamples_t nsamples, bool isZS = false, short zsThreshold = 0, 
+		    short zsOffset = 0, bool isSparse = false, bool isAutoBS = false, bool mebMode = false) :
+    fNPreSamples(npresamples),
+    fNSamples(nsamples),
+    fIsZeroSuppressed(isZS),
+    fZeroSuppressionThreshold(zsThreshold),
+    fZeroSuppressionOffset(zsOffset),
+    fIsSparseReadout(isSparse),
+    fIsAutoBaselineSubtracted(isAutoBS),
+    fMEBMode(mebMode)
+  {}
+
+  ~ReadoutSettings_t() {}
+  
+  ReadoutSettings_t(const ReadoutSettings_t& v) :
+    fNPreSamples(v.GetNPreSamples()),
+    fNSamples(v.GetNSamples()),
+    fIsZeroSuppressed(v.IsZeroSuppressed()),
+    fZeroSuppressionThreshold(v.GetZeroSuppressionThreshold()),
+    fZeroSuppressionOffset(v.GetZeroSuppressionOffset()),
+    fIsSparseReadout(v.IsSparseReadout()),
+    fIsAutoBaselineSubtracted(v.IsAutoBaselineSubtracted()),
+    fMEBMode(v.GetMEBMode())
+  {}
+
+  
+//   ReadoutSettings_t& operator=(const ReadoutSettings_t)
+//   {
+//     return *this;
+//   }
+
+  NPreSamples_t GetNPreSamples() const { return fNPreSamples; } 
+  NSamples_t GetNSamples() const { return fNSamples; }
+  bool IsZeroSuppressed() const { return fIsZeroSuppressed; }
+  short GetZeroSuppressionThreshold() const { return fZeroSuppressionThreshold; }
+  short GetZeroSuppressionOffset() const { return fZeroSuppressionOffset; }
+  bool IsSparseReadout() const { return fIsSparseReadout; } 
+  bool IsAutoBaselineSubtracted() const { return fIsAutoBaselineSubtracted; }
+  bool GetMEBMode() const { return fMEBMode; }
+
+  private:
+  
+  NPreSamples_t fNPreSamples;
+  NSamples_t fNSamples;
+  bool fIsZeroSuppressed;
+  short fZeroSuppressionThreshold;
+  short fZeroSuppressionOffset;
+  bool fIsSparseReadout;
+  bool fIsAutoBaselineSubtracted;
+  bool fMEBMode;
+
+};
+
 
 class ConfigInfo_t
 {
@@ -468,6 +541,7 @@ class ConfigInfo_t
 
 
 class TRURegister_t
+
 {
  public:
   TRURegister_t();

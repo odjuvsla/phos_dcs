@@ -33,12 +33,15 @@ SET(CMAKE_SWIG_FLAGS "")
 SET_SOURCE_FILES_PROPERTIES(PhosDataTypes.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(DcsInterface.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(PhosConst.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(PhosRegisters.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(PhosDataTypes python PhosDataTypes.i PhosDataTypes.cxx)
 SWIG_ADD_MODULE(DcsInterface python DcsInterface.i DcsInterface.cxx)
 SWIG_ADD_MODULE(PhosConst python PhosConst.i PhosConst.h)
+SWIG_ADD_MODULE(PhosRegisters python PhosRegisters.i PhosRegisters.h)
 SWIG_LINK_LIBRARIES(PhosDataTypes PhosDcs ${FEECLIENT}/lib/libdim.so ${FEECLIENT}/lib/libFeeClient.so ${PYTHON_LIBRARIES})
 SWIG_LINK_LIBRARIES(DcsInterface PhosDcs ${FEECLIENT}/lib/libdim.so ${FEECLIENT}/lib/libFeeClient.so ${PYTHON_LIBRARIES})
 SWIG_LINK_LIBRARIES(PhosConst PhosDcs ${FEECLIENT}/lib/libdim.so ${FEECLIENT}/lib/libFeeClient.so ${PYTHON_LIBRARIES})
+SWIG_LINK_LIBRARIES(PhosRegisters PhosDcs ${FEECLIENT}/lib/libdim.so ${FEECLIENT}/lib/libFeeClient.so ${PYTHON_LIBRARIES})
 
 
 INSTALL(TARGETS PhosDcs

@@ -22,6 +22,7 @@
 
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
+#include "PhosRegisters.h"
 #include <vector>
 #include <string>
 
@@ -79,9 +80,11 @@ class DcsInterface : public PhosDcsBase
   void            SetAllApds(const int modID, const int rcuId, const int branch, const int card, const int apdValue);
   void            SetApdValues(const int mod, const int rcu, const int branch, const int card, const unsigned long *values);
   void            SetPhosBit(const int modID) const;
-  void            SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig) const;
-  void            ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters) const;
-
+  void            SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig);
+  void            SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings);
+  void            SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const;
+  int             ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters) const;
+  int             ApplyReadoutRegion(const ModNumber_t modID) const; 
   //  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU]);
   unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate);
   unsigned int    ToggleOnOffTru(const int mod, const int rcu, const int truId);
@@ -98,10 +101,13 @@ class DcsInterface : public PhosDcsBase
   void            UpdateAFL(const int mod, const int rcu) const;
   std::vector<int>     UpdateFeeStatus(const int mod, const int rcu);
   int             UpdateSingleFeeStatus(const int mod, const int rcu, const int branch, const int fee);
+  int             Configure(const ModNumber_t modId);
+  int             Reset(const ModNumber_t modId);
 
  private:
   DatabaseDummy   *fDatabasePtr;
   PhosDetector    *fPhosDetectorPtr; /**<Pointer to the one and only PHOS detector */ 
+  ReadoutSettings_t fReadoutSettings;
 };
 
 

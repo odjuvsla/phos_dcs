@@ -22,6 +22,7 @@
 #include "PhosFeeClient.h"
 #include "Rcu.h"
 #include "PhosDcsLogging.h"
+#include "PhosRegisters.h"
 
 using namespace std;
 
@@ -259,17 +260,60 @@ PhosModule::SetReadoutConfig(const ReadoutConfig_t rdoConfig)
   fReadoutConfig = rdoConfig;
 }
 
+void
+PhosModule::SetReadoutSettings(const ReadoutSettings_t rdoSettings)
+{
+  fReadoutSettings = rdoSettings;
+}
 
-void 
+void
+PhosModule::SetReadoutRegion(const ReadoutRegion_t rdoRegion)
+{
+  fReadoutRegion = rdoRegion;
+}
+
+
+int 
 PhosModule::ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters)
 {
   int n = 0;
-
+  int res = 0;
   for(int n = 0; n < RCUS_PER_MODULE; n++)
     {
       if(fRcuPtr[n] != 0)
 	{
-	  fRcuPtr[n]->ApplyReadoutRegisters(readoutRegisters);
+	  res += fRcuPtr[n]->ApplyReadoutRegisters(readoutRegisters);
 	}
     }
 }
+
+int 
+PhosModule::ApplyReadoutRegion(const ReadoutRegion_t readoutRegion)
+{
+  int n = 0;
+  int res = 0;
+  int nTrials = 0;
+  SetReadoutRegion(readoutRegion);
+
+  fMapperPtr->GenerateACL(fReadoutConfig.GetReadoutRegion(), fAclMaps, fAfls);
+
+  int status[RCUS_PER_MODULE];
+
+  for(int i=0; i<RCUS_PER_MODULE; i++)
+    {
+      status[i] = -1;
+      if(fRcuPtr[i] != 0)
+	{
+	  fRcuPtr[i]->SetReadoutRegion(fAfls[i], fAclMaps[i]); 
+	  
+	  while((nTrials <= MAX_TRIALS) && (status[i] != REG_OK))
+	    {
+	      status[i] = fRcuPtr[i]->ApplyReadoutRegion();     
+	      nTrials ++;
+	    }
+	  nTrials =0;
+	}
+    }
+}
+
+

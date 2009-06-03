@@ -7,7 +7,7 @@ from DcsInterface import *
 from PhosConst import *
 from phos_utilities import *
 from threading import *
-
+from PhosDataTypes import *
 
 class PHOSHandler(QtCore.QObject):
     """Base class for the handlers"""
@@ -397,32 +397,37 @@ class ModuleHandler(PHOSHandler):
 
         print "Disabling trigger for module: " + str(moduleId)
 
-    def configureElectronics(self, moduleId, readoutConfiguration):
+    def configureElectronics(self, moduleId, readoutRegion, readoutSettings):
         # Start a thread for the toggling        
 
-        configureElectronicsThread = self.__ConfigureElectronicsThread(self.dcs_interface_wrapper, moduleId, readoutConfiguration)
+        configureElectronicsThread = self.__ConfigureElectronicsThread(self.dcs_interface_wrapper, moduleId, readoutRegion, readoutSettings)
         self.connect(configureElectronicsThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
         configureElectronicsThread.start()
 #        self.updateStatus(rcuId)
 
     class __ConfigureElectronicsThread(Thread, PHOSHandler):
 
-        def __init__(self, dcs_interface_wrapper, moduleId, readoutConfiguration):
+        def __init__(self, dcs_interface_wrapper, moduleId, readoutRegion, readoutSettings):
             
             Thread.__init__(self)
             PHOSHandler.__init__(self)
-
+            print readoutSettings.GetNSamples().GetIntValue()
             self.moduleId = moduleId
             self.dcs_interface_wrapper = dcs_interface_wrapper
-            self.readoutConfiguration = readoutConfiguration
- 
+            self.readoutRegion = readoutRegion
+            self.readoutSettings = readoutSettings
+            print self.readoutSettings.GetNSamples().GetIntValue()
+
         def run(self):
 
             modId = ModNumber_t(self.moduleId)
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
-
-            dcs_interface.SetReadoutConfig(modId, self.readoutConfiguration)
-            dcs_interface.ArmTrigger(self.moduleId)
+            
+            dcs_interface.SetReadoutRegion(modId, self.readoutRegion)
+            print modId.GetIntValue()
+            dcs_interface.SetReadoutSettings(modId, self.readoutSettings)
+#            dcs_interface.ArmTrigger(self.moduleId)
+            dcs_interface.Configure(modId)
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", self.moduleId)
 
             self.dcs_interface_wrapper.releaseDcsInterface()

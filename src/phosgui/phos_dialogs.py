@@ -153,8 +153,6 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         self.initConnections()
         self.initFrames()
 
-
-
     def start(self, moduleHandler, moduleId):
 
         self.moduleHandler = moduleHandler
@@ -195,30 +193,47 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
     def doConfigure(self):
 
-        rdoConfig = self.getReadoutConfig()
+        rdoRegion, rdoSettings = self.getReadoutConfig()
 
-        self.moduleHandler.configureElectronics(self.moduleId, rdoConfig)
+        self.moduleHandler.configureElectronics(self.moduleId, rdoRegion, rdoSettings)
 
     def getReadoutConfig(self):
 
-        altroConfig = self.getAltroConfig()
+        preSamples, samples = self.samplesWidget.getSamplesSettings()
+        print self.samplesWidget.getSamplesSettings()
+        zeroSuppression = self.zsWidget.isZeroSuppressionOn()
+        zsThreshold = self.zsWidget.getZSThreshold()
+        zsOffset = self.zsWidget.getOffset()
+        sparseReadout = self.zsWidget.isSparseReadout()
+
         
-        rdoRegion = self.getReadoutRegion()
 
-        triggerMode = self.getTriggerMode()
+        if zeroSuppression == True:
+            autoBs = True
+        else:
+            autoBs = False
 
-        rdoConfig = ReadoutConfig_t(altroConfig, rdoRegion, triggerMode)
 
-        return rdoConfig
+        MEBMode = self.mebWidget.getMEBMode()
+
+    #triggerMode = self.getTriggerMode()
+
+        xfirst, xlast, zfirst, zlast = self.regionWidget.getReadOutRegion()
+        print self.regionWidget.getReadOutRegion()
+        enableFakeAltroReadout = True
+
+        rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), enableFakeAltroReadout)
+
+        rdoSettings = ReadoutSettings_t(NPreSamples_t(preSamples), NSamples_t(samples), zeroSuppression, zsThreshold, zsOffset, 
+                                        sparseReadout, autoBs, MEBMode)
+
+        return rdoRegion, rdoSettings
 
     def getAltroConfig(self):
         
         preSamples, samples = self.samplesWidget.getSamplesSettings()
         
         readoutMode = self.mebWidget.getNumberOfMEB()/5
-        
-        
-        
 
     def cancelConfiguration(self):
 

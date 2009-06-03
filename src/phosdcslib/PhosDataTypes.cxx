@@ -422,27 +422,27 @@ NPreSamples_t::SetIntValue(const int val)
 
 
 /***********************************************/
-/******  ZeroSupressionTreshold_t  *************/
+/******  ZeroSuppressionTreshold_t  *************/
 /***********************************************/
-ZeroSupressionTreshold_t::ZeroSupressionTreshold_t() : fVal(0) 
+ZeroSuppressionTreshold_t::ZeroSuppressionTreshold_t() : fVal(0) 
 {
  
 }
 
 
-ZeroSupressionTreshold_t::~ZeroSupressionTreshold_t()
+ZeroSuppressionTreshold_t::~ZeroSuppressionTreshold_t()
 {
  
 }
 
 
-ZeroSupressionTreshold_t::ZeroSupressionTreshold_t(const unsigned long  n) : fVal(0) 
+ZeroSuppressionTreshold_t::ZeroSuppressionTreshold_t(const unsigned long  n) : fVal(0) 
 {
   SetIntValue(n);
 }
 
 void 
-ZeroSupressionTreshold_t::SetIntValue(const int val)
+ZeroSuppressionTreshold_t::SetIntValue(const int val)
 {
   if( (val < MAX_ZEROSUPRESSION_THR)  ||  (val < 0) )
     {
@@ -469,21 +469,22 @@ ZeroSupressionTreshold_t::SetIntValue(const int val)
 
 
 /***********************************************/
-/******  ZeroSupressionMode_t  *************/
+/******  ZeroSuppressionMode_t  *************/
 /***********************************************/
-ZeroSupressionMode_t::ZeroSupressionMode_t(const unsigned long int val)
+
+ZeroSuppressionMode_t::ZeroSuppressionMode_t(const unsigned long int val)
 {
   SetIntValue(val);
 }
 
 
-ZeroSupressionMode_t::~ZeroSupressionMode_t()
+ZeroSuppressionMode_t::~ZeroSuppressionMode_t()
 {
 
 }
 
 void
-ZeroSupressionMode_t::SetIntValue(const int val)
+ZeroSuppressionMode_t::SetIntValue(const int val)
 {
   if( (val == 0) || (val == 1) || (val == 2 ) || (val == 3)  )
   {
@@ -493,7 +494,7 @@ ZeroSupressionMode_t::SetIntValue(const int val)
     {
    
       fVal = 0;
-      cout << " ZeroSupressionMode_t::SetIntValue " << val << "out of range " <<endl;
+      cout << " ZeroSuppressionMode_t::SetIntValue " << val << "out of range " <<endl;
       cout << "zerosupression mode set to "<< val  <<endl;
   }
 }
@@ -564,8 +565,8 @@ Pattern_t::~Pattern_t()
 /***********************************************/
 AltroConfig_t::AltroConfig_t(): fNSamples(0), 
 				fNPreSamples(0), 
-				fZeroSupressionThreshold(0), 
-				fZeroSupressionMode(0), 
+				fZeroSuppressionThreshold(0), 
+				fZeroSuppressionMode(0), 
 				fReadoutMode(0) 
 {
   
@@ -575,13 +576,13 @@ AltroConfig_t::AltroConfig_t(): fNSamples(0),
 
 
 AltroConfig_t::AltroConfig_t(const NSamples_t nSamples, const NPreSamples_t  nPreSamples, 
-			     const ReadoutMode_t readoutmode, const  ZeroSupressionMode_t  zmode, 
-			     const ZeroSupressionTreshold_t  zthr): fNSamples(0), 
+			     const ReadoutMode_t readoutmode, const  ZeroSuppressionMode_t  zmode, 
+			     const ZeroSuppressionTreshold_t  zthr): fNSamples(0), 
 								    fNPreSamples(0), 
 
-								    fZeroSupressionThreshold(0), 
+								    fZeroSuppressionThreshold(0), 
 
-								    fZeroSupressionMode(0), 
+								    fZeroSuppressionMode(0), 
 
 								    fReadoutMode(0), 
 
@@ -596,8 +597,8 @@ AltroConfig_t::AltroConfig_t(const NSamples_t nSamples, const NPreSamples_t  nPr
   SetNSamples(nSamples);
   SetNPreSamples(nPreSamples);
   SetReadoutMode(readoutmode);
-  SetZerosSupressionMode(zmode);
-  SetZerosSupressionTreshold(zthr);
+  SetZerosSuppressionMode(zmode);
+  SetZerosSuppressionTreshold(zthr);
   
 }
 
@@ -656,16 +657,16 @@ AltroConfig_t::SetNPreSamples(const NPreSamples_t nPreSamples)
 
 
 void 
-AltroConfig_t::SetZerosSupressionTreshold(const ZeroSupressionTreshold_t treshold)
+AltroConfig_t::SetZerosSuppressionTreshold(const ZeroSuppressionTreshold_t treshold)
 {
-  fZeroSupressionThreshold =  treshold;
+  fZeroSuppressionThreshold =  treshold;
 }
 
 
 void 
-AltroConfig_t::SetZerosSupressionMode(const  ZeroSupressionMode_t mode)
+AltroConfig_t::SetZerosSuppressionMode(const  ZeroSuppressionMode_t mode)
 {
-  fZeroSupressionMode =  mode;
+  fZeroSuppressionMode =  mode;
 }
 
 void 
