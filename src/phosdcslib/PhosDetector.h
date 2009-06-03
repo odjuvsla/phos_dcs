@@ -48,7 +48,7 @@ class PhosDetector : public PhosDcsBase
   void SetAllApds(const int value);
   void SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig);
   void SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings);
-  void SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const;
+  void SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion);
   int  ApplyReadoutRegisters(const ModNumber_t modID, ReadoutRegisters_t readoutRegisters); 
   int  ApplyReadoutRegion(const ModNumber_t modID) const;
   void ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const;

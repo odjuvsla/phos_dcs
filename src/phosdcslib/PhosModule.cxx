@@ -269,6 +269,7 @@ PhosModule::SetReadoutSettings(const ReadoutSettings_t rdoSettings)
 void
 PhosModule::SetReadoutRegion(const ReadoutRegion_t rdoRegion)
 {
+
   fReadoutRegion = rdoRegion;
 }
 
@@ -295,7 +296,7 @@ PhosModule::ApplyReadoutRegion(const ReadoutRegion_t readoutRegion)
   int nTrials = 0;
   SetReadoutRegion(readoutRegion);
 
-  fMapperPtr->GenerateACL(fReadoutConfig.GetReadoutRegion(), fAclMaps, fAfls);
+  fMapperPtr->GenerateACL(fReadoutRegion, fAclMaps, fAfls);
 
   int status[RCUS_PER_MODULE];
 

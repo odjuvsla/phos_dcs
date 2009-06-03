@@ -108,8 +108,9 @@ PhosDetector::SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_
 }
 
 void
-PhosDetector::SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const
+PhosDetector::SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) 
 {
+  fReadoutRegion = rdoRegion;
   phosModulePtr[modId.GetIntValue()]->SetReadoutRegion(rdoRegion);
 }
 

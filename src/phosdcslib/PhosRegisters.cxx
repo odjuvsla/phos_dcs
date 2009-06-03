@@ -168,6 +168,7 @@ void RcuALTROIF_t::SetByRegisterValue(int value)
       break;
     default:
       fSampleFreq = 10000000;
+      break;
     } 
   
 }

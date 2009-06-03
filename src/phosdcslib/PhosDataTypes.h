@@ -501,12 +501,6 @@ public:
     fMEBMode(v.GetMEBMode())
   {}
 
-  
-//   ReadoutSettings_t& operator=(const ReadoutSettings_t)
-//   {
-//     return *this;
-//   }
-
   NPreSamples_t GetNPreSamples() const { return fNPreSamples; } 
   NSamples_t GetNSamples() const { return fNSamples; }
   bool IsZeroSuppressed() const { return fIsZeroSuppressed; }

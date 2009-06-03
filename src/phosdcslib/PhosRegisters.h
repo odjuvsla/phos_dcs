@@ -22,7 +22,7 @@ class RcuALTROIF_t
 public:
 
   RcuALTROIF_t();
-  RcuALTROIF_t(short nSamples, int sampleFreq = 10000000, short cstbDelay = 2, short instructionErrorCheck = 0);
+  RcuALTROIF_t(short nSamples, int sampleFreq = 10000000, short cstbDelay = 0, short instructionErrorCheck = 0);
   
   RcuALTROIF_t(const RcuALTROIF_t& v):
     fNSamples(v.GetNumberOfSamples()),
@@ -32,10 +32,10 @@ public:
   {
   }
   
-  RcuALTROIF_t& operator=(const RcuALTROIF_t)
-  {
-    return *this;
-  }
+//   RcuALTROIF_t& operator=(const RcuALTROIF_t)
+//   {
+//     return *this;
+//   }
  
   short GetNumberOfSamples() const { return fNSamples; }
   int GetSampleFrequency() const { return fSampleFreq; }
@@ -86,10 +86,10 @@ public:
     
   }
   
-  RcuTRGCONF_t& operator=(const RcuTRGCONF_t)
-  {
-    return *this;
-  }
+//   RcuTRGCONF_t& operator=(const RcuTRGCONF_t)
+//   {
+//     return *this;
+//   }
 
   bool IsSoftwareTriggerEnabled() const { return fSoftwareTrigger; }
   bool IsAuxTriggerEnabled() const { return fAuxTrigger; } 
@@ -162,10 +162,10 @@ public:
   {
   }
   
-  RcuRDOMOD_t& operator=(const RcuRDOMOD_t)
-  {
-    return *this;
-  }
+//   RcuRDOMOD_t& operator=(const RcuRDOMOD_t)
+//   {
+//     return *this;
+//   }
 
   bool IsMaskRDYRXEnabled() const { return fMaskRDYRX; }
   bool IsSparseReadoutEnabled() const { return fSparseReadout; }
@@ -212,10 +212,10 @@ public:
   {
   }
   
-  RcuALTROCFG1_t& operator=(const RcuALTROCFG1_t)
-  {
-    return *this;
-  }
+//   RcuALTROCFG1_t& operator=(const RcuALTROCFG1_t)
+//   {
+//     return *this;
+//   }
 
   bool IsZeroSuppressionEnabled() const { return fZeroSuppressionEnabled; }
   bool UsingAutomaticBaselineSubtraction() const { return fAutomaticBaselineSubtraction; }
@@ -270,10 +270,10 @@ public:
   {
   }
   
-  RcuALTROCFG2_t& operator=(const RcuALTROCFG2_t)
-  {
-    return *this;
-  }
+//   RcuALTROCFG2_t& operator=(const RcuALTROCFG2_t)
+//   {
+//     return *this;
+//   }
 
   short GetNPreSamples() const { return fNPreSamples; }
 
@@ -318,10 +318,10 @@ public:
   {
   }
   
-  AltroZSTHR_t& operator=(const AltroZSTHR_t)
-  {
-    return *this;
-  }
+//   AltroZSTHR_t& operator=(const AltroZSTHR_t)
+//   {
+//     return *this;
+//   }
 
   short GetThreshold() const { return fThreshold; }
   short GetOffset() const { return fOffset; } 
@@ -376,10 +376,10 @@ public:
   {
   }
   
-  AltroTRCFG_t& operator=(const AltroTRCFG_t)
-  {
-    return *this;
-  }
+//   AltroTRCFG_t& operator=(const AltroTRCFG_t)
+//   {
+//     return *this;
+//   }
 
   short GetStart() const { return fStart; }
   short GetStop() const { return fStop; } 
@@ -442,10 +442,10 @@ public:
   {
   }
   
-  AltroDPCFG_t& operator=(const AltroDPCFG_t)
-  {
-    return *this;
-  }
+//   AltroDPCFG_t& operator=(const AltroDPCFG_t)
+//   {
+//     return *this;
+//   }
 
   short GetFirstBaselineCorrectionMode() const { return fFirstBaselineCorrection; }
   bool IsZeroSuppressed() const { return fZeroSuppression; }
@@ -514,10 +514,10 @@ public:
   {
   }
   
-  AltroDPCFG2_t& operator=(const AltroDPCFG2_t)
-  {
-    return *this;
-  }
+//   AltroDPCFG2_t& operator=(const AltroDPCFG2_t)
+//   {
+//     return *this;
+//   }
 
   short GetNPreSamples() const { return fNPreTriggerSamples; }
   bool GetMEBMode() const { return fMEBMode; } 
@@ -567,10 +567,10 @@ public:
   {
   }
 
-  ReadoutRegisters_t& operator=(const ReadoutRegisters_t)
-  {
-    return *this;
-  }
+//   ReadoutRegisters_t& operator=(const ReadoutRegisters_t)
+//   {
+//     return *this;
+//   }
 
   ~ReadoutRegisters_t() {}
   

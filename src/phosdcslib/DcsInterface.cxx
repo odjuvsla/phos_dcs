@@ -351,6 +351,7 @@ DcsInterface::SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_
 void
 DcsInterface::SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const
 {
+ 
   fPhosDetectorPtr->SetReadoutRegion(modId, rdoRegion);
 }
 
@@ -493,7 +494,7 @@ DcsInterface::Configure(const ModNumber_t modId)
   RcuALTROCFG2_t altrocfg2(fReadoutSettings.GetNPreSamples().GetIntValue());
 
   ReadoutRegisters_t readoutRegs(altroif, rdomod, altrocfg1, altrocfg2);
-  // cout << fReadoutSettings.GetNSamples().GetIntValue() << endl;  
+
   log.str("");
   readoutRegs.Print(log);
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);

@@ -196,11 +196,13 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         rdoRegion, rdoSettings = self.getReadoutConfig()
 
         self.moduleHandler.configureElectronics(self.moduleId, rdoRegion, rdoSettings)
+        
+        self.cancelConfiguration()
 
     def getReadoutConfig(self):
 
         preSamples, samples = self.samplesWidget.getSamplesSettings()
-        print self.samplesWidget.getSamplesSettings()
+
         zeroSuppression = self.zsWidget.isZeroSuppressionOn()
         zsThreshold = self.zsWidget.getZSThreshold()
         zsOffset = self.zsWidget.getOffset()
@@ -219,7 +221,6 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
     #triggerMode = self.getTriggerMode()
 
         xfirst, xlast, zfirst, zlast = self.regionWidget.getReadOutRegion()
-        print self.regionWidget.getReadOutRegion()
         enableFakeAltroReadout = True
 
         rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), enableFakeAltroReadout)

@@ -103,7 +103,6 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 	      //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
 	      aclIndex[rcu] ++;
 
-
 	      afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(card+1) +(long int)branch*MAX_CARDS_PER_BRANCH));
 	    }
 	}

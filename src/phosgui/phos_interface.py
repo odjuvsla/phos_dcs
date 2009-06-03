@@ -411,12 +411,10 @@ class ModuleHandler(PHOSHandler):
             
             Thread.__init__(self)
             PHOSHandler.__init__(self)
-            print readoutSettings.GetNSamples().GetIntValue()
             self.moduleId = moduleId
             self.dcs_interface_wrapper = dcs_interface_wrapper
             self.readoutRegion = readoutRegion
             self.readoutSettings = readoutSettings
-            print self.readoutSettings.GetNSamples().GetIntValue()
 
         def run(self):
 
@@ -424,7 +422,7 @@ class ModuleHandler(PHOSHandler):
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
             
             dcs_interface.SetReadoutRegion(modId, self.readoutRegion)
-            print modId.GetIntValue()
+
             dcs_interface.SetReadoutSettings(modId, self.readoutSettings)
 #            dcs_interface.ArmTrigger(self.moduleId)
             dcs_interface.Configure(modId)
