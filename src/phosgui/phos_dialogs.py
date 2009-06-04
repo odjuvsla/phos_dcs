@@ -264,9 +264,9 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         self.readoutLabel.setGeometry(self.readoutFrame.width()/2 - self.readoutLabel.width()/2 - 15, 10, 130, 20)
 
         self.initReadoutWidgets()
+        self.initApdWidgets()
 
     def initReadoutWidgets(self):
-
 
         self.readoutSep = QtGui.QFrame(self.readoutFrame)
         self.readoutSep.setGeometry(0, 35, self.readoutFrame.width(), self.readoutFrame.width())
@@ -307,3 +307,10 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
         self.mebWidget = ReadoutMEBWidget(self.readoutFrame.width() - 30, 150, self)
         self.mebWidget.setGeometry(10, self.zsSep.y() + 5, self.readoutFrame.width() - 30, 150)
+
+    def initApdWidgets(self):
+
+        self.apdWidget = APDSettingSelectorWidget(self.apdFrame.width() - 30, 200, self.apdFrame)
+        
+        
+    

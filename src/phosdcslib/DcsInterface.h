@@ -56,7 +56,8 @@ class DcsInterface : public PhosDcsBase
  
   void            DisArmTrigger(const int modID, const int RcuID) const;
  
-  void            EnableTrigger(int modID);
+  void            EnableTrigger(int modID, std::string triggerType);
+  void            DisableTrigger(int modID);
   void            EnableTrigger_ttcrx(int modID);  
   unsigned long*  GetApdValues(const int mod, const int rcu, const int branch, const int card);
   void            GetConfigComment(char *text, const int id);

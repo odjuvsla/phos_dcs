@@ -474,11 +474,13 @@ Rcu::ApplyReadoutRegion() const
     {
       log << "Rcu::ApplyReadoutRegion: The active channel list was set correctly for " << fFeeServerName << ", status = " << iRet;
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+      iRet = 0;
     }
   else
     {
       log << "Rcu::ApplyReadoutRegion: Active channel list was not set correctly for " << fFeeServerName << ", status = " << iRet;
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+      iRet = 1;
     }
 
   return iRet;
@@ -542,22 +544,26 @@ Rcu::ApplyReadoutRegisters(ReadoutRegisters_t readoutRegisters)
   int iRet =  fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU, fFeeServerName, readoutRegisters.GetRcuRegisterAddresses(), 
 					    readoutRegisters.GetRcuRegisterValues(), readoutRegisters.GetRcuVerify(), 
 					    readoutRegisters.GetNRcuRegisters());
+  if(iRet == REG_OK) 
+    {
+      iRet = 0;
+    }
+  else iRet = 1;
+
   return iRet;
 }
 
 void
-Rcu::EnableTrigger() const
+Rcu::EnableTrigger(RcuTRGCONF_t trgConf) const
 {
-  char resultBuffer[50];
-  char tmpFileName[1024];  
-  sprintf(tmpFileName,"%s/s_enabletrigger.txt" ,fPhosDcsScriptDir ); 
-  fFeeClientPtr->ExecuteScript(tmpFileName, fFeeServerName, resultBuffer, 50);
-  
+  bool verify = true;
+  const long unsigned int address = trgConf.fRegAddress;
+  const long unsigned int value = trgConf.GetRegisterValue();
+  fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU, fFeeServerName, &address, &value, &verify, 1);
   stringstream log;
   log << "Rcu::EnableTrigger: Enabling external RCU trigger for : " << fFeeServerName << " ...... Done ! ";
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 }
-
 
 void
 Rcu::EnableTrigger_ttcrx() const
@@ -572,7 +578,6 @@ Rcu::EnableTrigger_ttcrx() const
   log << "Rcu::EnableTrigger_ttcrx: Enabling TTCrx RCU trigger for : " << fFeeServerName << " ...... Done ! ";
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 }
-
 
 void
 Rcu::DisArmTrigger() const

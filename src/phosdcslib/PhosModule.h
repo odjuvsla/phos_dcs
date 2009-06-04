@@ -23,6 +23,7 @@
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
 #include "RcuRegisterMap.h"
+#include "PhosRegisters.h"
 
 
 class Mapper;
@@ -40,7 +41,7 @@ class PhosModule : public PhosDcsBase
   const int ArmTrigger(const char *triggerScriptFileName);
   void DisArmTrigger(const int rcuId) const ;
   const char* GetFeeServerName(const int rcuId) const; 
-  void EnableTrigger() const;
+  void EnableTrigger(RcuTRGCONF_t trgConf) const;
   void EnableTrigger_ttcrx() const ;
   void ExecuteScript(const char *scriptFileName) const;
   void CreateRcu(const char *serverName, const int mId, const int rcuId, const int zCoord, const int xCoord);

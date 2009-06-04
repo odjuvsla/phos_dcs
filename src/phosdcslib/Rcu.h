@@ -28,6 +28,7 @@ class FeeCard;
 class FeeCard;
 class MainGui; 
 class ReadoutRegisters_t;
+class RcuTRGCONF_t;
 
 class Rcu : public PhosDcsBase
 {
@@ -42,7 +43,7 @@ class Rcu : public PhosDcsBase
   unsigned int  ActivateFee(const int branch, const int card);
   unsigned int  DeActivateFee(const int branch, const int card);
   void ArmTrigger(const char *triggerScriptFilename);
-  void EnableTrigger() const ;
+  void EnableTrigger(RcuTRGCONF_t trgConf) const ;
   void EnableTrigger_ttcrx() const;
   void DisArmTrigger() const ;
   const int  ApplyReadoutRegion() const ;

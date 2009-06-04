@@ -201,16 +201,18 @@ PhosModule::ArmTrigger(const char *triggerScriptFileName)
   return iRet;
 }
 
-
 void   
-PhosModule::EnableTrigger() const
+PhosModule::EnableTrigger(RcuTRGCONF_t trgConf) const
 {
+  
    for(int i=0; i<RCUS_PER_MODULE; i++)
     {
-      fRcuPtr[i]->EnableTrigger();
-    } 
+      if(fRcuPtr[i] != 0)
+	{
+	  fRcuPtr[i]->EnableTrigger(trgConf);
+	} 
+    }
 }
-
 
 void   
 PhosModule::EnableTrigger_ttcrx() const

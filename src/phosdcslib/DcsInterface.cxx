@@ -184,11 +184,34 @@ DcsInterface::DisArmTrigger(const int modID, const int RcuID) const
 
 
 void 
-DcsInterface::EnableTrigger(int modID)
+DcsInterface::EnableTrigger(int modID, string triggerType)
 {
-  fPhosDetectorPtr->phosModulePtr[modID]->EnableTrigger();
-}
+  RcuTRGCONF_t tmpTrgConf;
 
+  if(!strcmp(triggerType.c_str(), "ttc"))
+    {
+      tmpTrgConf.EnableTTCrxTrigger();
+    }
+  else if(!strcmp(triggerType.c_str(), "soft"))
+    {
+      tmpTrgConf.EnableSoftwareTrigger();
+    }
+  else if(!strcmp(triggerType.c_str(), "aux"))
+    {
+      tmpTrgConf.EnableAuxTrigger();
+    }
+  else
+    {
+      tmpTrgConf.DisableAllTriggers();
+    }
+
+  fPhosDetectorPtr->phosModulePtr[modID]->EnableTrigger(tmpTrgConf);
+}
+void 
+DcsInterface::DisableTrigger(int modID)
+{
+  EnableTrigger(modID, string("disable"));
+}
 
 void 
 DcsInterface::EnableTrigger_ttcrx(int modID)
@@ -351,7 +374,6 @@ DcsInterface::SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_
 void
 DcsInterface::SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const
 {
- 
   fPhosDetectorPtr->SetReadoutRegion(modId, rdoRegion);
 }
 

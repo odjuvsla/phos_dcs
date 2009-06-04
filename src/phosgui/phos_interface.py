@@ -389,14 +389,18 @@ class ModuleHandler(PHOSHandler):
         
         print "Shutting down module: " + str(moduleId)
 
-    def enableTrigger(self, moduleId):
+    def enableTrigger(self, moduleId, ):
         
-        print "Enabling trigger for module: " + str(moduleId)
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        dcs_interface.EnableTrigger(moduleId, "ttc")
+        self.dcs_interface_wrapper.releaseDcsInterface()
 
     def disableTrigger(self, moduleId):
 
-        print "Disabling trigger for module: " + str(moduleId)
-
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        dcs_interface.DisableTrigger(moduleId)
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        
     def configureElectronics(self, moduleId, readoutRegion, readoutSettings):
         # Start a thread for the toggling        
 

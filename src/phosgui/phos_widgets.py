@@ -125,7 +125,7 @@ class ModuleTabWidget(QtGui.QWidget):
                 
 #        self.logViewer.append(logString)
         self.logViewer.setText(self.logViewer.toPlainText() + logString)
-#        self.logViewer.verticalScrollBar().setPosition(self.logViewer.verticalScrollBar().maximum())
+        self.logViewer.verticalScrollBar().setValue(self.logViewer.verticalScrollBar().maximum())
         
     def updateFeeCard(self, feeId, state):
         
@@ -716,3 +716,23 @@ class ReadoutMEBWidget(QtGui.QWidget):
         return self.mebComboBox.currentText() == '8'
 
     
+class APDSettingSelectorWidget(QtGui.QWidget):
+    
+    def __init__(self, width, height, parent=None):
+        super(QtGui.QWidget, self).__init__(parent)
+
+        self.initLabels()
+#        self.initSpinBox()
+#        self.initTextEdit()
+#        self.initButtons()
+
+    def initLabels(self):
+        
+        self.apdLabel = QtGui.QLabel("APD Setting:", self)
+        self.apdLabel.setGeometry(10, 15, 120, 20)
+        
+        self.descriptionLabel = QtGui.QLabel("Description:", self)
+        self.descriptionLabel.setGeometry(10, 40, 120, 20)
+        
+
+        
