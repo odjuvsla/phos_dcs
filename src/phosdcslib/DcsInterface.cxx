@@ -188,15 +188,15 @@ DcsInterface::EnableTrigger(int modID, string triggerType)
 {
   RcuTRGCONF_t tmpTrgConf;
 
-  if(!strcmp(triggerType.c_str(), "ttc"))
+  if(triggerType == "ttc")
     {
       tmpTrgConf.EnableTTCrxTrigger();
     }
-  else if(!strcmp(triggerType.c_str(), "soft"))
+  else if(triggerType == "soft")
     {
       tmpTrgConf.EnableSoftwareTrigger();
     }
-  else if(!strcmp(triggerType.c_str(), "aux"))
+  else if(triggerType == "aux")
     {
       tmpTrgConf.EnableAuxTrigger();
     }
@@ -234,6 +234,12 @@ DcsInterface::GetConfigComment(char *text, const int id)
   fDatabasePtr->GetConfigComment(text, id);
 }
 
+string
+DcsInterface::GetConfigComment(const int id)
+{
+  return fDatabasePtr->GetConfigComment(id);
+}
+
 
 FeeCard* 
 DcsInterface::GetFeeCard(const int mod, const int rcu, const int branch, const int cardId) const
@@ -259,17 +265,18 @@ DcsInterface::GetRcuPtr(int modID, int rcuID) const
 }
 
 
-void      
-DcsInterface::LoadApdConfig(ConfigInfo_t *info) //Raed apd values from datbase and put them in sandbox directory
-{
-  fDatabasePtr->LoadApdConfig(info);
-}
+// void      
+// DcsInterface::LoadApdConfig(ConfigInfo_t *info) //Raed apd values from datbase and put them in sandbox directory
+// {
+//   fDatabasePtr->LoadApdConfig(info);
+// }
 
 
 void      
-DcsInterface::LoadApdConfig(ConfigInfo_t *info, int id) //Raed apd values from datbase and put them in sandbox directory
+DcsInterface::LoadApdConfig(ConfigInfo_t &info, int id) //Raed apd values from datbase and put them in sandbox directory
 {
-  fDatabasePtr->LoadApdConfig(info, id);
+  int res = fDatabasePtr->LoadApdConfig(info, id);
+  
 }
 
 void 
@@ -290,7 +297,7 @@ DcsInterface::LoadReadoutConfiguration(ReadoutConfig_t *rdoconfigPtr, ModNumber_
 void       
 DcsInterface::SaveReadoutConfiguration(const ReadoutConfig_t rdoconfig, const ModNumber_t modNumber) const
 {
-  fDatabasePtr->SaveRadoutConfiguration(rdoconfig, modNumber);
+  fDatabasePtr->SaveReadoutConfiguration(rdoconfig, modNumber);
 }
 
 void            

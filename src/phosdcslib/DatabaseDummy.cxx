@@ -17,7 +17,7 @@
  **************************************************************************/
 
 #include "DatabaseDummy.h"
-
+#include "PhosDcsLogging.h"
 
 DatabaseDummy::DatabaseDummy(): PhosDcsBase()
 {
@@ -54,6 +54,23 @@ DatabaseDummy::GetConfigComment(char *description, int id)
     return found;
 }
 
+string
+DatabaseDummy::GetConfigComment(int id)
+{
+
+  char postfix[100]; 
+  char configInfoFilename[200];
+  SetPostfix(postfix, id);  
+  char dummystring[2];
+  char tmpDescription[CONFIGINFO_MAX_SIZE];
+
+  sprintf(configInfoFilename,"%sconfiguration_%s_info.txt",  fDatabaseFolder, postfix);
+
+  ScanTextFromFile(configInfoFilename, tmpDescription, CONFIGINFO_MAX_SIZE);
+  return std::string(tmpDescription);
+  
+}
+
 
 int
 DatabaseDummy::LoadApdConfig(char *description)
@@ -76,10 +93,10 @@ DatabaseDummy::LoadApdConfig(char *description)
 
 
 int
-DatabaseDummy::LoadApdConfig(ConfigInfo_t *info, int configID)
+DatabaseDummy::LoadApdConfig(ConfigInfo_t &info, int configID)
 {
   int id;
-  
+  std::stringstream log;
   if(configID > 0)
     {
       id = configID;
@@ -91,16 +108,18 @@ DatabaseDummy::LoadApdConfig(ConfigInfo_t *info, int configID)
 
   if(id <0)
     {
-      printf("\nERROR ! ID file not found\n");
+      log.str("");
+      log << "DatabaseDummy::LoadApdConfig: Error file for ID: " << id << " was not found";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
     }
   else
     {
-      LoadApdConfig(info->fInfo, id);
-      info->fID = id;
-      cout << "DatabaseDummy::LoadApdConfig(ConfigInfo_t *info, int configID), databaseFolderPtr = " <<fDatabaseFolder << endl;
-      cout << "DatabaseDummy::LoadApdConfig(ConfigInfo_t *info, int configID), sanboxFolderPtr = " << fSandboxFolder  << endl;
-      cout << "ID =" << info->fID << "  description = " << info->fInfo <<endl;
-      info->fIDLimit = GetLatestConfigId();
+      LoadApdConfig(info.fInfo, id);
+      info.fID = id;
+      log.str("");
+      log << "Loading APD settings for ID: " << id;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+      info.fIDLimit = GetLatestConfigId();
     }
   
   return id;
@@ -119,20 +138,19 @@ DatabaseDummy::LoadApdConfig(char *description, int id)
   int branch = 0;
   int card = 0;
   int tmp = 0;
-
+  
   char postfix[100]; 
 
   SetPostfix(postfix, id);
   sprintf(configFilename,"%sconfiguration_%s.txt",fDatabaseFolder, postfix);
   GetConfigComment(description, id);
-  printf("\nDatabaseDummy::LoadApdConfig, descriptipn = %s\n", description);
+
   FILE *fp; 
   FILE *fpLoad; 
 
   if(CheckFile(configFilename, "r") == 0)
     {
       fpLoad=fopen(configFilename, "r");  
-      printf("\nLoading configuration from file: %s\n", configFilename);
       fscanf(fpLoad, "Module:%d\tRCU:%d\tbranch:%d\tcard:%d\n", &module, &rcu, &branch, &card); 
       do
 	{
@@ -156,9 +174,8 @@ DatabaseDummy::LoadApdConfig(char *description, int id)
 
 }//end LoadApdConfig
 
-
 void 
-DatabaseDummy::SaveRadoutConfiguration(const ReadoutConfig_t rdoConfig, const ModNumber_t modNumber) const
+DatabaseDummy::SaveReadoutConfiguration(const ReadoutConfig_t rdoConfig, const ModNumber_t modNumber) const
 {
  
 

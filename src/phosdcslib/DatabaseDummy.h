@@ -23,6 +23,8 @@
 
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
+#include <iostream>
+
 struct ConfigInfo_t;
 
 
@@ -33,17 +35,18 @@ class DatabaseDummy : public PhosDcsBase
   DatabaseDummy();
   virtual ~DatabaseDummy();
 
-  int LoadApdConfig(ConfigInfo_t *info, int = -1);
+  int LoadApdConfig(ConfigInfo_t &info, int = -1);
   int LoadApdConfig(char *description);
   int LoadApdConfig(char *description, int id);
   int SaveApdConfig(char *description);
-  void SaveRadoutConfiguration(const ReadoutConfig_t rdoConfig, const ModNumber_t modNumber) const;
+  void SaveReadoutConfiguration(const ReadoutConfig_t rdoConfig, const ModNumber_t modNumber) const;
   void LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig, const ModNumber_t modnumber_t) const;
 
   void SaveTruSettings(const TRUSettings_t t) const;
   void LoadTruSettings(TRUSettings_t *t)const;
 
   bool  GetConfigComment(char *description, int id);
+  std::string GetConfigComment(int id);
   const int GetLatestConfigId() const;
  private:
   void SetPostfix(char *postfix, const int id) const;

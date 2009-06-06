@@ -67,6 +67,7 @@ class PhosGui(QtGui.QMainWindow):
         self.moduleHandler = ModuleHandler(self.dcsInterface)
         self.detectorHandler = DetectorHandler(self.dcsInterface)
         self.logHandler = LogHandler(self.dcsInterface)
+        self.databaseHandler = DatabaseHandler(self.dcsInterface)
 
         self.connect(self.feeCardHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
         self.connect(self.truCardHandler, QtCore.SIGNAL("fetchLog"), self.fetchLog)
@@ -183,7 +184,7 @@ class PhosGui(QtGui.QMainWindow):
 
     def showElectronicsConfigDialog(self, moduleId):
         
-        self.configureElectronicsDialog.start(self.moduleHandler, moduleId)
+        self.configureElectronicsDialog.start(self.moduleHandler, self.databaseHandler, moduleId)
         
     def showConnectDialog(self):
         

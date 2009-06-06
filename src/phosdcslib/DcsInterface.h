@@ -61,13 +61,14 @@ class DcsInterface : public PhosDcsBase
   void            EnableTrigger_ttcrx(int modID);  
   unsigned long*  GetApdValues(const int mod, const int rcu, const int branch, const int card);
   void            GetConfigComment(char *text, const int id);
+  std::string     GetConfigComment(const int id);
   FeeCard*        GetFeeCard(const int mod, const int rcu, const int branch, const int cardId) const;
   int             GetLatestConfigId();
   std::string     GetLogViewerString();
   Rcu*            GetRcuPtr(const int modID, const int rcuID) const;
 
-  void            LoadApdConfig(ConfigInfo_t *info);
-  void            LoadApdConfig(ConfigInfo_t *info, int id);
+  //  void            LoadApdConfig(ConfigInfo_t *info);
+  void            LoadApdConfig(ConfigInfo_t &info, int id);
   void            LoadApdValues(int modID);
   void            LoadReadoutConfiguration(ReadoutConfig_t *rdoconfigPtr, ModNumber_t modNumber) const; 
   void            SaveReadoutConfiguration(const ReadoutConfig_t rdoconfig, ModNumber_t modNumber) const;

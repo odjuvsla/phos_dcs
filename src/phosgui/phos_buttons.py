@@ -247,6 +247,7 @@ class ModuleDisableTriggerButton(PhosModulePushButton):
     def disableTriggerModule(self):
         
         self.emit(QtCore.SIGNAL("disableTriggerModule"), "disableTriggerModule", self.moduleId)
+        
 
 # class PhosSaveButton(QtGui.QPushButton):
     

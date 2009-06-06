@@ -451,7 +451,7 @@ class DetectorHandler(PHOSHandler):
     def addFeeServer(self, feeServer, id):
 
         tmpFeeServer = FeeServer()
-        
+        print feeServer
         tmpFeeServer.fName = str(feeServer)
         moduleId, rcuId, x, z = self.idConverter.GetRcuLogicalCoordinatesFromFeeServerId(id)
         tmpFeeServer.fModId = moduleId
@@ -467,6 +467,7 @@ class DetectorHandler(PHOSHandler):
         self.dcs_interface.releaseDcsInterface()
         self.fee_servers.clear()
         return res
+
     def stopFeeClient(self):
 
         self.dcs_interface.DeInit()
@@ -534,5 +535,73 @@ class LogHandler(PHOSHandler):
 
             self.dcs_interface_wrapper.releaseDcsInterface()
 
+class DatabaseHandler(PHOSHandler):
+    """Class for handling the APD settings database"""
     
+    def __init__(self, dcs_interface):
+        """init takes a DcsInterfaceThreadWrapper object as argument"""
+        PHOSHandler.__init__(self)
+        self.dcs_interface_wrapper = dcs_interface
 
+    def getLatestConfigId(self):
+        """Get the id for the last configuration"""
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        id = dcs_interface.GetLatestConfigId()
+        self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return id
+
+    def getConfigComment(self, id):
+
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        comment = dcs_interface.GetConfigComment(id)
+        self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return comment
+
+    def loadApdConfig(self, id):
+        
+        configinfo = ConfigInfo_t();
+        configinfo.fID = id
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        dcs_interface.LoadApdConfig(configinfo, id)
+        self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
+        dcs_interface.releaseDcsInterface()
+        
+    def loadApdValues(self, moduleId):
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        dcs_interface.LoadApdValues(moduleID)
+        self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
+        dcs_interface.releaseDcsInterface()
+    
+    def applyApdValues(self, moduleId, rcuId, branchId, cardId):
+        
+
+        class __ConfigureElectronicsThread(Thread, PHOSHandler):
+            
+            def __init__(self, dcs_interface_wrapper, moduleId, readoutRegion, readoutSettings):
+            
+                Thread.__init__(self)
+                PHOSHandler.__init__(self)
+                self.moduleId = moduleId
+                self.dcs_interface_wrapper = dcs_interface_wrapper
+                self.readoutRegion = readoutRegion
+                self.readoutSettings = readoutSettings
+                
+                def run(self):
+
+                    modId = ModNumber_t(self.moduleId)
+                    dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+                    
+                    dcs_interface.SetReadoutRegion(modId, self.readoutRegion)
+                    
+                    dcs_interface.SetReadoutSettings(modId, self.readoutSettings)
+            #            dcs_interface.ArmTrigger(self.moduleId)
+                    dcs_interface.Configure(modId)
+                    self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", self.moduleId)
+                    
+                    self.dcs_interface_wrapper.releaseDcsInterface()
+
+        
