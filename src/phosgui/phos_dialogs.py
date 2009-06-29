@@ -21,8 +21,8 @@ class ConnectSettingsDialog(QtGui.QDialog):
 
         self.feeServerFile = "../GuiConfigurationFiles/feeServerNames.cfg"
 
-        self.feeServerNames = [" "]*(PHOS_MODS*RCUS_PER_MODULE+PHOS_MODS)
-        self.feeServerEnabled = [False]*(PHOS_MODS*RCUS_PER_MODULE+PHOS_MODS)
+        self.feeServerNames = [" "]*(PHOS_MODS*RCUS_PER_MODULE+1)
+        self.feeServerEnabled = [False]*(PHOS_MODS*RCUS_PER_MODULE+1)
         self.getFeeServers()
         self.loadFromFile()
         
@@ -77,8 +77,8 @@ class ConnectSettingsDialog(QtGui.QDialog):
         
         for i in range(PHOS_MODS):
             for j in range(RCUS_PER_MODULE):
-                feeLines.append(self.feeServerNames[i*(RCUS_PER_MODULE+1) + j] + " " +  str(self.feeServerEnabled[i*(RCUS_PER_MODULE+1) + j]) + "\n")
-            feeLines.append(self.feeServerNames[i*(RCUS_PER_MODULE+1) + RCUS_PER_MODULE] + " " + str(self.feeServerEnabled[i*(RCUS_PER_MODULE+1) + RCUS_PER_MODULE]) + "\n")
+                feeLines.append(self.feeServerNames[i*(RCUS_PER_MODULE) + j] + " " +  str(self.feeServerEnabled[i*(RCUS_PER_MODULE) + j]) + "\n")
+        feeLines.append(self.feeServerNames[PHOS_MODS*(RCUS_PER_MODULE)]+ " " + str(self.feeServerEnabled[PHOS_MODS*(RCUS_PER_MODULE)]) + "\n")
         FEEFILE.writelines(feeLines)
         FEEFILE.close()
 
@@ -124,22 +124,50 @@ class RcuDialog(QtGui.QDialog):
         super(QtGui.QDialog, self).__init__(parent)
 
         self.resize(640, 480)
-
+        
+        self.initGeneralInfoFrame()
         self.initRegistersFrame()
         self.initRdoInfoFrame()
         self.initCloseButton()
+
+        self.initWidgets()
+    
+    def initGeneralInfoFrame(self): 
         
+        self.infoFrame = QtGui.QFrame(self)
+        self.infoFrame.setGeometry(10, 10, self.width()/2 - 10, self.height() - 60)
+        self.infoFrame.setFixedSize(self.width()/2 - 20, self.height()/4)
+        self.infoFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.infoFrame.setFrameShadow(QtGui.QFrame.Raised)
+        
+    
     def initRegistersFrame(self):
-        
-        print 'init registers frame'
+                
+        self.regFrame = QtGui.QFrame(self)
+        self.regFrame.setGeometry(self.width()/2 + 10, 10, self.width()/2 - 10, self.height() - 10)
+        self.regFrame.setFixedSize(self.width()/2 - 20, self.height() - 20)
+        self.regFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.regFrame.setFrameShadow(QtGui.QFrame.Raised)
         
     def initRdoInfoFrame(self):
         
-        print 'init readout info frame'
-
+        
+        self.rdoFrame = QtGui.QFrame(self)
+        self.rdoFrame.setGeometry(10, self.infoFrame.y() + self.infoFrame.height() + 10, self.width()/2 - 10, self.height() - 60)
+#        self.rdoFrame.setGeometry(10, 10 + self.infoFrame.height() + 10, self.width()/2 - 10, self.height() - 60)
+        self.rdoFrame.setFixedSize(self.width()/2 - 20,  self.height()/4)
+        self.rdoFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.rdoFrame.setFrameShadow(QtGui.QFrame.Raised)
+        
     def initCloseButton(self):
         
         print 'init close button'
+        
+    def initWidgets(self):
+        
+        self.genInfoWidget = RcuGeneralInfoWidget(self.infoFrame.width() - 10, self.infoFrame.height() - 10, self.infoFrame)
+        self.regWidget = RcuRegistersWidget(self.regFrame.width() - 10, self.regFrame.height() - 10, self.regFrame)
+#        self.rdoInfo = RcuRdoInfoWidget()
         
 class ConfigureElectronicsDialog(QtGui.QDialog):
     """Dialog for setting up the electronics configuration"""
