@@ -15,6 +15,7 @@
  * about the suitability of this software for any purpose. It is          *
  * provided "as is" without express or implied warranty.                  *
  **************************************************************************/
+
 #include "FeeCard.h"
 #include "Rcu.h"
 #include "ScriptCompiler.h"
@@ -44,7 +45,7 @@ Rcu::Rcu() : PhosDcsBase(),
 
 Rcu::Rcu(PhosFeeClient *feeClientPtr, const char *feeServerName, const int mId, 
 	 const int rId, const int z, const int x) : PhosDcsBase(), 
-						    fFeeClientPtr(feeClientPtr), 
+						    fFeeClientPtr(0), 
 						    fModuleId(mId),	 
 						    fRcuId(rId),
 						    fZCoord(z), 
@@ -52,6 +53,7 @@ Rcu::Rcu(PhosFeeClient *feeClientPtr, const char *feeServerName, const int mId,
 						    fActiveFeeList(0), 
 						    fActiveFeeRdoList(0)
 {
+  fFeeClientPtr = new PhosFeeClient();
   SetFeeServer(feeServerName); //set the feeServerName same as rcu name
   InitFeeCards();
 }
@@ -211,7 +213,7 @@ Rcu::ToggleFeeOnOff(const int branch, const int cardNumber)
 
   else
     {
-      if((*fFeeState[branch*14 + cardIndex] == FEE_STATE_ON) || (*fFeeState[branch*14 + cardIndex]== FEE_STATE_WARNING) || (*fFeeState[branch*14 + cardIndex] == FEE_STATE_ERROR))
+      if(((*fFeeState[branch*14 + cardIndex])&0x3f == FEE_STATE_ON) || (*fFeeState[branch*14 + cardIndex]== FEE_STATE_WARNING) || (*fFeeState[branch*14 + cardIndex] == FEE_STATE_ERROR))
 	{
 	  *fFeeState[branch*14+cardIndex] = DeActivateFee(branch, cardNumber);
 	}
@@ -222,7 +224,7 @@ Rcu::ToggleFeeOnOff(const int branch, const int cardNumber)
 
       if(cardIndex == 0)
 	{
-	  if((*fFeeState[branch*14 + 13] == FEE_STATE_ON) || (*fFeeState[branch*14 + 13] == FEE_STATE_WARNING)|| (*fFeeState[branch*14 + 13] == FEE_STATE_ERROR))
+	  if(((*fFeeState[branch*14 + 13])&0x3f == FEE_STATE_ON) || (*fFeeState[branch*14 + 13] == FEE_STATE_WARNING)|| (*fFeeState[branch*14 + 13] == FEE_STATE_ERROR))
 	    {
 	      *fFeeState[branch*14 + 13] = DeActivateFee(branch, 14);
 	    }
@@ -235,7 +237,7 @@ Rcu::ToggleFeeOnOff(const int branch, const int cardNumber)
  
       if(cardIndex == 1)
 	{
-	  if((*fFeeState[branch*14+12] == FEE_STATE_ON) || (*fFeeState[branch*14+12] == FEE_STATE_WARNING) || (*fFeeState[branch*14+12] == FEE_STATE_ERROR))
+	  if(((*fFeeState[branch*14+12])&0x3f == FEE_STATE_ON) || (*fFeeState[branch*14+12] == FEE_STATE_WARNING) || (*fFeeState[branch*14+12] == FEE_STATE_ERROR))
 	    {
 	      *fFeeState[branch*14+12] = DeActivateFee(branch, 13);
 	    }
@@ -408,13 +410,19 @@ Rcu::SetReadoutRegion(const unsigned long int afl, const int acl[RcuRegisterMap:
 {
   //  fActiveChList = acl;
 
-
+  stringstream log;
   for(int i=0; i< RcuRegisterMap::Active_Channel_List_Length; i++)
     {
       fActiveChList[i] = acl[i];
+
+
+      log.str("");
+      log << "Rcu::SetReadoutRegion: fActiveChList[" << i << "] = 0x" << hex << fActiveChList[i] << dec;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
+      
     }
 
-  stringstream log;
+  log.str("");
   log << "Rcu::SetReadoutRegion: fActiveFeeList: " << hex << afl << dec;
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
 
@@ -474,13 +482,13 @@ Rcu::ApplyReadoutRegion() const
     {
       log << "Rcu::ApplyReadoutRegion: The active channel list was set correctly for " << fFeeServerName << ", status = " << iRet;
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
-      iRet = 0;
+      iRet = REG_OK;
     }
   else
     {
       log << "Rcu::ApplyReadoutRegion: Active channel list was not set correctly for " << fFeeServerName << ", status = " << iRet;
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
-      iRet = 1;
+      iRet = REG_ZERO;
     }
 
   return iRet;
@@ -768,5 +776,15 @@ Rcu::SetFeeServer(const char *name)
     }
 }
 
+void
+Rcu::Reset()
+{
+  fFeeClientPtr->Reset(fFeeServerName, 1);
+  fFeeClientPtr->Reset(fFeeServerName, 2);
+}
 
-
+int 
+Rcu::StartFeeClient()
+{
+  fFeeClientPtr->startFeeClient();
+}

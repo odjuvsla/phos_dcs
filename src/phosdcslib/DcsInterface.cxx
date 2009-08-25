@@ -61,10 +61,11 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
 	". Coord: x = " << (*server).fX << ", z = " << (*server).fZ;
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
       tmpPhosModulePtr->CreateRcu((*server).fName.c_str(), (*server).fModId, (*server).fRcuId, (*server).fZ, (*server).fX);
+      ret += tmpPhosModulePtr->StartFeeClient((*server).fRcuId);
       server++;
     }
   
-  ret = fPhosDetectorPtr->StartFeeClient();
+
   log.str("");
   log << "DcsInterface::Init: StartFeeClient() returned: " << ret;
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
@@ -186,6 +187,7 @@ DcsInterface::DisArmTrigger(const int modID, const int RcuID) const
 void 
 DcsInterface::EnableTrigger(int modID, string triggerType)
 {
+  ApplyReadoutRegisters(ModNumber_t(modID));
   RcuTRGCONF_t tmpTrgConf;
 
   if(triggerType == "ttc")
@@ -211,6 +213,7 @@ void
 DcsInterface::DisableTrigger(int modID)
 {
   EnableTrigger(modID, string("disable"));
+  Reset(ModNumber_t(modID));
 }
 
 void 
@@ -374,7 +377,7 @@ DcsInterface::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t r
 void
 DcsInterface::SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings)
 {
-  // fPhosDetectorPtr->SetReadoutSettings(modId, rdoSettings);
+  fPhosDetectorPtr->SetReadoutSettings(modId, rdoSettings);
   fReadoutSettings = rdoSettings;
 }
 
@@ -389,6 +392,13 @@ DcsInterface::ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegist
 {
 
   return fPhosDetectorPtr->ApplyReadoutRegisters(modID, readoutRegisters);
+}
+
+int
+DcsInterface::ApplyReadoutRegisters(const ModNumber_t modID) const
+{
+
+  return fPhosDetectorPtr->ApplyReadoutRegisters(modID);
 }
 
 int
@@ -472,6 +482,11 @@ DcsInterface::TurnOffAllTru(const int modID, const int rcuId) const
 void
 DcsInterface::UpdateAFL(const int mod, const int rcu) const
 {
+  stringstream log;
+  log.str("");
+  log << "DcsInterface::UpdateAFL: Updating AFL for module #: " << mod << " and RCU #:  " << rcu;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(mod, rcu); 
   tmpRcuPtr->UpdateAFL();
 }
@@ -501,7 +516,7 @@ int
 DcsInterface::UpdateSingleFeeStatus(const int mod, const int rcu, const int branch, const int fee)
 {
   int status = CheckFeeState(mod, rcu, branch, fee);
-
+  cout << "DcsInterface: state: " << status << endl;
   return status;
 }
 
@@ -515,20 +530,8 @@ int
 DcsInterface::Configure(const ModNumber_t modId)
 {
   stringstream log;
-  
-  RcuALTROIF_t altroif(fReadoutSettings.GetNSamples().GetIntValue());
-  RcuRDOMOD_t rdomod(false, fReadoutSettings.IsSparseReadout(), false, fReadoutSettings.GetMEBMode());
-  RcuALTROCFG1_t altrocfg1(fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
-			 fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold());
-  RcuALTROCFG2_t altrocfg2(fReadoutSettings.GetNPreSamples().GetIntValue());
-
-  ReadoutRegisters_t readoutRegs(altroif, rdomod, altrocfg1, altrocfg2);
-
-  log.str("");
-  readoutRegs.Print(log);
-  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
-  
-  int res = ApplyReadoutRegisters(modId.GetIntValue(), readoutRegs);
+ 
+  int res = ApplyReadoutRegisters(modId);
   
   res += ApplyReadoutRegion(modId);
 

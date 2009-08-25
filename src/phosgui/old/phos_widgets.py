@@ -40,7 +40,7 @@ class ModuleTabWidget(QtGui.QWidget):
             self.rcus[i] = Rcu(self.moduleId, i, self)
             self.rcus[i].geometry().setX(20)
             self.rcus[i].geometry().setY(i*self.rcus[i].geometry().height() + self.rcuTopFrame.geometry().y() + self.rcuTopFrame.geometry().height())
-    #        self.rcus[i].setEnabled(0)
+#            self.rcus[i].setEnabled(0)
 
     def initLogViewer(self):
 
@@ -132,17 +132,17 @@ class ModuleTabWidget(QtGui.QWidget):
         print 'update card ' + str(feeId) + ' with state ' + str(state)
         module, rcu, branch, fee = self.idConverter.GetFeeLogicalIDs(feeId)
         self.rcus[rcu].updateFeeCard(branch, fee, state)
-        if fee == 13:
-            self.rcus[rcu].updateFeeCard(branch, 2, state)
+  #       if fee == 13:
+#             self.rcus[rcu].updateFeeCard(branch, 2, state)
 
-        if fee == 14:
-            self.rcus[rcu].updateFeeCard(branch, 1, state)
+#         if fee == 14:
+#             self.rcus[rcu].updateFeeCard(branch, 1, state)
 
-        if fee == 1:
-            self.rcus[rcu].updateFeeCard(branch, 14, state)
+#         if fee == 1:
+#             self.rcus[rcu].updateFeeCard(branch, 14, state)
 
-        if fee == 2:
-            self.rcus[rcu].updateFeeCard(branch, 13, state)
+#         if fee == 2:
+#             self.rcus[rcu].updateFeeCard(branch, 13, state)
 
         self.update()
         
@@ -161,6 +161,7 @@ class ModuleTabWidget(QtGui.QWidget):
     def enableRcu(self, enable, rcuId):
         
         self.rcus[rcuId].enableRcu(enable)
+#        print "enabling rcu.."
 #        self.emit(QtCore.SIGNAL("rcuUpdateStatus"), "rcuUpdateStatus", rcuId)
         self.update()
         
@@ -388,7 +389,11 @@ class Rcu(QtGui.QWidget):
         self.update()
         
     def enableRcu(self, enable):
-        
+
+        if enable == True:
+            print "enabling rcu.."
+        else:
+            print "disabling rcu.."
         for i in range(CARDS_PER_BRANCH*2):
             self.feeButtons[i].setEnabled(enable)
 
@@ -572,6 +577,22 @@ class ReadoutRegionSettingsWidget(QtGui.QWidget):
         
         return xFirst, xLast, zFirst, zLast
 
+    def setFirstX(self, x):
+
+        self.xSpinboxFirst.setValue(x)
+
+    def setLastX(self, x):
+
+        self.xSpinboxLast.setValue(x)
+
+    def setFirstZ(self, z):
+
+        self.zSpinboxFirst.setValue(z)
+
+    def setLastZ(self, z):
+
+        self.zSpinboxLast.setValue(z)
+
     def initDetailedSelectionButton(self):
 
         print 'test'
@@ -620,6 +641,15 @@ class ReadoutSamplesSettingsWidget(QtGui.QWidget):
         nPreSamples = self.preSpinbox.value()
 
         return nPreSamples, nSamples
+
+    def setPreSamples(self, nPreSamples):
+
+        self.preSpinbox.setValue(nPreSamples)
+
+    def setSamples(self, nSamples):
+
+        self.samplesSpinbox.setValue(nSamples)
+
 
 class ReadoutZeroSuppressionWidget(QtGui.QWidget):
 
@@ -680,8 +710,23 @@ class ReadoutZeroSuppressionWidget(QtGui.QWidget):
     def getOffset(self):
         
         return self.offsetSpinbox.value()
-        
 
+    def setZeroSuppression(self, status):
+
+        self.zsCheckBox.setChecked(status)
+
+    def setSparseReadout(self, status):
+
+        self.sparseCheckBox.setChecked(status)
+
+    def setZSThreshold(self, threshold):
+
+        self.thresholdSpinbox.setValue(threshold)
+
+    def setOffset(self, offset):
+
+        self.offsetSpinbox.setValue(offset)
+        
 class ReadoutMEBWidget(QtGui.QWidget):
 
     def __init__(self, width, height, parent=None):
@@ -711,6 +756,9 @@ class ReadoutMEBWidget(QtGui.QWidget):
         
         return self.mebComboBox.currentText() == '8'
 
+    def setMEBMode(self, mode):
+
+        print 'not able to load MEB mode from file yet...'
     
 class APDSettingSelectorWidget(QtGui.QWidget):
     

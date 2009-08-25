@@ -2,23 +2,59 @@ PROJECT(phosgui)
 
 INSTALL(FILES
 startgui.sh
-DESTINATION $ENV{HOME}/phos_dcs/bin/)
+DESTINATION $ENV{PHOS_DCS}/bin/)
 
 INSTALL(FILES 
-phos_buttons.py
-phos_dialogs.py
 phos_gui.py
-phos_gui.ui
-phos_interface.py
 phos_main_window.py
-phos_utilities.py
-phos_widgets.py
-DESTINATION $ENV{HOME}/phos_dcs/gui_files/)
+buttons/PhosModulePushButton.py
+buttons/ModulePropertiesButton.py
+buttons/PhosPushButton.py
+buttons/RcuToggleOnOffPushButton.py
+buttons/ModuleEnableTriggerButton.py
+buttons/ModuleConfigureElectronicsButton.py
+buttons/TruPushButton.py
+buttons/ModuleTurnOffButton.py
+buttons/ModuleDisableTriggerButton.py
+buttons/FeePushButton.py
+buttons/RcuViewPushButton.py
+buttons/RcuUpdateStatusPushButton.py
+buttons/ModuleTurnOnButton.py
+dialogs/RcuDialog.py
+dialogs/ConnectSettingsDialog.py
+dialogs/ConfigureElectronicsDialog.py
+interface/FeeCardHandler.py
+interface/TruCardHandler.py
+interface/PHOSHandler.py
+interface/RcuHandler.py
+interface/ModuleHandler.py
+interface/DatabaseHandler.py
+interface/DetectorHandler.py
+interface/LogHandler.py
+interface/DcsInterfaceThreadWrapper.py
+utilities/PhosIdConverter.py
+widgets/Rcu.py
+widgets/RcuTopFrame.py
+widgets/ReadoutMEBWidget.py
+widgets/ReadoutRegionSettingsWidget.py
+widgets/ReadoutZeroSuppressionWidget.py
+widgets/ModuleTabWidget.py
+widgets/StatusTabWidget.py
+widgets/RcuGeneralInfoWidget.py
+widgets/ConnectionSettingsBusyboxTabWidget.py
+widgets/ConnectionSettingsModuleTabWidget.py
+widgets/RcuRegistersWidget.py
+widgets/APDSettingsSelectorWidget.py
+widgets/ReadoutSamplesSettingsWidget.py
+widgets/PhosTabWidget.py
+widgets/ModulesFrame.py
+widgets/Module.py
+DESTINATION $ENV{PHOS_DCS}/gui_files/)
 
 INSTALL(FILES
 ../GuiConfigurationFiles/feeServerNames.cfg
 ../GuiConfigurationFiles/feeServerNames.cfg.bak
-DESTINATION $ENV{HOME}/phos_dcs/GuiConfigurationFiles/)
+DESTINATION $ENV{PHOS_DCS}/GuiConfigurationFiles/)
 
 INSTALL(FILES
 ../graphics/5_mods_0_on.png
@@ -30,4 +66,4 @@ INSTALL(FILES
 ../graphics/modules.svg
 DESTINATION $ENV{HOME}/phos_dcs/graphics)
 
-INSTALL(CODE "FILE(MAKE_DIRECTORY \${ENV}\$ENV{HOME}/phos_dcs/log  )")
+#INSTALL(CODE "FILE(MAKE_DIRECTORY \${ENV}\$ENV{HOME}/phos_dcs/log  )")

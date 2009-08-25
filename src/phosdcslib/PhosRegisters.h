@@ -51,6 +51,8 @@ public:
 
   void SetByRegisterValue(int value);
 
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
   static const int fRegAddress = RcuRegisterMap::ALTROIF; // 0x5101
 
 private:
@@ -131,6 +133,8 @@ public:
 
   void SetByRegisterValue(int value);
 
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
   static const int fRegAddress = RcuRegisterMap::TRCFG; //0x5102 
 
 private: 
@@ -180,6 +184,8 @@ public:
   void SetMEBMode(bool value = true) { fMEBMode = value; } 
 
   void SetByRegisterValue(short value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const short fRegAddress = RcuRegisterMap::RDOMOD; //0x5103
 
@@ -232,6 +238,8 @@ public:
 
   void SetByRegisterValue(short value);
 
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
   static const short fRegAddress = RcuRegisterMap::ALTROCFG1; // 0x5104
 
 private:
@@ -283,6 +291,8 @@ public:
 
   void SetByRegisterValue(short value);
 
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
   static const int fRegAddress = RcuRegisterMap::ALTROCFG2; // 0x5105
 
 private:
@@ -332,6 +342,8 @@ public:
   void SetOffset(short offset) { fOffset = offset; }
 
   void SetByRegisterValue(int value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const int fRegAddress = AltroRegisterMap::ZSTHR;
   
@@ -396,6 +408,8 @@ public:
     }
 
   void SetByRegisterValue(int value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const int fRegAddress = AltroRegisterMap::TRCFG;
   
@@ -465,6 +479,8 @@ public:
 
   void SetByRegisterValue(int value);
 
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
   static const int fRegAddress = AltroRegisterMap::DPCFG;
   
  private:
@@ -532,6 +548,8 @@ public:
   void SetPowerSaveEnabled(bool value = true) { fPowerSaveEnabled = value; }
 
   void SetByRegisterValue(short value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const int fRegAddress = AltroRegisterMap::DPCFG2;
 
@@ -608,7 +626,7 @@ public:
   void SetAltroDPCFG(AltroDPCFG_t dpcfg);
   void SetAltroDPCFG2(AltroDPCFG2_t dpcfg2);
 
-  void Print(std::ostream& stream);
+  void Print(std::ostream& stream, std::string level = std::string(""));
   
 private:
   

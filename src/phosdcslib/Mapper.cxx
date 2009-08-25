@@ -17,15 +17,16 @@
  **************************************************************************/
 
 #include "Mapper.h"
+#include "PhosDataTypes.h"
 #include <cassert>
 #include <cstring>
 #include <cstdlib>
-
+#include "PhosDcsLogging.h"
 
 Mapper::Mapper() : PhosDcsBase()
 {
   //  printf("\nCreating new mapper\n");
-  InitAltroMapping(0); 
+  InitAltroMapping(0, 0); 
 }
 
 
@@ -35,6 +36,7 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 		    int acl[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length], 
 		    unsigned long int afl[RCUS_PER_MODULE], const int modID) const 
 {
+  stringstream log;
 
   for(int i=0; i<RCUS_PER_MODULE; i++)
     {
@@ -50,7 +52,7 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
   //  int aclIndex = 0;
 
   int aclIndex[RCUS_PER_MODULE];
-
+  
   for(int i = 0; i < RCUS_PER_MODULE; i++ )
     {
       aclIndex[i] = 0;
@@ -69,7 +71,11 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
     {
       for(int j = readoutregion.GetStartX().GetIntValue(); j <=  readoutregion.GetEndX().GetIntValue(); j++)
  	{
+	  log.str("");
+	  log << "Mapper::GenerateACL: Adding crystal: x: " << j << " and z: " << i << endl;
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
 
+	  
 // //FEE
 //   for(int i = 0; i <=  55; i++)
 //     {
@@ -117,11 +123,11 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 	    {
 	      for(int channel = 0; channel < CHANNELS_PER_ALTRO; channel++)
 		{
-		  unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
-		  acl[rcu][aclIndex[rcu]] = (branch << 11)  |((tru*(MAX_CARDS_PER_BRANCH-1)) << 7) | (tmpGlobalFeeChannel) ;
-		  //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
-		  aclIndex[rcu] ++;
-		  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(tru*(MAX_CARDS_PER_BRANCH-1)) +(long int)tru*MAX_CARDS_PER_BRANCH));
+// 		  unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
+// 		  acl[rcu][aclIndex[rcu]] = (branch << 11)  |((tru*(MAX_CARDS_PER_BRANCH-1)) << 7) | (tmpGlobalFeeChannel) ;
+// 		  //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
+// 		  aclIndex[rcu] ++;
+// 		  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(tru*(MAX_CARDS_PER_BRANCH-1)) +(long int)tru*MAX_CARDS_PER_BRANCH));
 		}
 	    }
 	  //	  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(0) +(long int)branch*MAX_CARDS_PER_BRANCH));
@@ -162,45 +168,88 @@ Mapper::AddCsp(int csp, int chip, int chHi, int chLo, int numHi, int numLo)
  // Note we use (0,1,2,3) instead of (0,2,3,4) ALTRO chip numbers.
  // So strange numbers we have due to well known RCU firmware bug.
  /////////////////////////////////////////////////////////////////
+
 void 
-Mapper::InitAltroCspMapping()
+Mapper::InitAltroCspMapping(ModNumber_t modID)
 {
-  // T1	csp	chip	chHi	chLo	numHi	numLo
-  AddCsp(	0,	1,	10,	11,	26,	27);
-  AddCsp(	1,	1,	14,	15,	30,	31);
-  AddCsp(	2,	1,	5,	4,	21,	20);
-  AddCsp(	3,	1,	1,	0,	17,	16);
-  AddCsp(	4,	2,	1,	0,	33,	32);
-  AddCsp(	5,	2,	5,	4,	37,	36);
-  AddCsp(	6,	2,	14,	15,	46,	47);
-  AddCsp(	7,	2,	10,	11,	42,	43);
-  // T2	csp	chip	chHi	chLo	numHi	numLo
-  AddCsp(	8,	0,	10,	11,	10,	11);
-  AddCsp(	9,	0,	14,	15,	14,	15);
-  AddCsp(	10,	0,	5,	4,	5,	4);
-  AddCsp(	11,	0,	1,	0,	1,	0);
-  AddCsp(	12,	3,	1,	0,	49,	48);
-  AddCsp(	13,	3,	5,	4,	53,	52);
-  AddCsp(	14,	3,	14,	15,	62,	63);
-  AddCsp(	15,	3,	10,	11,	58,	59);
-  // T3	csp	chip	chHi	chLo	numHi	numLo
-  AddCsp(	16,	1,	8,	9,	24,	25);
-  AddCsp(	17,	1,	12,	13,	28,	29);
-  AddCsp(	18,	1,	7,	6,	23,	22);
-  AddCsp(	19,	1,	3,	2,	19,	18);
-  AddCsp(	20,	2,	3,	2,	35,	34);
-  AddCsp(	21,	2,	7,	6,	39,	38);
-  AddCsp(	22,	2,	12,	13,	44,	45);
-  AddCsp(	23,	2,	8,	9,	40,	41);
-  // T4	csp	chip	chHi	chLo	numHi	numLo
-  AddCsp(	24,	0,	8,	9,	8,	9);
-  AddCsp(	25,	0,	12,	13,	12,	13);
-  AddCsp(	26,	0,	7,	6,	7,	6);
-  AddCsp(	27,	0,	3,	2,	3,	2);
-  AddCsp(	28,	3,	3,	2,	51,	50);
-  AddCsp(	29,	3,	7,	6,	55,	54);
-  AddCsp(	30,	3,	12,	13,	60,	61);
-  AddCsp(	31,	3,	8,	9,	56,	57);
+  if(modID.GetIntValue() == 4)
+    {
+      // T1  	csp	chip	chHi	chLo	numHi	numLo
+      AddCsp(	0,	1,	10,	11,	26,	27);
+      AddCsp(	1,	1,	14,	15,	30,	31);
+      AddCsp(	2,	1,	5,	4,	21,	20);
+      AddCsp(	3,	1,	1,	0,	17,	16);
+      AddCsp(	4,	2,	1,	0,	33,	32);
+      AddCsp(	5,	2,	5,	4,	37,	36);
+      AddCsp(	6,	2,	14,	15,	46,	47);
+      AddCsp(	7,	2,	10,	11,	42,	43);
+      // T2  	csp	chip	chHi	chLo	numHi	numLo
+      AddCsp(	8,	0,	10,	11,	10,	11);
+      AddCsp(	9,	0,	14,	15,	14,	15);
+      AddCsp(	10,	0,	5,	4,	5,	4);
+      AddCsp(	11,	0,	1,	0,	1,	0);
+      AddCsp(	12,	3,	1,	0,	49,	48);
+      AddCsp(	13,	3,	5,	4,	53,	52);
+      AddCsp(	14,	3,	14,	15,	62,	63);
+      AddCsp(	15,	3,	10,	11,	58,	59);
+      // T3  	csp	chip	chHi	chLo	numHi	numLo
+      AddCsp(	16,	1,	8,	9,	24,	25);
+      AddCsp(	17,	1,	12,	13,	28,	29);
+      AddCsp(	18,	1,	7,	6,	23,	22);
+      AddCsp(	19,	1,	3,	2,	19,	18);
+      AddCsp(	20,	2,	3,	2,	35,	34);
+      AddCsp(	21,	2,	7,	6,	39,	38);
+      AddCsp(	22,	2,	12,	13,	44,	45);
+      AddCsp(	23,	2,	8,	9,	40,	41);
+      // T4 	csp	chip	chHi	chLo	numHi	numLo
+      AddCsp(	24,	0,	8,	9,	8,	9);
+      AddCsp(	25,	0,	12,	13,	12,	13);
+      AddCsp(	26,	0,	7,	6,	7,	6);
+      AddCsp(	27,	0,	3,	2,	3,	2);
+      AddCsp(	28,	3,	3,	2,	51,	50);
+      AddCsp(	29,	3,	7,	6,	55,	54);
+      AddCsp(	30,	3,	12,	13,	60,	61);
+      AddCsp(	31,	3,	8,	9,	56,	57);
+    }
+  else
+    {
+      // T1  	csp	chip	chHi	chLo	numHi	numLo
+      AddCsp(	0,	1,	10,	11,	26,	27);
+      AddCsp(	1,	1,	14,	15,	30,	31);
+      AddCsp(	2,	1,	5,	4,	21,	20);
+      AddCsp(	3,	1,	1,	0,	17,	16);
+      AddCsp(	4,	2,	1,	0,	33,	32);
+      AddCsp(	5,	2,	5,	4,	37,	36);
+      AddCsp(	6,	2,	14,	15,	46,	47);
+      AddCsp(	7,	2,	10,	11,	42,	43);
+      // T2  	csp	chip	chHi	chLo	numHi	numLo
+      AddCsp(	8,	0,	8,	9,	8,	9); 
+      AddCsp(	9,	0,	12,	13,	12,	13);
+      AddCsp(	10,	0,	7,	6,	7,	6); 
+      AddCsp(	11,	0,	3,	2,	3,	2); 
+      AddCsp(	12,	3,	3,	2,	51,	50);
+      AddCsp(	13,	3,	7,	6,	55,	54);
+      AddCsp(	14,	3,	12,	13,	60,	61);
+      AddCsp(	15,	3,	8,	9,	56,	57);
+      // T3  	csp	chip	chHi	chLo	numHi	numLo
+      AddCsp(	16,	1,	8,	9,	24,	25);
+      AddCsp(	17,	1,	12,	13,	28,	29);
+      AddCsp(	18,	1,	7,	6,	23,	22);
+      AddCsp(	19,	1,	3,	2,	19,	18);
+      AddCsp(	20,	2,	3,	2,	35,	34);
+      AddCsp(	21,	2,	7,	6,	39,	38);
+      AddCsp(	22,	2,	12,	13,	44,	45);
+      AddCsp(	23,	2,	8,	9,	40,	41);
+      // T4 	csp	chip	chHi	chLo	numHi	numLo
+      AddCsp(	24,	0,	10,	11,	10,	11);
+      AddCsp(	25,	0,	14,	15,	14,	15);
+      AddCsp(	26,	0,	5,	4,	5,	4); 
+      AddCsp(	27,	0,	1,	0,	1,	0); 
+      AddCsp(	28,	3,	1,	0,	49,	48);
+      AddCsp(	29,	3,	5,	4,	53,	52);
+      AddCsp(	30,	3,	14,	15,	62,	63);
+      AddCsp(	31,	3,	10,	11,	58,	59);
+    }
 } 
 
 //void
@@ -250,12 +299,12 @@ Mapper::Hid2col(int hid)
 inline void 
 //Mapper::initAltroMapping(int saveMapping=0)
 //       initAltroMapping(int)'
-Mapper::InitAltroMapping(int saveMapping)
+Mapper::InitAltroMapping(int saveMapping, ModNumber_t modID)
 {
   //
   // Init CSP mapping first.
   //
-  InitAltroCspMapping();
+  InitAltroCspMapping(modID);
   //
 
   // Clear index arrays

@@ -66,7 +66,10 @@ class Rcu : public PhosDcsBase
   int   GetRcuId() const;
   char* GetFeeServerName();
   void  UpdateAFL();
+  void  Reset();
   FeeCard* GetFeeCardPtr(const int index) const;
+
+  int StartFeeClient();
 
  private:
   Rcu(); 

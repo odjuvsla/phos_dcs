@@ -27,7 +27,7 @@
 
 PhosDetector::PhosDetector() : PhosDcsBase(), 
 			       fFeeClientPtr(0),
-			       fRadoutConfig() 
+			       fReadoutConfig() 
 {
   fFeeClientPtr = new PhosFeeClient();
   for(int i=0; i<PHOS_MODS; i++)
@@ -45,7 +45,7 @@ PhosDetector::~PhosDetector()
 
 PhosDetector::PhosDetector(PhosDetector const&): PhosDcsBase(), 
 						 fFeeClientPtr(0), 
-						 fRadoutConfig()  
+						 fReadoutConfig()  
 {
 
 }
@@ -72,7 +72,7 @@ const int
 PhosDetector::ArmTrigger() const
 {
   int iRet = 1;
-  ScriptCompiler::MakeTriggerConfigScript("s_triggerconfig.txt", fRadoutConfig.GetTriggerMode(),  fRadoutConfig.GetAltroConfig());
+  ScriptCompiler::MakeTriggerConfigScript("s_triggerconfig.txt", fReadoutConfig.GetTriggerMode(),  fReadoutConfig.GetAltroConfig());
 
   for(int i=0; i<PHOS_MODS; i++)
     {
@@ -89,7 +89,7 @@ PhosDetector::ArmTrigger() const
 const int
 PhosDetector::ArmTrigger(const int moduleId) const
 {
-  ScriptCompiler::MakeTriggerConfigScript("s_triggerconfig.txt",fRadoutConfig.GetTriggerMode(), fRadoutConfig.GetAltroConfig());
+  ScriptCompiler::MakeTriggerConfigScript("s_triggerconfig.txt",fReadoutConfig.GetTriggerMode(), fReadoutConfig.GetAltroConfig());
   phosModulePtr[moduleId]->ArmTrigger("s_triggerconfig.txt");
 }
 
@@ -98,7 +98,7 @@ void
 PhosDetector::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig) 
 {
   phosModulePtr[modID.GetIntValue()]->SetReadoutConfig(rdoConfig);
-  fRadoutConfig = rdoConfig; 
+  fReadoutConfig = rdoConfig; 
 }
 
 void
@@ -123,6 +123,13 @@ PhosDetector::ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegist
 }
 
 int
+PhosDetector::ApplyReadoutRegisters(const ModNumber_t modID) const
+{
+  int res = phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegisters();
+  return res;
+}
+
+int
 PhosDetector::ApplyReadoutRegion(const ModNumber_t modID) const
 {
   int res = phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegion(fReadoutRegion);
@@ -130,9 +137,10 @@ PhosDetector::ApplyReadoutRegion(const ModNumber_t modID) const
 }
 
 int
-PhosDetector::StartFeeClient() const
+PhosDetector::StartFeeClient(const ModNumber_t modID) const
 {
-  return fFeeClientPtr->startFeeClient();
+  //  phosModulePtr[modID.GetIntValue()]->StartFeeClient();
+  return 10; //TODO: fix this value (whatever it should be...)
 }
 
 int
@@ -195,7 +203,7 @@ PhosDetector::SetAllApds(const int Value)
 int  
 PhosDetector::Reset(const ModNumber_t modId)
 {
-  //  int res = phosModulePtr[modId.GetIntValue()]->Reset(modId);
+  phosModulePtr[modId.GetIntValue()]->Reset();
   int res = 0;
   return res;
 }

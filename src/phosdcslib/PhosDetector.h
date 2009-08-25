@@ -40,7 +40,8 @@ class PhosDetector : public PhosDcsBase
   Rcu*  GetRcuPtr(const int modId, const int rcuId) const;
   void DisArmTrigger(const int modId, const int rcuId) const;
   void SetPhosBit(const int modId) const; 
-  int StartFeeClient() const; 
+  //  int StartFeeClient() const; 
+  int StartFeeClient(ModNumber_t modID) const; 
   int StopFeeClient() const; 
   const int ArmTrigger() const;
   const int ArmTrigger(const int moduleId) const;
@@ -50,6 +51,7 @@ class PhosDetector : public PhosDcsBase
   void SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings);
   void SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion);
   int  ApplyReadoutRegisters(const ModNumber_t modID, ReadoutRegisters_t readoutRegisters); 
+  int  ApplyReadoutRegisters(const ModNumber_t modID) const;
   int  ApplyReadoutRegion(const ModNumber_t modID) const;
   void ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const;
   PhosFeeClient *fFeeClientPtr;
@@ -58,7 +60,7 @@ class PhosDetector : public PhosDcsBase
  private:
   PhosDetector(const PhosDetector & );
   PhosDetector & operator = (const PhosDetector &){return *this;}
-  ReadoutConfig_t fRadoutConfig; 
+  ReadoutConfig_t fReadoutConfig; 
   ReadoutRegisters_t fReadoutRegisters;
   ReadoutRegion_t fReadoutRegion;
 };

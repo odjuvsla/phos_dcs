@@ -6,6 +6,8 @@
 #include <ctime>
 #include <vector>
 #include <cstdlib>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 PhosDcsLogging* PhosDcsLogging::fInstance = 0;
 
@@ -31,8 +33,12 @@ PhosDcsLogging::PhosDcsLogging() :
   stringstream timestamp;
   stringstream datestamp;
   
+
+
+  mkdir ("log/", 0777);
+
   GetTimeStamp(timestamp, datestamp); 
-   filename << "../log/" << datestamp.str() << "_" << timestamp.str() << ".log";
+  filename << "log/" << datestamp.str() << "_" << timestamp.str() << ".log";
   
   fLogFile.open(filename.str().c_str());
   //fLogFile.open("log/test.log");
@@ -40,7 +46,7 @@ PhosDcsLogging::PhosDcsLogging() :
   if(fLogFile.is_open() == false)
     {
       cerr << "Could not open log file!" << endl;
-      cerr << "Check permissions and if ../log/ directory exists in current directory" << endl;
+      cerr << "Check permissions and if log/ directory exists in current directory (should be automatic)" << endl;
       cerr << "Exiting..." << endl;
       exit(1);
     }

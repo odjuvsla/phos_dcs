@@ -1,10 +1,21 @@
 
 from PyQt4 import QtCore, QtGui
 from PhosConst import *
-from phos_dialogs import *
-from phos_widgets import *
-from phos_interface import *
-from phos_utilities import *
+from ModuleTabWidget import *
+from ConnectSettingsDialog import *
+from DcsInterfaceThreadWrapper import *
+from DcsInterface import *
+from FeeCardHandler import *
+from PHOSHandler import *
+from TruCardHandler import *
+from RcuHandler import *
+from ModuleHandler import *
+from DetectorHandler import *
+from LogHandler import *
+from DatabaseHandler import *
+from RcuDialog import *
+from ConfigureElectronicsDialog import *
+from PhosTabWidget import *
 
 class PhosGui(QtGui.QMainWindow):
     """The main gui"""
@@ -34,8 +45,10 @@ class PhosGui(QtGui.QMainWindow):
             
             self.moduleTabs[i] = ModuleTabWidget(i)
             self.tabControls.addTab(self.moduleTabs[i], "Module " + str(i))
-#            self.moduleTabs[i].setEnabled(0)
-
+            self.moduleTabs[i].setEnabled(0)
+        self.phosTab = PhosTabWidget()
+        self.tabControls.addTab(self.phosTab, "PHOS Detector")
+        
     def initMenuBar(self):
         
         self.connectMenu = self.menuBar().addMenu("&Connect")
@@ -205,15 +218,15 @@ class PhosGui(QtGui.QMainWindow):
         feeServerNames, feeServerEnabled = self.connectSettingsDialog.getFeeServers()
         for i in range(PHOS_MODS):
             for j in range(RCUS_PER_MODULE):
-                if feeServerEnabled[i*(RCUS_PER_MODULE+1) + j] == True:
+                if feeServerEnabled[i*(RCUS_PER_MODULE) + j] == True:
                     if res > 0:
                         self.moduleTabs[i].enableRcu(True, j)
                         self.moduleTabs[i].setEnabled(True)
-                    else:
-                        self.moduleTabs[i].enableRcu(False, j)
-                        self.moduleTabs[i].SetEnabled(False)
-                else:
-                    self.moduleTabs[i].enableRcu(False, j)
+#                    else:
+#                        self.moduleTabs[i].enableRcu(False, j)
+#                        self.moduleTabs[i].SetEnabled(False) #TODO: fix this such that the RCU is disabled on no connection
+#                else:
+                  #  self.moduleTabs[i].enableRcu(False, j)
                     
         # Need to enable TORs also ...
 
