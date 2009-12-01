@@ -22,6 +22,9 @@ class ReadoutSamplesSettingsWidget(QtGui.QWidget):
 
         self.samplesLabel = QtGui.QLabel("Samples:", self)
         self.samplesLabel.setGeometry(self.preLabel.x() + self.preLabel.width() + 15, self.preLabel.y(), 50, 20)
+
+        self.truSamplesLabel = QtGui.QLabel("TRU Samples:", self)
+        self.truSamplesLabel.setGeometry(self.samplesLabel.x() + self.samplesLabel.width() + 20, self.preLabel.y(), 50, 20)
         
 
     def initSpinBoxes(self):
@@ -36,14 +39,21 @@ class ReadoutSamplesSettingsWidget(QtGui.QWidget):
         self.samplesSpinbox.setGeometry(self.samplesLabel.x(), self.preSpinbox.y(), self.preSpinbox.width(), self.preSpinbox.height())
         self.samplesSpinbox.setValue(81)
         self.samplesSpinbox.setMinimum(0)
-        self.samplesSpinbox.setMaximum(MAX_ALTRO_SAMPLES)
+        self.samplesSpinbox.setMaximum(MAX_ALTRO_SAMPLES-1)
+
+        self.truSamplesSpinbox = QtGui.QSpinBox(self)
+        self.truSamplesSpinbox.setGeometry(self.truSamplesLabel.x(), self.preSpinbox.y(), self.preSpinbox.width(), self.preSpinbox.height())
+        self.truSamplesSpinbox.setValue(0)
+        self.truSamplesSpinbox.setMinimum(0)
+        self.truSamplesSpinbox.setMaximum(MAX_TRU_SAMPLES-1)
 
     def getSamplesSettings(self):
         
         nSamples = self.samplesSpinbox.value()
         nPreSamples = self.preSpinbox.value()
-
-        return nPreSamples, nSamples
+        truSamples = self.truSamplesSpinbox.value()
+        
+        return nPreSamples, nSamples, truSamples 
 
     def setPreSamples(self, nPreSamples):
 
@@ -52,4 +62,8 @@ class ReadoutSamplesSettingsWidget(QtGui.QWidget):
     def setSamples(self, nSamples):
 
         self.samplesSpinbox.setValue(nSamples)
+
+    def setTruSamples(self, nSamples):
+
+        self.truSamplesSpinbox.setValue(nSamples)
 

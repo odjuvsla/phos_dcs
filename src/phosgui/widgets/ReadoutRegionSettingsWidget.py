@@ -11,18 +11,26 @@ class ReadoutRegionSettingsWidget(QtGui.QWidget):
         self.initLabels()
 
         self.initSpinBoxes()
+        
+        self.initCheckBoxes()
 #        self.initDetailedSelectionButton()
 
     def initLabels(self):
         
-        self.regionLabel = QtGui.QLabel("Read out region:", self)
+        self.regionLabel = QtGui.QLabel("Read out region (HG/LG):", self)
         self.regionLabel.setGeometry(10, 10, 130, 20)
 
-        self.fromLabel = QtGui.QLabel("From:", self)
-        self.fromLabel.setGeometry(45, 40, 30, 20)
+        self.hgFromLabel = QtGui.QLabel("From:", self)
+        self.hgFromLabel.setGeometry(45, 40, 30, 20)
 
-        self.toLabel = QtGui.QLabel("To:", self)
-        self.toLabel.setGeometry(self.fromLabel.x() + self.fromLabel.width() + 35, self.fromLabel.y(), 30, 20)
+        self.hgToLabel = QtGui.QLabel("To:", self)
+        self.hgToLabel.setGeometry(self.hgFromLabel.x() + self.hgFromLabel.width() + 35, self.hgFromLabel.y(), 30, 20)
+
+        self.lgFromLabel = QtGui.QLabel("From:", self)
+        self.lgFromLabel.setGeometry(self.hgToLabel.x() + self.hgToLabel.width() + 40, self.hgFromLabel.y(), 30, 20)
+
+        self.lgToLabel = QtGui.QLabel("To:", self)
+        self.lgToLabel.setGeometry(self.hgToLabel.x() + self.hgToLabel.width() + 100, self.hgFromLabel.y(), 30, 20)
 
         self.xLabel = QtGui.QLabel("X:", self)
         self.xLabel.setGeometry(15, 65, 10, 20)
@@ -33,58 +41,117 @@ class ReadoutRegionSettingsWidget(QtGui.QWidget):
         self.regionLabel = QtGui.QLabel("Read out region:", self)
         self.regionLabel.setGeometry(10, 10, 130, 20)
         
-        self.regionLabel = QtGui.QLabel("Read out region:", self)
-        self.regionLabel.setGeometry(10, 10, 130, 20)
-        
 
     def initSpinBoxes(self):
 
-        self.xSpinboxFirst = QtGui.QSpinBox(self)
-        self.xSpinboxFirst.setGeometry(self.fromLabel.x(), 65, 40, 20)
-        self.xSpinboxFirst.setMinimum(0)
-        self.xSpinboxFirst.setMaximum(N_XCOLUMNS_MOD - 1)
+        # For high gain
+        self.hgxSpinboxFirst = QtGui.QSpinBox(self)
+        self.hgxSpinboxFirst.setGeometry(self.hgFromLabel.x(), 65, 40, 20)
+        self.hgxSpinboxFirst.setMinimum(0)
+        self.hgxSpinboxFirst.setMaximum(N_XCOLUMNS_MOD - 1)
         
-        self.xSpinboxLast = QtGui.QSpinBox(self)
-        self.xSpinboxLast.setGeometry(self.toLabel.x(), self.xSpinboxFirst.y(), self.xSpinboxFirst.width(), self.xSpinboxFirst.height())
-        self.xSpinboxLast.setValue(N_XCOLUMNS_MOD - 1)
-        self.xSpinboxLast.setMinimum(0)
-        self.xSpinboxLast.setMaximum(N_XCOLUMNS_MOD - 1)
+        self.hgxSpinboxLast = QtGui.QSpinBox(self)
+        self.hgxSpinboxLast.setGeometry(self.hgToLabel.x(), self.hgxSpinboxFirst.y(), self.hgxSpinboxFirst.width(), self.hgxSpinboxFirst.height())
+        self.hgxSpinboxLast.setValue(N_XCOLUMNS_MOD - 1)
+        self.hgxSpinboxLast.setMinimum(0)
+        self.hgxSpinboxLast.setMaximum(N_XCOLUMNS_MOD - 1)
         
-        self.zSpinboxFirst = QtGui.QSpinBox(self)
-        self.zSpinboxFirst.setGeometry(self.xSpinboxFirst.x(), self.xSpinboxFirst.y() + self.xSpinboxFirst.height() + 5, self.xSpinboxFirst.width(), self.xSpinboxFirst.height())
-        self.xSpinboxFirst.setMinimum(0)
-        self.xSpinboxFirst.setMaximum(N_ZROWS_MOD - 1)
+        self.hgzSpinboxFirst = QtGui.QSpinBox(self)
+        self.hgzSpinboxFirst.setGeometry(self.hgxSpinboxFirst.x(), self.hgxSpinboxFirst.y() + self.hgxSpinboxFirst.height() + 5, self.hgxSpinboxFirst.width(), self.hgxSpinboxFirst.height())
+        self.hgzSpinboxFirst.setMinimum(0)
+        self.hgzSpinboxFirst.setMaximum(N_ZROWS_MOD - 1)
         
-        self.zSpinboxLast = QtGui.QSpinBox(self)
-        self.zSpinboxLast.setGeometry(self.xSpinboxLast.x(), self.zSpinboxFirst.y(), self.xSpinboxFirst.width(), self.xSpinboxFirst.height())
-        self.zSpinboxLast.setValue(N_ZROWS_MOD - 1)
-        self.zSpinboxLast.setMinimum(0)
-        self.zSpinboxLast.setMaximum(N_ZROWS_MOD - 1)
+        self.hgzSpinboxLast = QtGui.QSpinBox(self)
+        self.hgzSpinboxLast.setGeometry(self.hgxSpinboxLast.x(), self.hgzSpinboxFirst.y(), self.hgxSpinboxFirst.width(), self.hgxSpinboxFirst.height())
+        self.hgzSpinboxLast.setValue(N_ZROWS_MOD - 1)
+        self.hgzSpinboxLast.setMinimum(0)
+        self.hgzSpinboxLast.setMaximum(N_ZROWS_MOD - 1)
+
+
+        #For low gain
+        
+        self.lgxSpinboxFirst = QtGui.QSpinBox(self)
+        self.lgxSpinboxFirst.setGeometry(self.lgFromLabel.x(), 65, 40, 20)
+        self.lgxSpinboxFirst.setMinimum(0)
+        self.lgxSpinboxFirst.setMaximum(N_XCOLUMNS_MOD - 1)
+        
+        self.lgxSpinboxLast = QtGui.QSpinBox(self)
+        self.lgxSpinboxLast.setGeometry(self.lgToLabel.x(), self.lgxSpinboxFirst.y(), self.lgxSpinboxFirst.width(), self.lgxSpinboxFirst.height())
+        self.lgxSpinboxLast.setValue(N_XCOLUMNS_MOD - 1)
+        self.lgxSpinboxLast.setMinimum(0)
+        self.lgxSpinboxLast.setMaximum(N_XCOLUMNS_MOD - 1)
+        
+        self.lgzSpinboxFirst = QtGui.QSpinBox(self)
+        self.lgzSpinboxFirst.setGeometry(self.lgxSpinboxFirst.x(), self.lgxSpinboxFirst.y() + self.lgxSpinboxFirst.height() +5, self.lgxSpinboxFirst.width(), self.lgxSpinboxFirst.height())
+        self.lgzSpinboxFirst.setMinimum(0)
+        self.lgzSpinboxFirst.setMaximum(N_ZROWS_MOD - 1)
+        
+        self.lgzSpinboxLast = QtGui.QSpinBox(self)
+        self.lgzSpinboxLast.setGeometry(self.lgxSpinboxLast.x(), self.lgzSpinboxFirst.y(), self.lgxSpinboxFirst.width(), self.lgxSpinboxFirst.height())
+        self.lgzSpinboxLast.setValue(N_ZROWS_MOD - 1)
+        self.lgzSpinboxLast.setMinimum(0)
+        self.lgzSpinboxLast.setMaximum(N_ZROWS_MOD - 1)
+
+    def initCheckBoxes(self):
+
+        self.truRoCheckBox = QtGui.QCheckBox(self)
+        self.truRoCheckBox.setText("Enable TRU Readout")
+        self.truRoCheckBox.setGeometry(self.xLabel.x(), self.zLabel.y() + self.zLabel.height() + 8, 200, 20)
+
 
     def getReadOutRegion(self):
         
-        xFirst = self.xSpinboxFirst.value()
-        xLast = self.xSpinboxLast.value()
-        zFirst = self.zSpinboxFirst.value()
-        zLast = self.zSpinboxLast.value()                
+        hgxFirst = self.hgxSpinboxFirst.value()
+        hgxLast = self.hgxSpinboxLast.value()
+        hgzFirst = self.hgzSpinboxFirst.value()
+        hgzLast = self.hgzSpinboxLast.value()                
+
+        lgxFirst = self.lgxSpinboxFirst.value()
+        lgxLast = self.lgxSpinboxLast.value()
+        lgzFirst = self.lgzSpinboxFirst.value()
+        lgzLast = self.lgzSpinboxLast.value()                
         
-        return xFirst, xLast, zFirst, zLast
+        return hgxFirst, hgxLast, hgzFirst, hgzLast ,lgxFirst, lgxLast, lgzFirst, lgzLast
 
-    def setFirstX(self, x):
+    def setHgFirstX(self, x):
 
-        self.xSpinboxFirst.setValue(x)
+        self.hgxSpinboxFirst.setValue(x)
 
-    def setLastX(self, x):
+    def setHgLastX(self, x):
 
-        self.xSpinboxLast.setValue(x)
+        self.hgxSpinboxLast.setValue(x)
 
-    def setFirstZ(self, z):
+    def setHgFirstZ(self, z):
 
-        self.zSpinboxFirst.setValue(z)
+        self.hgzSpinboxFirst.setValue(z)
 
-    def setLastZ(self, z):
+    def setHgLastZ(self, z):
 
-        self.zSpinboxLast.setValue(z)
+        self.hgzSpinboxLast.setValue(z)
+
+    def setLgFirstX(self, x):
+
+        self.lgxSpinboxFirst.setValue(x)
+
+    def setLgLastX(self, x):
+
+        self.lgxSpinboxLast.setValue(x)
+
+    def setLgFirstZ(self, z):
+
+        self.lgzSpinboxFirst.setValue(z)
+
+    def setLgLastZ(self, z):
+
+        self.lgzSpinboxLast.setValue(z)
+
+    def setTruEnabled(self, status):
+
+        self.truRoCheckBox.setChecked(status)
+
+    def isTruReadoutEnabled(self):
+
+        return self.truRoCheckBox.isChecked()
 
     def initDetailedSelectionButton(self):
 

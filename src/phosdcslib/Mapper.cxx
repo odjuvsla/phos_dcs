@@ -54,6 +54,7 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
   int aclIndex[RCUS_PER_MODULE];
   
   for(int i = 0; i < RCUS_PER_MODULE; i++ )
+
     {
       aclIndex[i] = 0;
     }
@@ -67,15 +68,59 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
   int csp = 99;
 
 
-  for(int i =  readoutregion.GetStartZ().GetIntValue(); i <=  readoutregion.GetEndZ().GetIntValue(); i++)
+  for(int i =  readoutregion.GetHGStartZ().GetIntValue(); i <=  readoutregion.GetHGEndZ().GetIntValue(); i++)
     {
-      for(int j = readoutregion.GetStartX().GetIntValue(); j <=  readoutregion.GetEndX().GetIntValue(); j++)
+      for(int j = readoutregion.GetHGStartX().GetIntValue(); j <=  readoutregion.GetHGEndX().GetIntValue(); j++)
  	{
 	  log.str("");
 	  log << "Mapper::GenerateACL: Adding crystal: x: " << j << " and z: " << i << endl;
 	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
 
-	  int k = PHOS_GAINS -1; 
+	  int k = HIGH_GAIN;
+
+// 	  for(int k = PHOS_GAINS - 1  ; k > -1; k--)
+// 	    {
+	 
+	      index = geo2hdw[modID][k][j][i]; 
+	      rcu = ALTRO_MAP[index].rcu;
+	      branch = ALTRO_MAP[index].branch;
+	      card = ALTRO_MAP[index].card;
+	      altro = ALTRO_MAP[index].chip;  
+	      channel = ALTRO_MAP[index].chan;
+	      csp = ALTRO_MAP[index].csp;
+	 
+	      if(altro > 0)
+		{
+		   altro = altro + 1; //to fix bug in mp
+		}
+
+	      ///OLD RCU FIRMWARE
+	      // aclIndex = branch*128+(card +1)*8+altro;
+	      // acl[rcu][aclIndex] =  acl[rcu][aclIndex] | 1<<channel;
+	      
+
+	      // NEW RCU FIRMWARE
+   	      // altro channel relative to one FEE
+
+	      unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
+	      acl[rcu][aclIndex[rcu]] = (branch << 11)  |((card+1) << 7) | (tmpGlobalFeeChannel) ;
+	      //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
+	      aclIndex[rcu] ++;
+
+	      afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(card+1) +(long int)branch*MAX_CARDS_PER_BRANCH));
+	      //	    }
+	}
+    }
+  for(int i =  readoutregion.GetLGStartZ().GetIntValue(); i <=  readoutregion.GetLGEndZ().GetIntValue(); i++)
+    {
+      for(int j = readoutregion.GetLGStartX().GetIntValue(); j <=  readoutregion.GetLGEndX().GetIntValue(); j++)
+ 	{
+	  log.str("");
+	  log << "Mapper::GenerateACL: Adding crystal: x: " << j << " and z: " << i << endl;
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
+
+	  int k = LOW_GAIN;
+
 // //FEE
 //   for(int i = 0; i <=  55; i++)
 //     {
@@ -114,7 +159,7 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 	      //	    }
 	}
     }
-  if(0)
+  if(readoutregion.IsTruReadoutEnabled())
     {
       //TRU // TODO: need to configure region for TRUs as well
       for(int rcu = 0; rcu < RCUS_PER_MODULE; rcu++)
@@ -123,12 +168,10 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 	    {
 	      for(int altro = 0; altro < 8; altro++)
 		{
-		  for(int channel = 0; channel < CHANNELS_PER_ALTRO; channel++)
+		  for(int channel = 0; channel < readoutregion.GetNumberOfTRUSamples(); channel++)
 		    {
 		      unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
-		  // 		  acl[rcu][aclIndex[rcu]] = (tru << 11)  |((tru*(MAX_CARDS_PER_BRANCH-1)) << 7) | (tmpGlobalFeeChannel) ;
 		      acl[rcu][aclIndex[rcu]] = (tru << 11)  | (tmpGlobalFeeChannel) ;
-		  //		  printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
 		      aclIndex[rcu] ++;
 		      afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(tru*(MAX_CARDS_PER_BRANCH-1)) +(long int)tru*MAX_CARDS_PER_BRANCH));
 		    }

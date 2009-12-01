@@ -194,10 +194,10 @@ DatabaseDummy::SaveReadoutConfiguration(const ReadoutConfig_t rdoConfig, const M
       fp = fopen(fileName, "w");
       fprintf(fp, "samples:\t %d\n",  rdoConfig.GetAltroConfig().GetNSamples().GetIntValue());
       fprintf(fp, "presamples:\t %d\n", rdoConfig.GetAltroConfig().GetNPreSamples().GetIntValue());
-      fprintf(fp, "startZ:\t %d\n",  rdoConfig.GetReadoutRegion().GetStartZ().GetIntValue());
-      fprintf(fp, "endZ:\t %d\n",   rdoConfig.GetReadoutRegion().GetEndZ().GetIntValue());
-      fprintf(fp, "startX:\t %d\n",  rdoConfig.GetReadoutRegion().GetStartX().GetIntValue());
-      fprintf(fp, "endX:\t %d\n",   rdoConfig.GetReadoutRegion().GetEndX().GetIntValue());
+      fprintf(fp, "startZ:\t %d\n",  rdoConfig.GetReadoutRegion().GetHGStartZ().GetIntValue());
+      fprintf(fp, "endZ:\t %d\n",   rdoConfig.GetReadoutRegion().GetHGEndZ().GetIntValue());
+      fprintf(fp, "startX:\t %d\n",  rdoConfig.GetReadoutRegion().GetHGStartX().GetIntValue());
+      fprintf(fp, "endX:\t %d\n",   rdoConfig.GetReadoutRegion().GetHGEndX().GetIntValue());
       fprintf(fp, "enableTruReadout:\t %d\n",   rdoConfig.GetReadoutRegion().IsTruReadoutEnabled());
       fclose(fp);
     }
@@ -280,7 +280,7 @@ DatabaseDummy::LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig, const ModNum
       StartX_t *startx = new StartX_t(tmpStartX);
       EndX_t *endx = new EndX_t(tmpEndX);
       
-      ReadoutRegion_t *rdoregion = new ReadoutRegion_t(*startz, *endz, *startx, *endx, tmpTruEnable);
+      ReadoutRegion_t *rdoregion = new ReadoutRegion_t(*startz, *endz, *startx, *endx, *startz, *endz, *startx, *endx, tmpTruEnable);
       rdoConfig->SetReadoutRegion(*rdoregion);
 
       delete  startz;

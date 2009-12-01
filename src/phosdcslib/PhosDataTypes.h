@@ -365,31 +365,50 @@ class ReadoutRegion_t
 {
  public:
   ReadoutRegion_t();
-  ReadoutRegion_t(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx, const bool enableTRUFakeAltro);
+  ReadoutRegion_t(const StartZ_t hgstartz, const EndZ_t hgendz, const StartX_t hgstartx, const EndX_t hgendx,
+		  const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx, const bool enableTRUFakeAltro, const int nTruSamples = 0);
   ~ReadoutRegion_t();
   void PrintInfo(const char *message = 0) const ;
-  void SetReadoutRegion(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx);
+  void SetReadoutRegion(const StartZ_t hgstartz, const EndZ_t hgendz, const StartX_t hgstartx, const EndX_t hgendx,
+			const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx);
 
-  const StartZ_t  GetStartZ() const { return fStartZ;};
-  const EndZ_t    GetEndZ() const {   return fEndZ;} ;
-  const StartX_t  GetStartX() const { return fStartX;};
-  const EndX_t    GetEndX() const {   return fEndX;}; 
+  void SetNumberOfTruSamples(const int nTruSamples) { fNTruSamples = nTruSamples; }
+
+  const StartZ_t  GetHGStartZ() const { return fHgStartZ;};
+  const EndZ_t    GetHGEndZ() const {   return fHgEndZ;} ;
+  const StartX_t  GetHGStartX() const { return fHgStartX;};
+  const EndX_t    GetHGEndX() const {   return fHgEndX;}; 
+
+  const StartZ_t  GetLGStartZ() const { return fLgStartZ;};
+  const EndZ_t    GetLGEndZ() const {   return fLgEndZ;} ;
+  const StartX_t  GetLGStartX() const { return fLgStartX;};
+  const EndX_t    GetLGEndX() const {   return fLgEndX;}; 
+
+  const int GetNumberOfTRUSamples() const { return fNTruSamples; }
+
   const bool IsRcuEnabled(const RcuNumber_t rcu) const;
   const bool IsBranchEnabled(const RcuNumber_t rcu, const BranchNumber_t branch) const;
   const bool IsTruReadoutEnabled(const RcuNumber_t rcu, const BranchNumber_t branch) const;
 
   const bool IsTruReadoutEnabled() const { return fIsTruEnabled; }
 
-  
 
  private:
   bool CheckConsistency(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx) const;
 
-  StartZ_t  fStartZ;
-  EndZ_t    fEndZ;
-  StartX_t  fStartX;
-  EndX_t    fEndX;
+  StartZ_t  fHgStartZ;
+  EndZ_t    fHgEndZ;
+  StartX_t  fHgStartX;
+  EndX_t    fHgEndX;
+
+  StartZ_t  fLgStartZ;
+  EndZ_t    fLgEndZ;
+  StartX_t  fLgStartX;
+  EndX_t    fLgEndX;
+  
   bool      fIsTruEnabled; 
+  int     fNTruSamples; // In the readout region class due to being set by ALTRO mapping
+  
 };
 
 

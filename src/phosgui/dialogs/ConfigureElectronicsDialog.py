@@ -64,9 +64,11 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         CONFIGFILE = open(self.configFile, "w") 
         configLines = []
 
-        xfirst, xlast, zfirst, zlast = self.regionWidget.getReadOutRegion()
+        xfirst, xlast, zfirst, zlast, lgxfirst, lgxlast, lgzfirst, lgzlast = self.regionWidget.getReadOutRegion()
 
-        preSamples, samples = self.samplesWidget.getSamplesSettings()
+        truRoEnabled = self.regionWidget.isTruReadoutEnabled()
+
+        preSamples, samples, truSamples= self.samplesWidget.getSamplesSettings()
 
         zeroSuppression = self.zsWidget.isZeroSuppressionOn()
         zsThreshold = self.zsWidget.getZSThreshold()
@@ -74,13 +76,21 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         sparseReadout = self.zsWidget.isSparseReadout()
         
         
-        configLines.append("XFIRST " + str(xfirst) + "\n")
-        configLines.append("XLAST " + str(xlast) + "\n")
-        configLines.append("ZFIRST " + str(zfirst) + "\n")
-        configLines.append("ZLAST " + str(zlast) + "\n")
+        configLines.append("HGXFIRST " + str(xfirst) + "\n")
+        configLines.append("HGXLAST " + str(xlast) + "\n")
+        configLines.append("HGZFIRST " + str(zfirst) + "\n")
+        configLines.append("HGZLAST " + str(zlast) + "\n")
+
+        configLines.append("LGXFIRST " + str(lgxfirst) + "\n")
+        configLines.append("LGXLAST " + str(lgxlast) + "\n")
+        configLines.append("LGZFIRST " + str(lgzfirst) + "\n")
+        configLines.append("LGZLAST " + str(lgzlast) + "\n")
+
+        configLines.append("TRUREADOUT " + str(truRoEnabled) + "\n")
 
         configLines.append("PRESAMPLES " + str(preSamples) + "\n")
         configLines.append("SAMPLES " + str(samples) + "\n")
+        configLines.append("TRUSAMPLES " + str(truSamples) + "\n")
         configLines.append("ZEROSUPPRESSION " + str(zeroSuppression) + "\n")
         configLines.append("THRESHOLD " + str(zsThreshold) + "\n")
         configLines.append("OFFSET " + str(zsOffset) + "\n")
@@ -100,18 +110,33 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         for line in CONFIGFILE.readlines():
 
             valueName = line.split(" ")[0]
-            if valueName == "XFIRST":
-                self.regionWidget.setFirstX(int(line.split(" ")[1]))
-            if valueName == "XLAST":
-                self.regionWidget.setLastX(int(line.split(" ")[1]))
-            if valueName == "ZFIRST":
-                self.regionWidget.setFirstZ(int(line.split(" ")[1]))
-            if valueName == "ZLAST":
-                self.regionWidget.setLastZ(int(line.split(" ")[1]))
+            if valueName == "HGXFIRST":
+                self.regionWidget.setHgFirstX(int(line.split(" ")[1]))
+            if valueName == "HGXLAST":
+                self.regionWidget.setHgLastX(int(line.split(" ")[1]))
+            if valueName == "HGZFIRST":
+                self.regionWidget.setHgFirstZ(int(line.split(" ")[1]))
+            if valueName == "HGZLAST":
+                self.regionWidget.setHgLastZ(int(line.split(" ")[1]))
+            if valueName == "LGXFIRST":
+                self.regionWidget.setLgFirstX(int(line.split(" ")[1]))
+            if valueName == "LGXLAST":
+                self.regionWidget.setLgLastX(int(line.split(" ")[1]))
+            if valueName == "LGZFIRST":
+                self.regionWidget.setLgFirstZ(int(line.split(" ")[1]))
+            if valueName == "LGZLAST":
+                self.regionWidget.setLgLastZ(int(line.split(" ")[1]))
+            if valueName == "TRUREADOUT":
+                if line.split(" ")[1].strip() == "True":
+                    self.regionWidget.setTruEnabled(True)
+                if line.split(" ")[1].strip() == "False":
+                    self.regionWidget.setTruEnabled(False)
             if valueName == "PRESAMPLES":
                 self.samplesWidget.setPreSamples(int(line.split(" ")[1]))
             if valueName == "SAMPLES":
                 self.samplesWidget.setSamples(int(line.split(" ")[1]))
+            if valueName == "TRUSAMPLES":
+                self.samplesWidget.setTruSamples(int(line.split(" ")[1]))
             if valueName == "ZEROSUPPRESSION":
                 if line.split(" ")[1].strip() == "True":
                     self.zsWidget.setZeroSuppression(True)
@@ -147,14 +172,14 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
     def getReadoutConfig(self):
 
-        preSamples, samples = self.samplesWidget.getSamplesSettings()
+        preSamples, samples, truSamples = self.samplesWidget.getSamplesSettings()
 
         zeroSuppression = self.zsWidget.isZeroSuppressionOn()
         zsThreshold = self.zsWidget.getZSThreshold()
         zsOffset = self.zsWidget.getOffset()
         sparseReadout = self.zsWidget.isSparseReadout()
 
-        
+        enableFakeAltroReadout = self.regionWidget.isTruReadoutEnabled()
 
         if zeroSuppression == True:
             autoBs = True
@@ -166,10 +191,10 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         print "MEBMODE: " + str(MEBMode)
     #triggerMode = self.getTriggerMode()
 
-        xfirst, xlast, zfirst, zlast = self.regionWidget.getReadOutRegion()
-        enableFakeAltroReadout = True
+        xfirst, xlast, zfirst, zlast, lgxfirst, lgxlast, lgzfirst, lgzlast = self.regionWidget.getReadOutRegion()
 
-        rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), enableFakeAltroReadout)
+
+        rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), StartZ_t(lgzfirst), EndZ_t(lgzlast), StartX_t(lgxfirst), EndX_t(lgxlast), enableFakeAltroReadout, truSamples)
 
         rdoSettings = ReadoutSettings_t(NPreSamples_t(preSamples), NSamples_t(samples), zeroSuppression, zsThreshold, zsOffset, 
                                         sparseReadout, autoBs, MEBMode)
@@ -221,8 +246,8 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         self.readoutSep.setFrameShadow(QtGui.QFrame.Raised)
         self.readoutSep.setFrameShape(QtGui.QFrame.HLine)
 
-        self.regionWidget = ReadoutRegionSettingsWidget(self.readoutFrame.width() - 30, 130, self)
-        self.regionWidget.setGeometry(10, 45, self.readoutFrame.width() - 30, 130)
+        self.regionWidget = ReadoutRegionSettingsWidget(self.readoutFrame.width() - 30, 140, self)
+        self.regionWidget.setGeometry(10, 45, self.readoutFrame.width() - 30, 140)
 
         self.regionSep = QtGui.QFrame(self.readoutFrame)
         self.regionSep.setGeometry(0, self.readoutSep.y() + self.regionWidget.height(), self.readoutFrame.width(), self.readoutFrame.width())
