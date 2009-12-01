@@ -1,2 +1,5 @@
-ccopy of configuration 291
+DON'T USE ME!!!!
 
+Some channels (~20 channels) are not set properly.
+Used for run 9856 - 9859
+Module 3 Hamamatsu Gain50 at room temperature

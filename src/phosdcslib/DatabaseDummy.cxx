@@ -86,7 +86,7 @@ DatabaseDummy::LoadApdConfig(char *description)
     {
       LoadApdConfig(description, id);
       cout << "DatabaseDummy::LoadApdConfig,   databaseFolderPtr = " <<fDatabaseFolder << endl;
-      cout << "DatabaseDummy::LoadApdConfig,   sanboxFolderPtr = " << fSandboxFolder  << endl;
+      cout << "DatabaseDummy::LoadApdConfig,   sandboxFolderPtr = " << fSandboxFolder  << endl;
     }
   return id;
 }
@@ -114,7 +114,7 @@ DatabaseDummy::LoadApdConfig(ConfigInfo_t &info, int configID)
     }
   else
     {
-      LoadApdConfig(info.fInfo, id);
+      LoadApdConfig(info.fInfo, info.fID);
       info.fID = id;
       log.str("");
       log << "Loading APD settings for ID: " << id;
@@ -150,6 +150,7 @@ DatabaseDummy::LoadApdConfig(char *description, int id)
 
   if(CheckFile(configFilename, "r") == 0)
     {
+
       fpLoad=fopen(configFilename, "r");  
       fscanf(fpLoad, "Module:%d\tRCU:%d\tbranch:%d\tcard:%d\n", &module, &rcu, &branch, &card); 
       do
@@ -166,9 +167,8 @@ DatabaseDummy::LoadApdConfig(char *description, int id)
 		}
 	      fclose(fp);
 	    }
-      }
-       
-      while(fscanf(fpLoad,"Module:%d\tRCU:%d\tbranch:%d\tcard:%d\n", &module, &rcu, &branch, &card) !=EOF);    
+	} while(fscanf(fpLoad,"Module:%d\tRCU:%d\tbranch:%d\tcard:%d\n", &module, &rcu, &branch, &card) !=EOF);    
+
       fclose(fpLoad);
     }  
 
@@ -347,6 +347,8 @@ DatabaseDummy::SaveApdConfig(char *description)
   char postfix[20];
   int configId=0;
 
+  cout << "SAVE CONFIG!" << endl;
+
   sprintf(IdFilename, "%s/Id.txt", fDatabaseFolder);
   configId=GetLatestConfigId()+1;
   
@@ -406,6 +408,7 @@ DatabaseDummy::SaveApdConfig(char *description)
 			    {
 			      fscanf(fp,"%d\n",&tmpApdValue[i]);
 			      fprintf(fpConf, "%d\n", tmpApdValue[i]);
+			      //			      cout << tmpApdValue[i] << endl;
 			    }
 			  fclose(fp);
 			}

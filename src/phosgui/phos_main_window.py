@@ -98,7 +98,8 @@ class PhosGui(QtGui.QMainWindow):
         self.connect(self, QtCore.SIGNAL("rcuUpdateStatus"), self.rcuHandler.updateStatus)
         self.connect(self, QtCore.SIGNAL("rcuToggleOnOff"), self.rcuHandler.toggleOnOff)
         
-        self.connect(self, QtCore.SIGNAL("turnOnModule"), self.moduleHandler.turnOn)
+#        self.connect(self, QtCore.SIGNAL("turnOnModule"), self.moduleHandler.turnOn)
+        self.connect(self, QtCore.SIGNAL("turnOnModule"), self.goReady)
         self.connect(self, QtCore.SIGNAL("shutdownModule"), self.moduleHandler.shutdown)
 
         self.connect(self, QtCore.SIGNAL("showModuleProperties"), self.showModulePropertiesDialog)
@@ -239,4 +240,11 @@ class PhosGui(QtGui.QMainWindow):
             
             self.moduleTabs[i].addLogString(logString)
 
-    
+    def goReady(self, moduleId):
+
+        self.moduleHandler.shutdown(moduleId)
+        self.configureElectronicsDialog.start(self.moduleHandler, self.databaseHandler, moduleId, True)
+        self.configureElectronicsDialog.doConfigure()
+        self.moduleHandler.disableTrigger(moduleId)
+        self.moduleHandler.enableTrigger(moduleId)
+        

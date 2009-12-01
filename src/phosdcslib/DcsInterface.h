@@ -107,6 +107,8 @@ class DcsInterface : public PhosDcsBase
   int             Configure(const ModNumber_t modId);
   int             Reset(const ModNumber_t modId);
 
+  int             ApplyScriptToFeeServer(const char *feeserver, const char* scriptfilename);
+
  private:
   DatabaseDummy   *fDatabasePtr;
   PhosDetector    *fPhosDetectorPtr; /**<Pointer to the one and only PHOS detector */ 

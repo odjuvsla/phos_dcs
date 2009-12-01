@@ -45,4 +45,4 @@ class FeePushButton(PhosPushButton):
             self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(255, 255, 0))
         if state == FEE_STATE_ERROR: 
             self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(255, 0, 0))
-        print FEE_STATE_OFF
+

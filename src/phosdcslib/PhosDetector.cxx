@@ -163,7 +163,8 @@ PhosDetector::SetPhosBit(const int moduleId) const
 Rcu*
 PhosDetector::GetRcuPtr(const int module, const int rcu) const
 {
-  return phosModulePtr[module]->GetRcuPtr(rcu);
+  if(phosModulePtr[module]->GetRcuPtr(rcu)) return phosModulePtr[module]->GetRcuPtr(rcu);
+  return 0;
 }
 
 

@@ -75,14 +75,15 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 	  log << "Mapper::GenerateACL: Adding crystal: x: " << j << " and z: " << i << endl;
 	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
 
-	  
+	  int k = PHOS_GAINS -1; 
 // //FEE
 //   for(int i = 0; i <=  55; i++)
 //     {
 //       for(int j = 0; j <= 63; j++)
 // 	{
-	  for(int k = PHOS_GAINS - 1  ; k > -1; k--)
-	    {
+// 	  for(int k = PHOS_GAINS - 1  ; k > -1; k--)
+// 	    {
+	 
 	      index = geo2hdw[modID][k][j][i]; 
 	      rcu = ALTRO_MAP[index].rcu;
 	      branch = ALTRO_MAP[index].branch;
@@ -110,27 +111,30 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 	      aclIndex[rcu] ++;
 
 	      afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(card+1) +(long int)branch*MAX_CARDS_PER_BRANCH));
-	    }
+	      //	    }
 	}
     }
-
-  //TRU // TODO: need to configure region for TRUs as well
-  for(int rcu = 0; rcu < RCUS_PER_MODULE; rcu++)
+  if(0)
     {
-      for(int tru = 0; tru < 2; tru++) //TODO: don't use hardcoded values
+      //TRU // TODO: need to configure region for TRUs as well
+      for(int rcu = 0; rcu < RCUS_PER_MODULE; rcu++)
 	{
-	  for(int altro = 0; altro < 8; altro++)
+	  for(int tru = 0; tru < 2; tru++) //TODO: don't use hardcoded values
 	    {
-	      for(int channel = 0; channel < CHANNELS_PER_ALTRO; channel++)
+	      for(int altro = 0; altro < 8; altro++)
 		{
-// 		  unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
-// 		  acl[rcu][aclIndex[rcu]] = (branch << 11)  |((tru*(MAX_CARDS_PER_BRANCH-1)) << 7) | (tmpGlobalFeeChannel) ;
-// 		  //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
-// 		  aclIndex[rcu] ++;
-// 		  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(tru*(MAX_CARDS_PER_BRANCH-1)) +(long int)tru*MAX_CARDS_PER_BRANCH));
+		  for(int channel = 0; channel < CHANNELS_PER_ALTRO; channel++)
+		    {
+		      unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
+		  // 		  acl[rcu][aclIndex[rcu]] = (tru << 11)  |((tru*(MAX_CARDS_PER_BRANCH-1)) << 7) | (tmpGlobalFeeChannel) ;
+		      acl[rcu][aclIndex[rcu]] = (tru << 11)  | (tmpGlobalFeeChannel) ;
+		  //		  printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
+		      aclIndex[rcu] ++;
+		      afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(tru*(MAX_CARDS_PER_BRANCH-1)) +(long int)tru*MAX_CARDS_PER_BRANCH));
+		    }
 		}
+	      //	  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(0) +(long int)branch*MAX_CARDS_PER_BRANCH));
 	    }
-	  //	  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(0) +(long int)branch*MAX_CARDS_PER_BRANCH));
 	}
     }
 }
@@ -296,7 +300,7 @@ Mapper::Hid2col(int hid)
 
 
 
-inline void 
+void 
 //Mapper::initAltroMapping(int saveMapping=0)
 //       initAltroMapping(int)'
 Mapper::InitAltroMapping(int saveMapping, ModNumber_t modID)

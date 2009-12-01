@@ -67,7 +67,12 @@ class APDSettingSelectorWidget(QtGui.QWidget):
         self.apdButtonLayoutWidget.setLayout(self.apdButtonLayout)
 
         self.connect(self.loadApdButton, QtCore.SIGNAL("clicked()"), self.loadApdSettings)
+        self.connect(self.applyApdButton, QtCore.SIGNAL("clicked()"), self.applyApdSettings)
         
     def loadApdSettings(self):
         
         self.emit(QtCore.SIGNAL("loadApdSettings"), self.configId)
+
+    def applyApdSettings(self):
+        
+        self.emit(QtCore.SIGNAL("applyApdSettings"), self.configId)

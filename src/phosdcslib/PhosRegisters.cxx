@@ -3,23 +3,27 @@
 #include <iostream>
 
 const unsigned long ReadoutRegisters_t::fRcuRegisterAddresses[] = { RcuALTROIF_t::fRegAddress, 
-								 RcuRDOMOD_t::fRegAddress,
-								 RcuALTROCFG1_t::fRegAddress,
-								 RcuALTROCFG2_t::fRegAddress };
+								    RcuRDOMOD_t::fRegAddress,
+								    RcuALTROCFG1_t::fRegAddress,
+								    RcuALTROCFG2_t::fRegAddress, 
+								    RcuL1LAT_t::fRegAddress,
+								    RcuL1MSGLAT_t::fRegAddress };
 const unsigned long ReadoutRegisters_t::fAltroRegisterAddresses[] = { AltroZSTHR_t::fRegAddress, 
 								   AltroTRCFG_t::fRegAddress,
 								   AltroDPCFG_t::fRegAddress,
 								   AltroDPCFG2_t::fRegAddress };
-const bool ReadoutRegisters_t::fRcuVerify[] = {false, false, false, false};
+const bool ReadoutRegisters_t::fRcuVerify[] = {false, false, false, false, false, false};
 
-const bool ReadoutRegisters_t::fAltroVerify[] = {true, true, true, true};
+const bool ReadoutRegisters_t::fAltroVerify[] = {false, false, false, false};
 
 ReadoutRegisters_t::ReadoutRegisters_t(RcuALTROIF_t altroif, RcuRDOMOD_t rdoMod, RcuALTROCFG1_t altrocfg1, 
-		     RcuALTROCFG2_t altrocfg2)
+				       RcuALTROCFG2_t altrocfg2, RcuL1LAT_t lOneLat, RcuL1MSGLAT_t lOneMsgLat)
 {
   SetRcuALTROIF(altroif);
   SetRcuRDOMOD(rdoMod);
   SetRcuALTROCFG(altrocfg1, altrocfg2);
+  SetRcuL1LAT(lOneLat);
+  SetRcuL1MSGLAT(lOneMsgLat);
 }
 
 const unsigned long* ReadoutRegisters_t::GetRcuRegisterValues() 
@@ -28,6 +32,9 @@ const unsigned long* ReadoutRegisters_t::GetRcuRegisterValues()
   fRcuRegisterValues[1] = fRcuRDOMOD.GetRegisterValue();
   fRcuRegisterValues[2] = fRcuALTROCFG1.GetRegisterValue();
   fRcuRegisterValues[3] = fRcuALTROCFG2.GetRegisterValue();
+  fRcuRegisterValues[4] = fRcuL1LAT.GetRegisterValue();
+  fRcuRegisterValues[5] = fRcuL1MSGLAT.GetRegisterValue();
+  
   return fRcuRegisterValues;
 }
 
@@ -77,6 +84,8 @@ void ReadoutRegisters_t::Print(std::ostream& stream, std::string level)
   fRcuRDOMOD.Print(stream, level);
   fRcuALTROCFG1.Print(stream, level);
   fRcuALTROCFG2.Print(stream, level);
+  fRcuL1LAT.Print(stream, level);
+  fRcuL1MSGLAT.Print(stream, level);
   stream << "-------------------" << std::endl;
   stream << "ALTRO Registers:" << std::endl;
   fAltroZSTHR.Print(stream, level);
@@ -275,7 +284,7 @@ RcuRDOMOD_t::RcuRDOMOD_t(bool maskRDYRX, bool sparseReadoutEnabled, bool execute
 short RcuRDOMOD_t::GetRegisterValue()
 {
   return fMaskRDYRX << 3 | 
-    fSparseReadout << 2 |
+    fSparseReadout << 6 |
     fExecuteSequencer << 1 | 
     fMEBMode;
 }
@@ -283,7 +292,7 @@ short RcuRDOMOD_t::GetRegisterValue()
 void RcuRDOMOD_t::SetByRegisterValue(short value)
 {
   fMaskRDYRX = (value >> 3) & 0x1;
-  fSparseReadout = (value >> 2) & 0x1;
+  fSparseReadout = (value >> 7) & 0x1;
   fExecuteSequencer = (value >> 1) & 0x1;
   fMEBMode = value & 0x1;
 }
@@ -473,3 +482,37 @@ void AltroDPCFG2_t::Print(std::ostream& stream, std::string level)
 	     << "\t Power save\t: " << IsPowerSaveEnabled() << std::endl;   
     }
 }
+
+
+void RcuL1LAT_t::SetByRegisterValue(short value)
+{
+  fLatency = value & 0xfff;
+  fUncertainty = (value >> 12) & 0xf;
+}
+
+void RcuL1LAT_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "L1_LATENCY     : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Latency (BC)\t: " << GetLatency() << std::endl
+	     << "\t Uncertainty (BC)\t: " << GetUncertainty() << std::endl;
+    }
+}
+
+void RcuL1MSGLAT_t::SetByRegisterValue(int value)
+{
+  fMinLatency = (value >> 16) & 0xfff;
+  fMaxLatency = value & 0xffff;
+}
+
+void RcuL1MSGLAT_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "L1_MSG_LATENCY    : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Min. latency (BC)\t: " << GetMinLatency() << std::endl
+	     << "\t Max. latency (BC)\t: " << GetMaxLatency() << std::endl;
+    }
+}
+

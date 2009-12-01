@@ -12,13 +12,21 @@ class ModuleHandler(PHOSHandler):
         
     def turnOn(self, moduleId):
         
-        print 'Turning on module: ' + str(moduleId)
+        self.configureElectronics(moduleId)
+        self.disableTrigger(moduleId)
+        self.enableTrigger(moduleId)
         
     def shutdown(self, moduleId):
         
-        print "Shutting down module: " + str(moduleId)
+#        print "Shutting down module: " + str(moduleId)
 
-    def enableTrigger(self, moduleId, ):
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        for i in range(RCUS_PER_MODULE):
+            dcs_interface.DisArmTrigger(moduleId, i)
+            
+        self.dcs_interface_wrapper.releaseDcsInterface()
+
+    def enableTrigger(self, moduleId):
         
         dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
         dcs_interface.EnableTrigger(moduleId, "ttc")
@@ -38,6 +46,13 @@ class ModuleHandler(PHOSHandler):
         configureElectronicsThread.start()
 #        self.updateStatus(rcuId)
 
+    def applyApdSettings(self, moduleId):
+
+        self.connect(self.rcuHandler, QtCore.SIGNAL("apdSettingApplied"), self.emit_signal)
+        self.connect(self.rcuHandler, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+        for i in range(RCUS_PER_MODULE):
+            self.rcuHandler.applyApdSettings(moduleId, i)
+    
     class __ConfigureElectronicsThread(Thread, PHOSHandler):
 
         def __init__(self, dcs_interface_wrapper, moduleId, readoutRegion, readoutSettings):

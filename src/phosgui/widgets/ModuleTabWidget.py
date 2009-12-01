@@ -72,9 +72,11 @@ class ModuleTabWidget(QtGui.QWidget):
 
         self.moduleTurnOnButton = ModuleTurnOnButton(self.moduleMainButtonFrame, self.moduleId)
         self.moduleTurnOnButton.setGeometry(5, 5, 320, 60)
+        self.moduleTurnOnButton.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(0, 255, 0))
         
         self.moduleShutdownButton = ModuleTurnOffButton(self.moduleMainButtonFrame, self.moduleId)
         self.moduleShutdownButton.setGeometry(5, 75, 320, 60)
+
         
         self.moduleConfigurationButtonsFrame = QtGui.QFrame(self)
         self.moduleConfigurationButtonsFrame.setGeometry(760, 275, 330, 75)
@@ -128,6 +130,7 @@ class ModuleTabWidget(QtGui.QWidget):
 #        self.logViewer.append(logString)
         self.logViewer.setText(self.logViewer.toPlainText() + logString)
         self.logViewer.verticalScrollBar().setValue(self.logViewer.verticalScrollBar().maximum())
+        self.moduleIndicator.update()
         
     def updateFeeCard(self, feeId, state):
         

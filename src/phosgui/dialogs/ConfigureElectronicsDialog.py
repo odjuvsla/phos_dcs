@@ -19,7 +19,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
         self.configFile = "test.config"
 
-    def start(self, moduleHandler, databaseHandler, moduleId):
+    def start(self, moduleHandler, databaseHandler, moduleId, auto = False):
 
         self.moduleHandler = moduleHandler
         self.databaseHandler = databaseHandler
@@ -27,7 +27,9 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
         self.initFrames()
         self.loadFromFile()
-        self.exec_()
+        if auto == False:
+            self.exec_()
+        
         
     def initButtons(self):
 
@@ -265,6 +267,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
         self.connect(self.apdWidget, QtCore.SIGNAL("getConfig"), self.setApdConfig)
         self.connect(self.apdWidget, QtCore.SIGNAL("loadApdSettings"), self.loadApdSettings)
+        self.connect(self.apdWidget, QtCore.SIGNAL("applyApdSettings"), self.applyApdSettings)
 
     def setApdConfig(self, id):
         
@@ -278,5 +281,11 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         return self.configId
 
     def loadApdSettings(self, id):
-        
+
+        self.databaseHandler.loadApdConfig(id)
         self.databaseHandler.loadApdValues(self.moduleId)
+
+    def applyApdSettings(self, id):
+        
+        self.moduleHandler.applyApdSettings(self.moduleId)
+        

@@ -39,8 +39,8 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
   void SetScripFileName(const char *filename);
 
   const int WriteReadRegisters(const int regtype, const char *feeServerName, const unsigned long *regs, const unsigned long *values, const bool *verify, 
-			 const int N, const int branch = 999, const int card = 999);
-  int ReadRegisters(const int regtype, const char *feeServerName, const unsigned long *regs, unsigned long *rbValues,  const int N, const int branch = 999, const int card = 999);
+			 const int N, const int branch = 0, const int card = 0);
+  int ReadRegisters(const int regtype, const char *feeServerName, const unsigned long *regs, unsigned long *rbValues,  const int N, const int branch = 0, const int card = 0);
 
   /**
    * Executes a script given on a given feeserver.
@@ -98,7 +98,7 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
 
   bool WriteAFL(unsigned long activeFeeList, const char* feeServerName);
 
-  void ReadExecutionResult(const char* feeServerName, vector<unsigned long> & resultBuffer, int N);  
+  int ReadExecutionResult(const char* feeServerName, vector<unsigned long> & resultBuffer, int N);  
   
   int GetExecutionResult(const char* feeServerName, int N); 
 

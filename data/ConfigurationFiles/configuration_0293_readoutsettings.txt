@@ -1,6 +1,6 @@
-samples:	 501
-presamples:	 11
+samples:	 0
+presamples:	 0
 startZ:	 0
-endZ:	 55
+endZ:	 3
 startX:	 0
-endX:	 63
+endX:	 0

@@ -35,6 +35,14 @@ class RcuHandler(PHOSHandler):
         updateStatusThread.start()
         
     #------------------------------------------------
+
+    def applyApdSettings(self, moduleId, logicRcuId):
+        """Apply APD settings to RCU"""
+
+        applyApdThread = self.__ApplyApdSettingsThread(moduleId, logicRcuId, self.dcs_interface_wrapper)
+        self.connect(applyApdThread, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+        self.connect(applyApdThread, QtCore.SIGNAL("apdSettingApplied"), self.emit_signal)
+        applyApdThread.start()
     
     class __ToggleOnOffThread(Thread, PHOSHandler):
         """Member threading class for toggle on/off all cards on RCU"""
@@ -61,6 +69,7 @@ class RcuHandler(PHOSHandler):
                 
             for i in range(CARDS_PER_BRANCH):
                 feeId = self.rcuId*CARDS_PER_RCU + i
+
                 if self.on == True:
                     self.feeHandler.toggleOn(feeId)
                     time.sleep(0.1)
@@ -100,7 +109,6 @@ class RcuHandler(PHOSHandler):
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
             
             moduleId, rcuId = self.idConverter.GetRcuLogicalIDs(self.rcuId)
-            print 'UpdateStatusThread: module ID: ' + str(moduleId) + ' RCU ID: ' + str(rcuId)
 
             dcs_interface.UpdateAFL(moduleId, rcuId)
 
@@ -128,3 +136,38 @@ class RcuHandler(PHOSHandler):
 #             self.emit(QtCore.SIGNAL("statusUpdated"), "statusUpdated", self.rcuId, status)
 
 #self.dcs_interface_wrapper.releaseDcsInterface()
+
+    class __ApplyApdSettingsThread(Thread, PHOSHandler):
+        """Member threading class for applying APD settings to the FEE cards"""
+        
+        def __init__(self, moduleId, logicRcuId, dcs_interface_wrapper):
+            """init takes a Dcs_Interface_Wrapper object as argument"""
+            Thread.__init__(self)
+            PHOSHandler.__init__(self)
+
+            self.rcuId = logicRcuId
+            self.moduleId = moduleId
+            self.dcs_interface_wrapper = dcs_interface_wrapper
+            
+        def run(self):
+            
+            dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+            
+            dcs_interface.UpdateAFL(self.moduleId, self.rcuId)
+
+#            for i in range(CARDS_PER_BRANCH):
+            for i in range(14):
+                dcs_interface.ApplyApdSettings(self.moduleId, self.rcuId, BRANCH_A, i+1)
+                feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
+                self.emit(QtCore.SIGNAL("apdSettingApplied"), "apdSettingApplied", feeId)
+                self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", self.moduleId)
+                time.sleep(0.05)
+                
+            for j in range(CARDS_PER_BRANCH):
+                dcs_interface.ApplyApdSettings(self.moduleId, self.rcuId, BRANCH_B, j+1)
+                feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_B, j+1)
+                self.emit(QtCore.SIGNAL("apdSettingApplied"), "apdSettingApplied", feeId)
+                self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", self.moduleId)
+                time.sleep(0.05)
+
+            self.dcs_interface_wrapper.releaseDcsInterface()

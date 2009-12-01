@@ -71,7 +71,7 @@ class Mapper : public PhosDcsBase
   inline int Hid2col(int hid);
   inline int ExtractHid(char *objName);  
 
-  inline void InitAltroMapping(int saveMapping, ModNumber_t modID);
+  void InitAltroMapping(int saveMapping, ModNumber_t modID);
   inline void PrintHistMapInfo(char *objName);
 
   FEE_CSP_MAP CSP_MAP[ALTROS_PER_FEE ][CHANNELS_PER_ALTRO];

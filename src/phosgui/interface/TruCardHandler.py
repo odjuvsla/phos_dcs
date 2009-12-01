@@ -42,9 +42,9 @@ class TruCardHandler(PHOSHandler):
             moduleId, rcuId, truId = self.idConverter.GetTruLogicalIDs(self.truId)
 
             state = 0
-         
+
             # Here we do the toggling
-            #state = dcs_interface.ToggleOnOffTru(moduleId, rcuId, truId)
+            state = dcs_interface.ToggleOnOffTru(moduleId, rcuId, truId)
 
             # Emitting signal for fetching log information
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)

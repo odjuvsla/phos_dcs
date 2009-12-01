@@ -24,3 +24,8 @@ class PhosTabWidget(QtGui.QWidget):
 
             self.modules[i].geometry().setX(20)
             self.modules[i].geometry().setY((i*self.modules[i].geometry().height() + self.modulesFrame.geometry().y() + self.modulesFrame.geometry().height()))
+
+#     def initButtons(self):
+
+#         self.allGoReadyButton = AllGoReadyButton()
+#         self.allgoreadybutton.setGeometry(20, 700, 

@@ -57,6 +57,7 @@ FeeCard::FeeCard(PhosFeeClient *fClientPtr, char *sName, const int mod, const in
   SetState(FEE_STATE_UNKNOWN);
   SetServerName(sName);
   sprintf(apdFilename,"%s/module%d_RCU%d_Branch%d_card%d.txt",fSandboxFolder, mod, rcuId, br, cardNumber);
+  feeModuleNumber = mod;
   LoadApdValues();
   
   for(int i=0; i< CSPS_PER_FEE; i++)
@@ -91,6 +92,7 @@ FeeCard::ApplyApdSettings()
 {
   stringstream log;
   if(fIsInitialized == true)
+    //if(1)
 
     {
       int apdStatus = 0;
@@ -98,9 +100,10 @@ FeeCard::ApplyApdSettings()
       char resultBuffer[1024];
       SaveApdValues();
       LoadApdValues();
-
-      if((currentState == FEE_STATE_ON) || (currentState == FEE_STATE_WARNING) )
-      	{
+   
+      //if((currentState == FEE_STATE_ON) || (currentState == FEE_STATE_WARNING) )
+      if(1)
+	{
 	  do
 	    {
 	      
@@ -224,6 +227,11 @@ FeeCard::LoadApdValues() //load default values from file
   else if(CheckFile(apdFilename,"r") == EXIST ) 
     {
       fp = fopen(apdFilename,"r"); 
+      stringstream log;
+      log.str("");
+      log << "FeeCard::LoadApdValues: Loading APD values from file: " << apdFilename << endl;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+
  
       for(int i=0; i < CSPS_PER_FEE; i++)
 	{
@@ -320,10 +328,10 @@ FeeCard::SetPcmversion(unsigned long  pcmversion)
 	  DisableHamming();
 	}
     }
-  
+ 
   if(fIsInitialized == false)
     {
-      InitMapping();
+      InitMapping();  
       fIsInitialized = true;
     }
   
@@ -344,10 +352,22 @@ void
 FeeCard::InitMapping()
 {
   //  scriptAdress=DCS_BASEADRESS;
- 
-  for(int i=0; i< CSPS_PER_FEE; i++)
+
+  if(feeModuleNumber == 4)
     {
-      crystAdress[i] = HV_DAC_settings[i];  
+      cout << "Initialising module 4" << endl;
+      for(int i=0; i< CSPS_PER_FEE; i++)
+	{
+	  crystAdress[i] = HV_DAC_settings[i];  
+	}
+    }
+  else
+    {
+      cout << "Initialising module " << feeModuleNumber << endl;
+      for(int i=0; i< CSPS_PER_FEE; i++)
+	{
+	  crystAdress[i] = HV_DAC_settings_mod_2_3[i];  
+	}
     }
 
 

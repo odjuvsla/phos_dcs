@@ -48,7 +48,7 @@ class Rcu : public PhosDcsBase
   void DisArmTrigger() const ;
   const int  ApplyReadoutRegion() const ;
   int  ApplyApdSettings() const;
-  int  ApplyApdSettings(const int branch, const int card) const;
+  int  ApplyApdSettings(const int branch, const int card);
   void ApplyTruSettings(const unsigned long regAddr[N_TRU_REGS], const unsigned long regVal[N_TRU_REGS], const bool verify[N_TRU_REGS], 
 			const int N) const;
   int  ApplyReadoutRegisters(ReadoutRegisters_t readoutRegisters);

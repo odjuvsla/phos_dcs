@@ -20,7 +20,6 @@ class DetectorHandler(PHOSHandler):
     def addFeeServer(self, feeServer, id):
 
         tmpFeeServer = FeeServer()
-        print feeServer
         tmpFeeServer.fName = str(feeServer)
 #        tmpFeeServer.fName = "alidcsdcb1584"
         moduleId, rcuId, x, z = self.idConverter.GetRcuLogicalCoordinatesFromFeeServerId(id)

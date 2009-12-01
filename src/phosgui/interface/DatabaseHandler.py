@@ -1,5 +1,5 @@
 from PHOSHandler import *
-
+from PhosDataTypes import *
 class DatabaseHandler(PHOSHandler):
     """Class for handling the APD settings database"""
     
@@ -14,7 +14,7 @@ class DatabaseHandler(PHOSHandler):
         dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
         id = dcs_interface.GetLatestConfigId()
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
-        self.dcs_interface_wrapper.releaseDcsInterface()
+   #     self.dcs_interface_wrapper.releaseDcsInterface()
         return id
 
     def getConfigComment(self, id):
@@ -22,7 +22,7 @@ class DatabaseHandler(PHOSHandler):
         dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
         comment = dcs_interface.GetConfigComment(id)
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
-        self.dcs_interface_wrapper.releaseDcsInterface()
+  #      self.dcs_interface_wrapper.releaseDcsInterface()
         return comment
 
     def loadApdConfig(self, id):
@@ -32,11 +32,11 @@ class DatabaseHandler(PHOSHandler):
         dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
         dcs_interface.LoadApdConfig(configinfo, id)
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
-        dcs_interface.releaseDcsInterface()
+ #       dcs_interface.releaseDcsInterface()
         
     def loadApdValues(self, moduleId):
         
         dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
-        dcs_interface.LoadApdValues(moduleID)
+        dcs_interface.LoadApdValues(moduleId)
         self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
-        dcs_interface.releaseDcsInterface()
+#        dcs_interface.releaseDcsInterface()

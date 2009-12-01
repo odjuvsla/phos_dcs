@@ -54,7 +54,8 @@ PhosModule::~PhosModule()
 const char*
 PhosModule::GetFeeServerName(const int rcuId) const
 {
-  return fRcuPtr[rcuId]->GetFeeServerName(); 
+  if(fRcuPtr[rcuId]) return fRcuPtr[rcuId]->GetFeeServerName(); 
+  return 0;
 }
 
 
@@ -82,10 +83,10 @@ PhosModule::SetAllApds(const int value) const
   stringstream log;
   log << "PhosModule::SetAllApds: Setting all APDs for MODULE";
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
-
+  
   for(int i = 0; i< RCUS_PER_MODULE; i++)
     {
-      fRcuPtr[i]->SetAllApds(value);
+      if(fRcuPtr[i]) fRcuPtr[i]->SetAllApds(value);
     }
 }
 
@@ -114,7 +115,6 @@ PhosModule::GetRcuPtr(const int id) const
 {
   if(id < RCUS_PER_MODULE && fRcuPtr[id] != 0)
     {
-      printf("");
       return fRcuPtr[id];
     }
   else 
@@ -144,8 +144,7 @@ PhosModule::ArmTrigger(const char *triggerScriptFileName)
     {
       if( fReadoutConfig.GetAltroConfig().GetApplyPattern() == true )
 	{
-
-	  fRcuPtr[i]->ApplyPattern(fReadoutConfig.GetAltroConfig().GetPattern());
+	  if(fRcuPtr[i]) fRcuPtr[i]->ApplyPattern(fReadoutConfig.GetAltroConfig().GetPattern());
 	  //	  printf("\n%s", mbuff);
 	    
 	}
@@ -218,7 +217,7 @@ PhosModule::EnableTrigger_ttcrx() const
 {
    for(int i=0; i<RCUS_PER_MODULE; i++)
     {
-      fRcuPtr[i]->EnableTrigger_ttcrx();
+      if(fRcuPtr[i]) fRcuPtr[i]->EnableTrigger_ttcrx();
     } 
 }
 
@@ -226,7 +225,7 @@ PhosModule::EnableTrigger_ttcrx() const
 void
 PhosModule::DisArmTrigger(const int rcuId) const
 {
-  fRcuPtr[rcuId]->DisArmTrigger();
+  if(fRcuPtr[rcuId]) fRcuPtr[rcuId]->DisArmTrigger();
 }
 
 
@@ -251,7 +250,8 @@ PhosModule::CreateRcu(const char *serverName, const int mId, const int rcuId, co
 void 
 PhosModule::ApplyApdSettings(const int rcuId, const int branch, const int card) const
 {
-  fRcuPtr[rcuId]->ApplyApdSettings(branch, card);
+  if(fRcuPtr[rcuId]) fRcuPtr[rcuId]->ApplyApdSettings(branch, card);
+
 }
 
 
@@ -300,7 +300,10 @@ PhosModule::ApplyReadoutRegisters() const
 			 fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold());
   RcuALTROCFG2_t altrocfg2(fReadoutSettings.GetNPreSamples().GetIntValue());
 
-  ReadoutRegisters_t readoutRegs(altroif, rdomod, altrocfg1, altrocfg2);
+  RcuL1LAT_t tmpLOneLat;
+  RcuL1MSGLAT_t tmpLOneMsgLat;
+
+  ReadoutRegisters_t readoutRegs(altroif, rdomod, altrocfg1, altrocfg2, tmpLOneLat, tmpLOneMsgLat);
 
   log.str("");
   readoutRegs.Print(log, string("V"));

@@ -72,7 +72,7 @@ class FeeCardHandler(PHOSHandler):
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
             
             moduleId, rcuId, branchId, feeId = self.idConverter.GetFeeLogicalIDs(self.feeId)
-            print 'toggling card'
+#            print 'toggling card'
             currentstate = 0
 #            tmpStates = [0]*CARDS_PER_RCU
             state = 0
