@@ -61,10 +61,9 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
 	". Coord: x = " << (*server).fX << ", z = " << (*server).fZ;
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
       tmpPhosModulePtr->CreateRcu((*server).fName.c_str(), (*server).fModId, (*server).fRcuId, (*server).fZ, (*server).fX);
-      //      ret += tmpPhosModulePtr->StartFeeClient((*server).fRcuId);
+      ret += tmpPhosModulePtr->StartFeeClient((*server).fRcuId);
       server++;
     }
-  return 100; 
 
   log.str("");
   log << "DcsInterface::Init: StartFeeClient() returned: " << ret;

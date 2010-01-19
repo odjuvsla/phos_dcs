@@ -94,11 +94,6 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 		   altro = altro + 1; //to fix bug in mp
 		}
 
-	      ///OLD RCU FIRMWARE
-	      // aclIndex = branch*128+(card +1)*8+altro;
-	      // acl[rcu][aclIndex] =  acl[rcu][aclIndex] | 1<<channel;
-	      
-
 	      // NEW RCU FIRMWARE
    	      // altro channel relative to one FEE
 
@@ -121,11 +116,6 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 
 	  int k = LOW_GAIN;
 
-// //FEE
-//   for(int i = 0; i <=  55; i++)
-//     {
-//       for(int j = 0; j <= 63; j++)
-// 	{
 // 	  for(int k = PHOS_GAINS - 1  ; k > -1; k--)
 // 	    {
 	 
@@ -141,14 +131,6 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
 		{
 		   altro = altro + 1; //to fix bug in mp
 		}
-
-	      ///OLD RCU FIRMWARE
-	      // aclIndex = branch*128+(card +1)*8+altro;
-	      // acl[rcu][aclIndex] =  acl[rcu][aclIndex] | 1<<channel;
-	      
-
-	      // NEW RCU FIRMWARE
-   	      // altro channel relative to one FEE
 
 	      unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
 	      acl[rcu][aclIndex[rcu]] = (branch << 11)  |((card+1) << 7) | (tmpGlobalFeeChannel) ;
@@ -389,7 +371,16 @@ Mapper::InitAltroMapping(int saveMapping, ModNumber_t modID)
 		//		int row  = (r/2)*32 + b*16 + CSP_MAP[a][c].row;
 		//		int col  = (r%2)*28 + f*2  + CSP_MAP[a][c].col;
 		int row  = r*N_XCOLUMNS_MOD/RCUS_PER_MODULE + CSP_MAP[a][c].row; // New RCU geometrical configuration
-		int col  = b*CARDS_PER_BRANCH*2 + f*2  + CSP_MAP[a][c].col; // New RCU geometrical configuration
+		int cardoffset = 0;
+		if(b == 0)
+		  {
+		    cardoffset = ((CARDS_PER_BRANCH-1)-f)*2;
+		  }
+		if(b == 1)
+		  {
+		    cardoffset = f*2;
+		  }
+		int col  = b*CARDS_PER_BRANCH*2 + cardoffset  + CSP_MAP[a][c].col; // New RCU geometrical configuration
  		int gain = CSP_MAP[a][c].gain;
 		int csp  = CSP_MAP[a][c].csp;
 		int num  = CSP_MAP[a][c].num;
