@@ -711,7 +711,7 @@ Rcu::GetActiveFeeList()
   unsigned long tmpAddr = RcuRegisterMap::AFL;
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList, 1); 
-
+  usleep(1000); //FIXME, should put wait command in fee client
   return fActiveFeeList;
 }
 
