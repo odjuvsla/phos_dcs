@@ -284,7 +284,8 @@ RcuRDOMOD_t::RcuRDOMOD_t(bool maskRDYRX, bool sparseReadoutEnabled, bool execute
 short RcuRDOMOD_t::GetRegisterValue()
 {
   return fMaskRDYRX << 3 | 
-    fSparseReadout << 6 |
+        fSparseReadout << 6 |
+    //    fSparseReadout << 2 |
     fExecuteSequencer << 1 | 
     fMEBMode;
 }
@@ -292,7 +293,8 @@ short RcuRDOMOD_t::GetRegisterValue()
 void RcuRDOMOD_t::SetByRegisterValue(short value)
 {
   fMaskRDYRX = (value >> 3) & 0x1;
-  fSparseReadout = (value >> 7) & 0x1;
+  //fSparseReadout = (value >> 2) & 0x1;
+      fSparseReadout = (value >> 7) & 0x1;
   fExecuteSequencer = (value >> 1) & 0x1;
   fMEBMode = value & 0x1;
 }
