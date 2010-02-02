@@ -45,7 +45,7 @@ class ReadoutSamplesSettingsWidget(QtGui.QWidget):
         self.truSamplesSpinbox.setGeometry(self.truSamplesLabel.x(), self.preSpinbox.y(), self.preSpinbox.width(), self.preSpinbox.height())
         self.truSamplesSpinbox.setValue(0)
         self.truSamplesSpinbox.setMinimum(0)
-        self.truSamplesSpinbox.setMaximum(MAX_TRU_SAMPLES-1)
+        self.truSamplesSpinbox.setMaximum(MAX_TRU_SAMPLES)
 
     def getSamplesSettings(self):
         
