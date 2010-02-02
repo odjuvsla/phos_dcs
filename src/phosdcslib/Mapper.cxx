@@ -67,71 +67,109 @@ Mapper::GenerateACL(const ReadoutRegion_t readoutregion,
   int channel = 99;
   int csp = 99;
 
-  int branchIndex[2][64*56];
+  int branchIndex[2][N_XCOLUMNS_MOD*N_ZROWS_MOD];
+  
+  for(int i = 0; i < N_XCOLUMNS_MOD*N_ZROWS_MOD; i++)
+    {
+      branchIndex[0][i] = -1;
+      branchIndex[1][i] = -1;
+    }
 
   int ttA = 0;
   int ttB = 0;
 
-  for(int mod = 2; mod<3; mod++)
+//   for(int mod = 2; mod<3; mod++)
+//     {
+//   for(int x = 0; x < 64; x++)
+//     {
+//       for(int z = 0; z < 56; z++)
+// 	{
+
+  for(int z =  readoutregion.GetHGStartZ().GetIntValue(); z <=  readoutregion.GetHGEndZ().GetIntValue(); z++)
     {
-  for(int x = 0; x < 64; x++)
+      for(int x = readoutregion.GetHGStartX().GetIntValue(); x <=  readoutregion.GetHGEndX().GetIntValue(); x++)
+  	{
+	  //  	  for(int k = PHOS_GAINS - 1  ; k > -1; k--)
+	  //  	    {
+	  int k = HIGH_GAIN;
+
+	  index = geo2hdw[modID][k][x][z]; 
+	  branch = ALTRO_MAP[index].branch;
+	      
+	  if(branch == 0)
+	    {
+	      branchIndex[branch][ttB] = index;
+	      ttB++;
+	    }
+	  else
+	    {
+	      branchIndex[branch][ttA] = index;
+	      ttA++;
+	    }
+	  //	    }
+	}
+    }
+
+  for(int z =  readoutregion.GetLGStartZ().GetIntValue(); z <=  readoutregion.GetLGEndZ().GetIntValue(); z++)
     {
-      for(int z = 0; z < 56; z++)
-	{
- 	  for(int k = PHOS_GAINS - 1  ; k > -1; k--)
- 	    {
-	      
-	      index = geo2hdw[mod][k][x][z]; 
-	      cout << "index: " << index << " mod: " << mod  << endl;
-	      branch = ALTRO_MAP[index].branch;
-	      
-	      if(branch == 0)
-		{
-		  branchIndex[branch][ttB] = index;
-		  ttB++;
-		}
-	      else
-		{
-		  branchIndex[branch][ttA] = index;
- 		  ttA++;
-		}
+      for(int x = readoutregion.GetLGStartX().GetIntValue(); x <=  readoutregion.GetLGEndX().GetIntValue(); x++)
+  	{
+
+	  int k = LOW_GAIN;
+
+	  index = geo2hdw[modID][k][x][z]; 
+	  branch = ALTRO_MAP[index].branch;
+	  
+	  if(branch == 0)
+	    {
+	      branchIndex[branch][ttB] = index;
+	      ttB++;
+	    }
+	  else
+	    {
+	      branchIndex[branch][ttA] = index;
+	      ttA++;
 	    }
 	}
     }
-    }
-  for(int i = 0; i < 64*56; i++)
+
+
+  for(int i = 0; i < N_XCOLUMNS_MOD*N_ZROWS_MOD; i++)
     {
       for(int b = 0; b < 2; b++)
 	{
 
 	  int index = branchIndex[b][i];
 
-	  rcu = ALTRO_MAP[index].rcu;
-	  branch = ALTRO_MAP[index].branch;
-	  card = ALTRO_MAP[index].card;
-	  altro = ALTRO_MAP[index].chip;  
-	  channel = ALTRO_MAP[index].chan;
-	  csp = ALTRO_MAP[index].csp;
-	 
-	  if(altro > 0)
+	  if(index != -1)
 	    {
-	      altro = altro + 1; //to fix bug in mp
-	    }
+	      rcu = ALTRO_MAP[index].rcu;
+	      branch = ALTRO_MAP[index].branch;
+	      card = ALTRO_MAP[index].card;
+	      altro = ALTRO_MAP[index].chip;  
+	      channel = ALTRO_MAP[index].chan;
+	      csp = ALTRO_MAP[index].csp;
+	 
+	      if(altro > 0)
+		{
+		  altro = altro + 1; //to fix bug in mp
+		}
 
-	  // NEW RCU FIRMWARE
-	  // altro channel relative to one FEE
+	      // NEW RCU FIRMWARE
+	      // altro channel relative to one FEE
 	  
-	  unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
-	  acl[rcu][aclIndex[rcu]] = (branch << 11)  |((card+1) << 7) | (tmpGlobalFeeChannel) ;
-	  //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
-	  aclIndex[rcu] ++;
+	      unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
+	      acl[rcu][aclIndex[rcu]] = (branch << 11)  |((card+1) << 7) | (tmpGlobalFeeChannel) ;
+	      //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
+	      aclIndex[rcu] ++;
 	  
-	  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(card+1) +(long int)branch*MAX_CARDS_PER_BRANCH));
+	      afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(card+1) +(long int)branch*MAX_CARDS_PER_BRANCH));
+	    }
 	}
     }
 
 
-//   for(int i =  readoutregion.GetHGStartZ().GetIntValue(); i <=  readoutregion.GetHGEndZ().GetIntValue(); i++)
+  //   for(int i =  readoutregion.GetHGStartZ().GetIntValue(); i <=  readoutregion.GetHGEndZ().GetIntValue(); i++)
 //     {
 //       for(int j = readoutregion.GetHGStartX().GetIntValue(); j <=  readoutregion.GetHGEndX().GetIntValue(); j++)
 //  	{
