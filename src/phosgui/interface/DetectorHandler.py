@@ -1,0 +1,66 @@
+from PHOSHandler import *
+from DcsInterface import *
+
+class DetectorHandler(PHOSHandler):
+
+    def __init__(self, dcs_interface):
+        super(DetectorHandler, self).__init__()
+
+        self.dcs_interface = dcs_interface
+        self.fee_servers = vectorfee()
+
+#        self.fee_servers = vectorfee(PHOS_MODS*RCUS_PER_MODULE)
+
+        self.fee_servers.clear()
+
+    def turnOnOff(self):
+        
+        print 'turning on/off PHOS' 
+
+    def addFeeServer(self, feeServer, id):
+
+        tmpFeeServer = FeeServer()
+        tmpFeeServer.fName = str(feeServer)
+#        tmpFeeServer.fName = "alidcsdcb1584"
+        moduleId, rcuId, x, z = self.idConverter.GetRcuLogicalCoordinatesFromFeeServerId(id)
+        tmpFeeServer.fModId = moduleId
+        tmpFeeServer.fRcuId = rcuId
+        tmpFeeServer.fZ = z
+        tmpFeeServer.fX = x
+        self.fee_servers.push_back(tmpFeeServer)
+
+    def startFeeClient(self):
+        
+        res = self.dcs_interface.getDcsInterface().Init(self.fee_servers)
+        self.dcs_interface.releaseDcsInterface()
+        self.fee_servers.clear()
+        return res
+
+    def stopFeeClient(self):
+
+        self.dcs_interface.DeInit()
+        self.fee_servers.clear()
+
+    def connectToFeeServers(self, feeServerNames, feeServerEnabled):
+        
+        self.connect(self, QtCore.SIGNAL("feeServerStarted"), self.emit_signal)
+       # self.connect(self, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+
+        for i in range(len(feeServerNames)):
+            if feeServerEnabled[i] == True:
+                self.addFeeServer(feeServerNames[i], i)
+
+        res = self.startFeeClient()
+
+        self.emit(QtCore.SIGNAL("feeServerStarted"), "FeeServerStarted", res)
+        self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID
+
+    def disconnectFromFeeServers(self, feeServerNames, feeServerEnabled):
+        
+        self.connect(self, QtCore.SIGNAL("feeServerStopped"), self.emit_signal)
+       # self.connect(self, QtCore.SIGNAL("fetchLog"), self.emit_signal)
+
+        res = self.stopFeeClient()
+
+        self.emit(QtCore.SIGNAL("feeServerStopped"), "FeeServerStopped", res)
+        self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", 0) # fix module ID

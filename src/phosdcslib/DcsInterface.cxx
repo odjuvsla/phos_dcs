@@ -61,10 +61,10 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
 	". Coord: x = " << (*server).fX << ", z = " << (*server).fZ;
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
       tmpPhosModulePtr->CreateRcu((*server).fName.c_str(), (*server).fModId, (*server).fRcuId, (*server).fZ, (*server).fX);
+      ret += tmpPhosModulePtr->StartFeeClient((*server).fRcuId);
       server++;
     }
-  
-  ret = fPhosDetectorPtr->StartFeeClient();
+
   log.str("");
   log << "DcsInterface::Init: StartFeeClient() returned: " << ret;
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
@@ -80,7 +80,7 @@ int DcsInterface::Init(vector<FeeServer> feeServers)
 	      << " and RCU ID: " << (*server).fRcuId << ". Coord: x = " 
 	      << (*server).fX << ", z = " << (*server).fZ;
 	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
-	  DisArmTrigger((*server).fModId, (*server).fRcuId);
+	  //	  DisArmTrigger((*server).fModId, (*server).fRcuId);
 	  server++;
 	}
     }
@@ -172,20 +172,28 @@ unsigned int
 DcsInterface::CheckFeeState(const int mod,  const int rcu , const int branch , const int cardId)
 {
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(mod, rcu); 
-  return tmpRcuPtr->CheckFeeState(branch, cardId);
+  if(tmpRcuPtr) return tmpRcuPtr->CheckFeeState(branch, cardId);
+  stringstream log;
+  log.str("");
+  log << "DcsInterface::CheckFeeState: Checking FEE state for module: " << mod << " for RCU: " << rcu << " for card: " << cardId 
+      << " fails due to missing RCU " << endl;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+
+  return FEE_STATE_OFF;
 }
 
 
 void 
 DcsInterface::DisArmTrigger(const int modID, const int RcuID) const
 {
-  fPhosDetectorPtr->DisArmTrigger(modID, RcuID);
+  if(fPhosDetectorPtr) fPhosDetectorPtr->DisArmTrigger(modID, RcuID);
 }
 
 
 void 
 DcsInterface::EnableTrigger(int modID, string triggerType)
 {
+  ApplyReadoutRegisters(ModNumber_t(modID));
   RcuTRGCONF_t tmpTrgConf;
 
   if(triggerType == "ttc")
@@ -205,18 +213,19 @@ DcsInterface::EnableTrigger(int modID, string triggerType)
       tmpTrgConf.DisableAllTriggers();
     }
 
-  fPhosDetectorPtr->phosModulePtr[modID]->EnableTrigger(tmpTrgConf);
+  if(fPhosDetectorPtr) fPhosDetectorPtr->phosModulePtr[modID]->EnableTrigger(tmpTrgConf);
 }
 void 
 DcsInterface::DisableTrigger(int modID)
 {
   EnableTrigger(modID, string("disable"));
+  Reset(ModNumber_t(modID));
 }
 
 void 
 DcsInterface::EnableTrigger_ttcrx(int modID)
 {
-  fPhosDetectorPtr->phosModulePtr[modID]->EnableTrigger_ttcrx();
+  if(fPhosDetectorPtr) fPhosDetectorPtr->phosModulePtr[modID]->EnableTrigger_ttcrx();
 }
 
 
@@ -224,20 +233,22 @@ unsigned long*
 DcsInterface::GetApdValues(const int mod, const int rcu, const int branch, const int cardId)
 {
   FeeCard *tmpFeeCard  = GetFeeCard(mod,  rcu, branch, cardId);
-  return tmpFeeCard->GetApdValues();
+  if(tmpFeeCard) return tmpFeeCard->GetApdValues();
+  return 0;
 }
 
 
 void
 DcsInterface::GetConfigComment(char *text, const int id)
 {
-  fDatabasePtr->GetConfigComment(text, id);
+  if(fDatabasePtr) fDatabasePtr->GetConfigComment(text, id);
 }
 
 string
 DcsInterface::GetConfigComment(const int id)
 {
-  return fDatabasePtr->GetConfigComment(id);
+  if(fDatabasePtr) return fDatabasePtr->GetConfigComment(id);
+  return string("No database initialised");
 }
 
 
@@ -247,21 +258,29 @@ DcsInterface::GetFeeCard(const int mod, const int rcu, const int branch, const i
   int tmpFeeIndex = branch*CARDS_PER_BRANCH + cardId -1;
 
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(mod, rcu); 
-  FeeCard *tmpFeeCard = tmpRcuPtr->GetFeeCardPtr(tmpFeeIndex);
+  if(tmpRcuPtr) 
+    {
+      FeeCard *tmpFeeCard = tmpRcuPtr->GetFeeCardPtr(tmpFeeIndex);
+      return tmpFeeCard;
+    }
+  return 0;
+  
 }
 
 
 int
 DcsInterface::GetLatestConfigId()
 {
-  return fDatabasePtr->GetLatestConfigId();
+  if(fDatabasePtr) return fDatabasePtr->GetLatestConfigId();
+  return -1;
 }
 
 
 Rcu* 
 DcsInterface::GetRcuPtr(int modID, int rcuID) const
 {
-  return fPhosDetectorPtr->GetRcuPtr(modID, rcuID);
+  if(fPhosDetectorPtr) return fPhosDetectorPtr->GetRcuPtr(modID, rcuID);
+  return 0;
 }
 
 
@@ -275,21 +294,31 @@ DcsInterface::GetRcuPtr(int modID, int rcuID) const
 void      
 DcsInterface::LoadApdConfig(ConfigInfo_t &info, int id) //Raed apd values from datbase and put them in sandbox directory
 {
-  int res = fDatabasePtr->LoadApdConfig(info, id);
+
+  if(fDatabasePtr) 
+    {
+      char tmpDscr[2000];
+      fDatabasePtr->SaveApdConfig(tmpDscr);
+      //fDatabasePtr->LoadApdConfig(info.fInfo, id);
+      fDatabasePtr->LoadApdConfig(info, id);
+    }
   
 }
 
 void 
 DcsInterface::LoadApdValues(int modID)  //Load apd values into Feecard objects
 {
-  fPhosDetectorPtr->phosModulePtr[modID]->LoadApdValues();
+  if(fPhosDetectorPtr) 
+    {    
+      fPhosDetectorPtr->phosModulePtr[modID]->LoadApdValues();
+    }
 }
  
 
 void            
 DcsInterface::LoadReadoutConfiguration(ReadoutConfig_t *rdoconfigPtr, ModNumber_t modNumber) const
 {
-  fDatabasePtr->LoadReadoutConfiguration(rdoconfigPtr, modNumber);
+  if(fDatabasePtr) fDatabasePtr->LoadReadoutConfiguration(rdoconfigPtr, modNumber);
   rdoconfigPtr->PrintInfo("DcsInterface::LoadReadoutConfiguration ");
 } 
 
@@ -297,19 +326,19 @@ DcsInterface::LoadReadoutConfiguration(ReadoutConfig_t *rdoconfigPtr, ModNumber_
 void       
 DcsInterface::SaveReadoutConfiguration(const ReadoutConfig_t rdoconfig, const ModNumber_t modNumber) const
 {
-  fDatabasePtr->SaveReadoutConfiguration(rdoconfig, modNumber);
+  if(fDatabasePtr) fDatabasePtr->SaveReadoutConfiguration(rdoconfig, modNumber);
 }
 
 void            
 DcsInterface::LoadTruSettings(TRUSettings_t *trusettings) const
 {
-  fDatabasePtr->LoadTruSettings(trusettings);
+  if(fDatabasePtr) fDatabasePtr->LoadTruSettings(trusettings);
 }
 
 int 
 DcsInterface::SaveApdConfig(char *description)
 {
-  fDatabasePtr->SaveApdConfig(description); 
+  if(fDatabasePtr) fDatabasePtr->SaveApdConfig(description); 
 }
 
 
@@ -317,22 +346,44 @@ void
 DcsInterface::SaveTRUSettings(const TRUSettings_t trusettings)
 {
   trusettings.PrintInfo("DcsInterface::SaveTRUSettings"); 
-  fDatabasePtr->SaveTruSettings(trusettings);
+  if(fDatabasePtr) fDatabasePtr->SaveTruSettings(trusettings);
 }
 
 
 void 
 DcsInterface::SetAllApds(const int modID, const int apdValue)
 {
-  fPhosDetectorPtr->phosModulePtr[modID]->SetAllApds(apdValue);
+  if(fPhosDetectorPtr) fPhosDetectorPtr->phosModulePtr[modID]->SetAllApds(apdValue);
 }
 
 
 void 
 DcsInterface::SetAllApds(const int modID, const int rcuId, const int apdValue)
 {
-  Rcu *tmpRcu =fPhosDetectorPtr->phosModulePtr[modID]->GetRcuPtr(rcuId);
-  tmpRcu->SetAllApds(apdValue);
+  if(fPhosDetectorPtr)
+    {
+      Rcu *tmpRcu = fPhosDetectorPtr->phosModulePtr[modID]->GetRcuPtr(rcuId);
+      if(tmpRcu) 
+	{
+	  tmpRcu->SetAllApds(apdValue);
+	}
+      else 
+	{
+	    stringstream log;
+	    log.str("");
+	    log << "DcsInterface::SetAllApds: Setting all APDs for RCU: " << rcuId << " on module: " << modID << "to: " << apdValue 
+		<< " fails due missing RCU connection" << endl;
+	    PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+	}
+    }
+  else
+    {
+      stringstream log;
+      log.str("");
+      log << "DcsInterface::SetAllApds: Setting all APDs for RCU: " << rcuId << " on module: " << modID << "to: " << apdValue 
+	  << " fails due missing module connection" << endl;
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+    }
   //  fPhosDetectorPtr->phosModulePtr[modID]->SetAllApds(apdValue);
 }
 
@@ -374,7 +425,7 @@ DcsInterface::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t r
 void
 DcsInterface::SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings)
 {
-  // fPhosDetectorPtr->SetReadoutSettings(modId, rdoSettings);
+  fPhosDetectorPtr->SetReadoutSettings(modId, rdoSettings);
   fReadoutSettings = rdoSettings;
 }
 
@@ -392,6 +443,13 @@ DcsInterface::ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegist
 }
 
 int
+DcsInterface::ApplyReadoutRegisters(const ModNumber_t modID) const
+{
+
+  return fPhosDetectorPtr->ApplyReadoutRegisters(modID);
+}
+
+int
 DcsInterface::ApplyReadoutRegion(const ModNumber_t modID) const 
 {
   return fPhosDetectorPtr->ApplyReadoutRegion(modID);
@@ -400,13 +458,13 @@ DcsInterface::ApplyReadoutRegion(const ModNumber_t modID) const
 unsigned int
 DcsInterface::TurnOnFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState)
 {
-  return fPhosDetectorPtr->GetRcuPtr(mod, rcu)->ActivateFee(branch, cardSlot);
+  if(fPhosDetectorPtr->GetRcuPtr(mod, rcu)) return fPhosDetectorPtr->GetRcuPtr(mod, rcu)->ActivateFee(branch, cardSlot);
 }
 
 unsigned int
 DcsInterface::TurnOffFee(const int mod,  const int rcu , const int branch , const int cardSlot, unsigned int tmpState)
 {
-  return fPhosDetectorPtr->GetRcuPtr(mod, rcu)->DeActivateFee(branch, cardSlot);
+  if(fPhosDetectorPtr->GetRcuPtr(mod, rcu)) return fPhosDetectorPtr->GetRcuPtr(mod, rcu)->DeActivateFee(branch, cardSlot);
 }
 
 unsigned int 
@@ -428,8 +486,15 @@ unsigned int
 DcsInterface::ToggleOnOffTru(const int mod, const int rcu, const int truId)
 
 {  
+  stringstream log;
+
+  log.str("");
+  log << "DcsInterface::ToggleOnOffTru: Toggling TRU: " << truId << " for RCU: " << rcu << " on module " << mod << endl;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+  int state = 0;
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(mod, rcu); 
-  int state = tmpRcuPtr->ToggleTruOnOff(truId);
+  if(tmpRcuPtr) state = tmpRcuPtr->ToggleTruOnOff(truId);
+
   return state;
 }
 
@@ -437,9 +502,8 @@ void
 DcsInterface::TurnOnAllFee(const int modID, const int rcuId) const
 {
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(modID, rcuId); 
-  tmpRcuPtr->TurnOnAllFee();
-  char* tmp = 0;
- }
+  if(tmpRcuPtr) tmpRcuPtr->TurnOnAllFee();
+}
 
 
 void 
@@ -447,7 +511,7 @@ DcsInterface::TurnOnAllTru(const int modID, const int rcuId) const
 {
   //  fPhosDetectorPtr->phosModulePtr[modID]->TurnOnAllTru(message);
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(modID, rcuId); 
-  tmpRcuPtr->TurnOnAllTru();
+  if(tmpRcuPtr) tmpRcuPtr->TurnOnAllTru();
 }
 
 
@@ -455,7 +519,7 @@ void
 DcsInterface::TurnOffAllFee(const int modID, const  int rcuId) const
 {
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(modID, rcuId); 
-  tmpRcuPtr->TurnOffAllFee();
+  if(tmpRcuPtr) tmpRcuPtr->TurnOffAllFee();
   TurnOffAllTru(modID, rcuId); //bad
   //  fPhosDetectorPtr->phosModulePtr[modID]->TurnOffAllFee();
 }
@@ -465,15 +529,20 @@ DcsInterface::TurnOffAllTru(const int modID, const int rcuId) const
 {
   //  fPhosDetectorPtr->phosModulePtr[modID]->TurnOffAllTru(message);
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(modID, rcuId); 
-  tmpRcuPtr->TurnOffAllTru();
+  if(tmpRcuPtr) tmpRcuPtr->TurnOffAllTru();
 }
 
 
 void
 DcsInterface::UpdateAFL(const int mod, const int rcu) const
 {
+  stringstream log;
+  log.str("");
+  log << "DcsInterface::UpdateAFL: Updating AFL for module #: " << mod << " and RCU #:  " << rcu;
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr(mod, rcu); 
-  tmpRcuPtr->UpdateAFL();
+  if(tmpRcuPtr) tmpRcuPtr->UpdateAFL();
 }
 
 vector<int>
@@ -501,7 +570,7 @@ int
 DcsInterface::UpdateSingleFeeStatus(const int mod, const int rcu, const int branch, const int fee)
 {
   int status = CheckFeeState(mod, rcu, branch, fee);
-
+  cout << "DcsInterface: state: " << status << endl;
   return status;
 }
 
@@ -515,28 +584,20 @@ int
 DcsInterface::Configure(const ModNumber_t modId)
 {
   stringstream log;
-  
-  RcuALTROIF_t altroif(fReadoutSettings.GetNSamples().GetIntValue());
-  RcuRDOMOD_t rdomod(false, fReadoutSettings.IsSparseReadout(), false, fReadoutSettings.GetMEBMode());
-  RcuALTROCFG1_t altrocfg1(fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
-			 fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold());
-  RcuALTROCFG2_t altrocfg2(fReadoutSettings.GetNPreSamples().GetIntValue());
-
-  ReadoutRegisters_t readoutRegs(altroif, rdomod, altrocfg1, altrocfg2);
-
-  log.str("");
-  readoutRegs.Print(log);
-  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
-  
-  int res = ApplyReadoutRegisters(modId.GetIntValue(), readoutRegs);
+ 
+  int res = ApplyReadoutRegisters(modId);
   
   res += ApplyReadoutRegion(modId);
 
   if(res != 0) 
     {
+//       log.str("");
+//       log << "DcsInterface::Configure: Error in configuring module #: " << modId.GetIntValue();
+//       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
       log.str("");
-      log << "DcsInterface::Configure: Error in configuring module #: " << modId.GetIntValue();
-      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+      log << "DcsInterface::Configure: Successfully configured module #: " << modId.GetIntValue();
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+
     }
   else
     {
@@ -564,6 +625,30 @@ int DcsInterface::Reset(const ModNumber_t modId)
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
     }
   return res;
+}
+
+
+int DcsInterface::ApplyScriptToFeeServer(const char *feeServerName, const char* scriptfilename)
+{
+  vector<FeeServer> feeserverVector;
+
+  FeeServer server;
+
+  server.fName = std::string(feeServerName);
+  server.fModId = 0;
+  server.fRcuId = 0;
+  server.fX = 0;
+  server.fZ = 0;
+
+  feeserverVector.push_back(server);
+
+  Init(feeserverVector);
+
+  char *tmpResult = new char[20000];
+  fPhosDetectorPtr->GetFeeClientPointer()->ExecuteScript(scriptfilename, feeServerName, tmpResult, 1);
+  
+  sleep(10);
+  return 0;
 }
 
 // int 

@@ -309,6 +309,80 @@ of crystals   |     CSP/APDs          |   Controller adresses
                                                     //                              [9:0]    Value to Write
 
 
+/* MODULE 2+3 The mapping between the crystals  and the adress for the
+ corresponding CSP on the board controller is given 
+below. The crystals is numbered concecutively starting from
+the upper left corner of a 2x16 matrix for convinient handling 
+in ROOT. The numbering is sown below as seen from the front.
+The corresponding CSP and BC adresses matrixes are shown to the 
+right for convienience. The mapping is done both with respect
+to the CSPs and with respect to the crystals (the latter is in 
+principle redundant)
+
+Mapping as seen from the back (from the electronics)
+
+2x16 matrix   |     2x16 matrix of    |   2x16 matrix of Board
+of crystals   |     CSP/APDs          |   Controller adresses
+------------------------------------------------------------------
+0     1       |     CSP 0    CSP 16   |   0x68    0x67
+2     3       |     CSP 1    CSP 17   |   0x69    0x66
+4     5       |     CSP 2    CSP 18   |   0x6A    0x65
+6     7       |     CSP 3    CSP 19   |   0x6B    0x64 
+8     9       |     CSP 4    CSP 20   |   0x6C    0x63
+10    11      |     CSP 5    CSP 21   |   0x6D    0x62
+12    13      |     CSP 6    CSP 22   |   0x6E    0x61
+14    15      |     CSP 7    CSP 23   |   0x6F    0x60
+
+16    17      |     CSP 8    CSP 24   |   0x7F    0x70
+18    19      |     CSP 9    CSP 25   |   0x7E    0x71
+20    21      |     CSP 10   CSP 26   |   0x7D    0x72
+22    23      |     CSP 11   CSP 27   |   0x7C    0x73
+24    25      |     CSP 12   CSP 28   |   0x7B    0x74
+26    27      |     CSP 13   CSP 29   |   0x7A    0x75
+28    29      |     CSP 14   CSP 30   |   0x79    0x76
+30    31      |     CSP 15   CSP 31   |   0x78    0x77
+*/
+  const unsigned long HV_DAC_settings_mod_2_3[32]  = {0x68,
+  					      0x67,
+					      0x69,
+					      0x66,
+					      0x6A,
+					      0x65,
+					      0x6B,
+					      0x64,
+					      0x6C,
+					      0x63,
+					      0x6D,
+					      0x62,
+					      0x6E, 
+					      0x61, 
+					      0x6F, 
+					      0x60, 
+					      0x7F,
+					      0x70, 
+					      0x7E,
+					      0x71,
+					      0x7D,
+					      0x72,
+					      0x7C,
+					      0x73,
+					      0x7B, 
+					      0x74, 
+					      0x7A, 
+					      0x75, 
+					      0x79, 
+					      0x76, 
+					      0x78, 
+					      0x77};//[14:0]    RW   Yes            High voltage bias value for CSPs
+                                                    //                              0x60-0x67: CSP 23 down to CSP 16
+                                                    //                              0x68-0x6F: CSP 0 to CSP 7
+                                                    //                              0x70-0x77: CSP 8 to CSP 15
+                                                    //                              0x78-0x7F: CSP 31 down to CSP 24
+                                                    //                              [15:11] Hamming code
+                                                    //                              [10]     Don’¡Çt care (not used)
+                                                    //                              [9:0]    Value to Write
+
+
   /*** Sensor tresholds ***/
   const unsigned long TEMP1_MIN_TH  = 0x30; //                                      Minimum Temperature Threshold for ADC IC13
                                             //                                      Default Data Value: 0x0 (disabled)

@@ -65,6 +65,7 @@ class FeeCard : public PhosDcsBase
   const int branch;
   const int cardNumber;
   unsigned long  crystAdress[CSPS_PER_FEE];
+  int feeModuleNumber;
 };
 
 #endif

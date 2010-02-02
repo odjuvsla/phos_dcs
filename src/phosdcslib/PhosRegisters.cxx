@@ -3,23 +3,27 @@
 #include <iostream>
 
 const unsigned long ReadoutRegisters_t::fRcuRegisterAddresses[] = { RcuALTROIF_t::fRegAddress, 
-								 RcuRDOMOD_t::fRegAddress,
-								 RcuALTROCFG1_t::fRegAddress,
-								 RcuALTROCFG2_t::fRegAddress };
+								    RcuRDOMOD_t::fRegAddress,
+								    RcuALTROCFG1_t::fRegAddress,
+								    RcuALTROCFG2_t::fRegAddress, 
+								    RcuL1LAT_t::fRegAddress,
+								    RcuL1MSGLAT_t::fRegAddress };
 const unsigned long ReadoutRegisters_t::fAltroRegisterAddresses[] = { AltroZSTHR_t::fRegAddress, 
 								   AltroTRCFG_t::fRegAddress,
 								   AltroDPCFG_t::fRegAddress,
 								   AltroDPCFG2_t::fRegAddress };
-const bool ReadoutRegisters_t::fRcuVerify[] = {false, false, false, false};
+const bool ReadoutRegisters_t::fRcuVerify[] = {false, false, false, false, false, false};
 
-const bool ReadoutRegisters_t::fAltroVerify[] = {true, true, true, true};
+const bool ReadoutRegisters_t::fAltroVerify[] = {false, false, false, false};
 
 ReadoutRegisters_t::ReadoutRegisters_t(RcuALTROIF_t altroif, RcuRDOMOD_t rdoMod, RcuALTROCFG1_t altrocfg1, 
-		     RcuALTROCFG2_t altrocfg2)
+				       RcuALTROCFG2_t altrocfg2, RcuL1LAT_t lOneLat, RcuL1MSGLAT_t lOneMsgLat)
 {
   SetRcuALTROIF(altroif);
   SetRcuRDOMOD(rdoMod);
   SetRcuALTROCFG(altrocfg1, altrocfg2);
+  SetRcuL1LAT(lOneLat);
+  SetRcuL1MSGLAT(lOneMsgLat);
 }
 
 const unsigned long* ReadoutRegisters_t::GetRcuRegisterValues() 
@@ -28,6 +32,9 @@ const unsigned long* ReadoutRegisters_t::GetRcuRegisterValues()
   fRcuRegisterValues[1] = fRcuRDOMOD.GetRegisterValue();
   fRcuRegisterValues[2] = fRcuALTROCFG1.GetRegisterValue();
   fRcuRegisterValues[3] = fRcuALTROCFG2.GetRegisterValue();
+  fRcuRegisterValues[4] = fRcuL1LAT.GetRegisterValue();
+  fRcuRegisterValues[5] = fRcuL1MSGLAT.GetRegisterValue();
+  
   return fRcuRegisterValues;
 }
 
@@ -68,35 +75,23 @@ void ReadoutRegisters_t::SetRcuALTROCFG(RcuALTROCFG1_t altrocfg1, RcuALTROCFG2_t
 
 }
 
-void ReadoutRegisters_t::Print(std::ostream& stream)
+void ReadoutRegisters_t::Print(std::ostream& stream, std::string level)
 {
-//   std::cout << "ReadoutRegisters_t: " << std::endl;
-//   std::cout << "-------------------" << std::endl;
-//   std::cout << "RCU Registers: " << std::endl;
-//   std::cout << "ALTROIF   : 0x" << std::hex << fRcuALTROIF.GetRegisterValue() << std::endl;
-//   std::cout << "RDOMOD    : 0x" << fRcuRDOMOD.GetRegisterValue() << std::endl;
-//   std::cout << "ALTROCFG1 : 0x" << fRcuALTROCFG1.GetRegisterValue() << std::endl;
-//   std::cout << "ALTROCFG2 : 0x" << fRcuALTROCFG2.GetRegisterValue() << std::endl;
-//   std::cout << "-------------------" << std::endl;
-//   std::cout << "ALTRO Registers:" << std::endl;
-//   std::cout << "ZSTHR     : 0x" << fAltroZSTHR.GetRegisterValue() << std::endl;
-//   std::cout << "TRCFG     : 0x" << fAltroTRCFG.GetRegisterValue() << std::endl;
-//   std::cout << "DPCFG     : 0x" << fAltroDPCFG.GetRegisterValue() << std::endl;
-//   std::cout << "DPCFG     : 0x" << fAltroDPCFG2.GetRegisterValue() << std::dec << std::endl;
-
   stream << "ReadoutRegisters_t: " << std::endl;
   stream << "-------------------" << std::endl;
   stream << "RCU Registers: " << std::endl;
-  stream << "ALTROIF   : 0x" << std::hex << fRcuALTROIF.GetRegisterValue() << std::endl;
-  stream << "RDOMOD    : 0x" << fRcuRDOMOD.GetRegisterValue() << std::endl;
-  stream << "ALTROCFG1 : 0x" << fRcuALTROCFG1.GetRegisterValue() << std::endl;
-  stream << "ALTROCFG2 : 0x" << fRcuALTROCFG2.GetRegisterValue() << std::endl;
+  fRcuALTROIF.Print(stream, level);
+  fRcuRDOMOD.Print(stream, level);
+  fRcuALTROCFG1.Print(stream, level);
+  fRcuALTROCFG2.Print(stream, level);
+  fRcuL1LAT.Print(stream, level);
+  fRcuL1MSGLAT.Print(stream, level);
   stream << "-------------------" << std::endl;
   stream << "ALTRO Registers:" << std::endl;
-  stream << "ZSTHR     : 0x" << fAltroZSTHR.GetRegisterValue() << std::endl;
-  stream << "TRCFG     : 0x" << fAltroTRCFG.GetRegisterValue() << std::endl;
-  stream << "DPCFG     : 0x" << fAltroDPCFG.GetRegisterValue() << std::endl;
-  stream << "DPCFG     : 0x" << fAltroDPCFG2.GetRegisterValue() << std::dec << std::endl;
+  fAltroZSTHR.Print(stream, level);
+  fAltroTRCFG.Print(stream, level);
+  fAltroDPCFG.Print(stream, level);
+  fAltroDPCFG2.Print(stream, level);
 }
 
 RcuALTROIF_t::RcuALTROIF_t() :
@@ -148,9 +143,9 @@ int RcuALTROIF_t::GetRegisterValue()
 void RcuALTROIF_t::SetByRegisterValue(int value)
 {
   fNSamples = value & 0x2ff;
-  int samplesetting = value >> 10 & 0x3;
-  fCstbDelay = value >> 14 & 0x3;
-  fInstructionErrorCheck = value >> 16 & 0x3;
+  int samplesetting = (value >> 10) & 0x3;
+  fCstbDelay = (value >> 14) & 0x3;
+  fInstructionErrorCheck = (value >> 16) & 0x3;
 
   switch(samplesetting) 
     {
@@ -171,6 +166,18 @@ void RcuALTROIF_t::SetByRegisterValue(int value)
       break;
     } 
   
+}
+
+void RcuALTROIF_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "ALTROIF   : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t # samples\t: " << GetNumberOfSamples() << std::endl
+	     << "\t Sample freq\t: " << GetSampleFrequency() << std::endl
+	     << "\t Cstb delay\t: " << GetCstbDelay() << std::endl
+	     << "\t Inst. check\t: " << InstructionErrorCheck() << std::endl;
+    }
 }
 
 RcuTRGCONF_t::RcuTRGCONF_t() :
@@ -244,6 +251,18 @@ void RcuTRGCONF_t::SetByRegisterValue(int value)
     }
 }
 
+void RcuTRGCONF_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "TRGCONF   : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t SW trigger\t: " << IsSoftwareTriggerEnabled() << std::endl
+	     << "\t Aux trigger\t: " << IsAuxTriggerEnabled() << std::endl
+	     << "\t TTC trigger\t: " << IsTTCrxTriggerEnabled() << std::endl
+	     << "\t PHOS mode\t: " << IsPHOSTriggerMode() << std::endl
+	     << "\t L2-L1 lat.\t: " << GetL2LatencyWrtL1() << std::endl;
+    }
+}
 
 RcuRDOMOD_t::RcuRDOMOD_t() :
   fMaskRDYRX(false),
@@ -265,17 +284,31 @@ RcuRDOMOD_t::RcuRDOMOD_t(bool maskRDYRX, bool sparseReadoutEnabled, bool execute
 short RcuRDOMOD_t::GetRegisterValue()
 {
   return fMaskRDYRX << 3 | 
-    fSparseReadout << 2 |
+        fSparseReadout << 6 |
+    //    fSparseReadout << 2 |
     fExecuteSequencer << 1 | 
     fMEBMode;
 }
 
 void RcuRDOMOD_t::SetByRegisterValue(short value)
 {
-  fMaskRDYRX = value >> 3 & 0x1;
-  fSparseReadout = value >> 2 & 0x1;
-  fExecuteSequencer = value >> 1 & 0x1;
+  fMaskRDYRX = (value >> 3) & 0x1;
+  //fSparseReadout = (value >> 2) & 0x1;
+      fSparseReadout = (value >> 7) & 0x1;
+  fExecuteSequencer = (value >> 1) & 0x1;
   fMEBMode = value & 0x1;
+}
+
+void RcuRDOMOD_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "RDOMOD    : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Mask RDYRX\t: " << IsMaskRDYRXEnabled() << std::endl
+	     << "\t Sparse rdo\t: " << IsSparseReadoutEnabled() << std::endl
+	     << "\t Exec seq.\t: " << IsExecuteSequencerEnabled() << std::endl
+	     << "\t MEB mode\t: " << GetMEBMode() << std::endl;
+    }
 }
 
 RcuALTROCFG1_t::RcuALTROCFG1_t():
@@ -297,18 +330,30 @@ RcuALTROCFG1_t::RcuALTROCFG1_t(bool zsEnabled, bool automaticBS, short offset, s
 
 short RcuALTROCFG1_t::GetRegisterValue()
 {
-  return fZeroSuppressionEnabled & 0x1 << 15 | 
-    fAutomaticBaselineSubtraction & 0x1 << 14 | 
-    fOffset & 0xf << 10 | 
+  return (fZeroSuppressionEnabled & 0x1) << 15 | 
+    (fAutomaticBaselineSubtraction & 0x1) << 14 | 
+    (fOffset & 0xf) << 10 | 
     fThreshold & 0x2ff;
 }
 
 void RcuALTROCFG1_t::SetByRegisterValue(short value)
 {
-  fZeroSuppressionEnabled = value >> 15 & 0x1;
-  fAutomaticBaselineSubtraction = value >> 14 & 0x1;
-  fOffset = value >> 10 & 0xf;
-  fThreshold = value & 0x2ff;
+  fZeroSuppressionEnabled = (value >> 15) & 0x1;
+  fAutomaticBaselineSubtraction = (value >> 14) & 0x1;
+  fOffset = (value >> 10) & 0xf;
+  fThreshold = value & 0x3ff;
+}
+
+void RcuALTROCFG1_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "ALTROCFG1 : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Zero suppr.\t: " << IsZeroSuppressionEnabled() << std::endl
+	     << "\t Auto BS\t: " << UsingAutomaticBaselineSubtraction() << std::endl  
+	     << "\t Offset\t: " << GetOffset() << std::endl
+	     << "\t Threshold\t: " << GetThreshold() << std::endl;
+    }
 }
 
 short RcuALTROCFG2_t::GetRegisterValue()
@@ -321,55 +366,95 @@ void RcuALTROCFG2_t::SetByRegisterValue(short value)
   fNPreSamples = value & 0xf;
 }
 
+void RcuALTROCFG2_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "ALTROCFG2 : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Pre Samples\t: " << GetNPreSamples() << std::endl;
+    }
+}
+
 int AltroZSTHR_t::GetRegisterValue() const
 {
-  return fOffset << 10 | fThreshold;
+  return (fOffset << 10) | fThreshold;
 }
 
 void AltroZSTHR_t::SetByRegisterValue(int value)
 {
   fThreshold = value & 0x3ff;
-  fOffset = value >> 10 & 0x3ff;
+  fOffset = (value >> 10) & 0x3ff;
 }
 
+void AltroZSTHR_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "ZSTHR     : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Threshold\t: " << GetThreshold() << std::endl
+	     << "\t Offset\t: " << GetOffset() << std::endl;
+    }
+}
 
 int AltroTRCFG_t::GetRegisterValue() const
 {
-  return fStart << 10 | fStop;
+  return (fStart << 10) | fStop;
 }
 
 void AltroTRCFG_t::SetByRegisterValue(int value)
 {
-  fStart = value >> 10 & 0x3ff;
-  fStop = value & 0x3ff;
+  fStart = (value >> 10) & 0x3ff;
+  fStop = (value & 0x3ff);
+}
+
+void AltroTRCFG_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "TRCFG     : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Start\t: " << GetStart() << std::endl
+	     << "\t Stop\t: " << GetStop() << std::endl
+	     << "\t # samples\t: " << GetNSamples() << std::dec << std::endl;
+    }
 }
 
 int AltroDPCFG_t::GetRegisterValue() const
 {
 
   return fFirstBaselineCorrection |
-    fPolarity << 4 |
-    fPreExcluded2 << 5 | 
-    fPostExcluded2 << 7 | 
-    fSecondBaselineCorrection << 11 | 
-    fGlitchFilterConfig << 12 | 
-    fPostExcludedZS << 14 | 
-    fPreExcludedZS << 17 |
-    fZeroSuppression << 19;
+    (fPolarity << 4) |
+    (fPreExcluded2 << 5) | 
+    (fPostExcluded2 << 7) | 
+    (fSecondBaselineCorrection << 11) | 
+    (fGlitchFilterConfig << 12) | 
+    (fPostExcludedZS << 14) | 
+    (fPreExcludedZS << 17) |
+    (fZeroSuppression << 19);
 
 }
 
 void AltroDPCFG_t::SetByRegisterValue(int value)
 {
   fFirstBaselineCorrection = value & 0xf;
-  fPolarity = value >> 4 & 0x1;
-  fPreExcluded2 = value >> 5 & 0x3;
-  fPostExcluded2 = value >> 7 & 0xf;
-  fSecondBaselineCorrection = value >> 11 & 0x1;
-  fGlitchFilterConfig = value >> 12 & 0x3;
-  fPostExcludedZS = value >> 14 & 0x7;
-  fPreExcludedZS = value >> 17 & 0x3;
-  fZeroSuppression = value >> 19 & 0x1;
+  fPolarity = (value >> 4) & 0x1;
+  fPreExcluded2 = (value >> 5) & 0x3;
+  fPostExcluded2 = (value >> 7) & 0xf;
+  fSecondBaselineCorrection = (value >> 11) & 0x1;
+  fGlitchFilterConfig = (value >> 12) & 0x3;
+  fPostExcludedZS = (value >> 14) & 0x7;
+  fPreExcludedZS = (value >> 17) & 0x3;
+  fZeroSuppression = (value >> 19) & 0x1;
+}
+
+void AltroDPCFG_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "DPCFG     : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Zero suppr\t: " << IsZeroSuppressed() << std::endl
+	     << "\t Auto BS\t: " << IsAutomaticBaselineSubtracted() << std::endl
+	     << "\t Fixed BS\t: " << IsFixedBaselineSubtracted() << std::endl;
+    }
 }
 
 short AltroDPCFG2_t::GetRegisterValue() const
@@ -383,7 +468,53 @@ short AltroDPCFG2_t::GetRegisterValue() const
 void AltroDPCFG2_t::SetByRegisterValue(short value)
 {
   fNPreTriggerSamples = value & 0xf;
-  fMEBMode = value >> 4 & 0x1;
-  fDigitalFilterEnabled = value >> 5 & 0x1;
-  fPowerSaveEnabled = value >> 6 & 0x1;
+  fMEBMode = (value >> 4) & 0x1;
+  fDigitalFilterEnabled = (value >> 5) & 0x1;
+  fPowerSaveEnabled = (value >> 6) & 0x1;
 }
+
+void AltroDPCFG2_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "DPCFG2     : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t # Pre sampl.\t: " << GetNPreSamples() << std::endl
+	     << "\t MEB mode\t: " << GetMEBMode() << std::endl
+	     << "\t Digital filter\t: " << IsFilterEnabled() << std::endl
+	     << "\t Power save\t: " << IsPowerSaveEnabled() << std::endl;   
+    }
+}
+
+
+void RcuL1LAT_t::SetByRegisterValue(short value)
+{
+  fLatency = value & 0xfff;
+  fUncertainty = (value >> 12) & 0xf;
+}
+
+void RcuL1LAT_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "L1_LATENCY     : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Latency (BC)\t: " << GetLatency() << std::endl
+	     << "\t Uncertainty (BC)\t: " << GetUncertainty() << std::endl;
+    }
+}
+
+void RcuL1MSGLAT_t::SetByRegisterValue(int value)
+{
+  fMinLatency = (value >> 16) & 0xfff;
+  fMaxLatency = value & 0xffff;
+}
+
+void RcuL1MSGLAT_t::Print(std::ostream& stream, std::string level)
+{
+  stream << "L1_MSG_LATENCY    : 0x" << std::hex << GetRegisterValue() << std::dec << std::endl;
+  if(level == std::string("V"))
+    {
+      stream << "\t Min. latency (BC)\t: " << GetMinLatency() << std::endl
+	     << "\t Max. latency (BC)\t: " << GetMaxLatency() << std::endl;
+    }
+}
+

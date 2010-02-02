@@ -118,7 +118,7 @@ class ConnectSettingsDialog(QtGui.QDialog):
         return self.feeServerNames, self.feeServerEnabled
     
 class RcuDialog(QtGui.QDialog):
-    """Connection dialog"""
+    """RCU dialog"""
 
     def __init__(self, parent=None):
         super(QtGui.QDialog, self).__init__(parent)
@@ -180,6 +180,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         self.initButtons()
         self.initConnections()
 
+        self.configFile = "test.config"
 
     def start(self, moduleHandler, databaseHandler, moduleId):
 
@@ -188,7 +189,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         self.moduleId = moduleId
 
         self.initFrames()
-
+        self.loadFromFile()
         self.exec_()
         
     def initButtons(self):
@@ -220,8 +221,82 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         self.connect(self.cancelButton, QtCore.SIGNAL("clicked()"), self.cancelConfiguration)
 
     def saveToFile(self):
+        
+        CONFIGFILE = open(self.configFile, "w") 
+        configLines = []
 
-        print 'saveToFile'
+        xfirst, xlast, zfirst, zlast = self.regionWidget.getReadOutRegion()
+
+        preSamples, samples = self.samplesWidget.getSamplesSettings()
+
+        zeroSuppression = self.zsWidget.isZeroSuppressionOn()
+        zsThreshold = self.zsWidget.getZSThreshold()
+        zsOffset = self.zsWidget.getOffset()
+        sparseReadout = self.zsWidget.isSparseReadout()
+        
+        
+        configLines.append("XFIRST " + str(xfirst) + "\n")
+        configLines.append("XLAST " + str(xlast) + "\n")
+        configLines.append("ZFIRST " + str(zfirst) + "\n")
+        configLines.append("ZLAST " + str(zlast) + "\n")
+
+        configLines.append("PRESAMPLES " + str(preSamples) + "\n")
+        configLines.append("SAMPLES " + str(samples) + "\n")
+        configLines.append("ZEROSUPPRESSION " + str(zeroSuppression) + "\n")
+        configLines.append("THRESHOLD " + str(zsThreshold) + "\n")
+        configLines.append("OFFSET " + str(zsOffset) + "\n")
+        configLines.append("SPARSEREADOUT " + str(sparseReadout) + "\n")
+        configLines.append("MEBMODE " + str(self.mebWidget.getMEBMode()) + "\n")
+        configLines.append("APDCONFIG " + str(self.getApdConfig()) + "\n")
+       
+
+        CONFIGFILE.writelines(configLines)
+        CONFIGFILE.close()
+
+    def loadFromFile(self):
+
+        CONFIGFILE = open(self.configFile, "r")
+        
+        
+        for line in CONFIGFILE.readlines():
+
+            valueName = line.split(" ")[0]
+            if valueName == "XFIRST":
+                self.regionWidget.setFirstX(int(line.split(" ")[1]))
+            if valueName == "XLAST":
+                self.regionWidget.setLastX(int(line.split(" ")[1]))
+            if valueName == "ZFIRST":
+                self.regionWidget.setFirstZ(int(line.split(" ")[1]))
+            if valueName == "ZLAST":
+                self.regionWidget.setLastZ(int(line.split(" ")[1]))
+            if valueName == "PRESAMPLES":
+                self.samplesWidget.setPreSamples(int(line.split(" ")[1]))
+            if valueName == "SAMPLES":
+                self.samplesWidget.setSamples(int(line.split(" ")[1]))
+            if valueName == "ZEROSUPPRESSION":
+                if line.split(" ")[1].strip() == "True":
+                    self.zsWidget.setZeroSuppression(True)
+                if line.split(" ")[1].strip() == "False":
+                    self.zsWidget.setZeroSuppression(False)
+            if valueName == "SPARSEREADOUT":
+                if line.split(" ")[1].strip() == "True":
+                    self.zsWidget.setSparseReadout(True)
+                if line.split(" ")[1].strip() == "False":
+                    self.zsWidget.setSparseReadout(False)
+            if valueName == "THRESHOLD":
+                self.zsWidget.setZSThreshold(int(line.split(" ")[1]))
+            if valueName == "OFFSET":
+                self.zsWidget.setOffset(int(line.split(" ")[1]))
+            if valueName == "MEBMODE":
+                if line.split(" ")[1].strip() == "True":
+                    self.mebWidget.setMEBMode(True)
+                if line.split(" ")[1].strip() == "False":
+                    self.mebWidget.setMEBMode(False)
+            if valueName == "APDCONFIG":
+                self.setApdConfig(int(line.split(" ")[1]))
+
+        CONFIGFILE.close()
+
 
     def doConfigure(self):
 
@@ -360,6 +435,10 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         latest = self.databaseHandler.getLatestConfigId()
         self.apdWidget.setConfig(id, latest, comment)
         self.configId = id
+
+    def getApdConfig(self):
+
+        return self.configId
 
     def loadApdSettings(self, id):
         

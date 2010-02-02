@@ -150,6 +150,7 @@ namespace PhosConst
   const unsigned int MAX_ZEROSUPRESSION_THR = 500;
   const unsigned int MAX_ZEROSUPRESSION_MODE = 7;
   const unsigned int MAX_READOUT_MODE = 0xf; 
+  const unsigned int MAX_TRU_SAMPLES = 128;
 
   const unsigned int FEC_RD = 0;
 

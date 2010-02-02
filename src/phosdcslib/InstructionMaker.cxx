@@ -1,6 +1,7 @@
 
 #include "InstructionMaker.h"
 #include "PhosConst.h"
+#include "PhosDcsLogging.h"
 
 using namespace PhosConst;
 
@@ -10,7 +11,9 @@ InstructionMaker::MakeMS20Instruction(const int registerType,   const bool read,
 				    const unsigned long card,  const unsigned long chip, 
 				    const unsigned long channel)
 {
-  
+
+  stringstream log;
+
   int tmp_bc_altro = 0;
 
   int tmpCommand = 0;
@@ -59,7 +62,17 @@ InstructionMaker::MakeMS20Instruction(const int registerType,   const bool read,
       tmpInstruction = tmpInstruction & (tmpInstruction - 1);
     }
   tmpParity = no_ones & 1;
-  
+
+  int command = (tmpCommand << CMD_TYPE)| (tmpParity << PAR) | ( tmp_bc_altro << BC_AL )|  (tmp_broadcast << BCAST) |  (branch<<BRANCH) | (card<<FAD) | (channel <<REGAD) | reg;
+
+  log.str("");
+  log << hex << "InstructionMaker::MakeMS20Instruction: Command type: " << tmpCommand << ", parity: " << tmpParity << ", BC or ALTRO: " << tmp_bc_altro << ", broadcast: "
+      << tmp_broadcast << ", branch: " << branch << ", card: " << card << ", channel: " << channel << ", register: " << reg << dec << endl;
+  log << hex << "Command: " << command << endl;
+
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);
+
+
   return  (tmpCommand << CMD_TYPE)| (tmpParity << PAR) | ( tmp_bc_altro << BC_AL )|  (tmp_broadcast << BCAST) |  (branch<<BRANCH) | (card<<FAD) | (channel <<REGAD) | reg;
 
  

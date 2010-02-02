@@ -62,7 +62,7 @@ class Mapper : public PhosDcsBase
   void GenerateACL(ReadoutRegion_t, int acl[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length], 
 		   unsigned long int afl[RCUS_PER_MODULE], const int modId = MODULE_2) const;
 
-  void InitAltroCspMapping();
+  void InitAltroCspMapping(ModNumber_t modID);
 
   inline int Geo2hid(int mod, int gain, int row, int col);
   inline int Hid2mod(int hid);
@@ -71,7 +71,7 @@ class Mapper : public PhosDcsBase
   inline int Hid2col(int hid);
   inline int ExtractHid(char *objName);  
 
-  inline void InitAltroMapping(int saveMapping);
+  void InitAltroMapping(int saveMapping, ModNumber_t modID);
   inline void PrintHistMapInfo(char *objName);
 
   FEE_CSP_MAP CSP_MAP[ALTROS_PER_FEE ][CHANNELS_PER_ALTRO];

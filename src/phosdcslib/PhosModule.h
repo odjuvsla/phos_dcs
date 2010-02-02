@@ -51,9 +51,13 @@ class PhosModule : public PhosDcsBase
   void SetReadoutSettings(const ReadoutSettings_t rdoSettings);
   void SetReadoutRegion(const ReadoutRegion_t rdoRegion);
   int  ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters);
+  int  ApplyReadoutRegisters() const;
   int  ApplyReadoutRegion(const ReadoutRegion_t readoutRegion);
+  void Reset();
   Rcu *GetRcuPtr(const int Id) const;
   int**  fFeeState[RCUS_PER_MODULE];
+
+  int StartFeeClient(int rcuId);
 
  private:
   PhosModule();

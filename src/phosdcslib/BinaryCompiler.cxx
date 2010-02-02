@@ -53,10 +53,14 @@ BinaryCompiler::MakeWriteReadRegisterBinary(const unsigned int regType, vector<u
   if(regType == REGTYPE_TRU)
     {
     }
-  
+    
+  char name[128];
+  sprintf(name, "tmp/binblock_0x%X\0", reg[0]);
+  ofstream outfile(name);
   stringstream log;
   for(int i = 0; i < binData.size(); ++i)
     {
+      outfile << "0x" << hex << binData.at(i) << endl;
       log.str("");
       log << "BinaryCompiler::MakeWriteReadRegisterBinary: Final block data[" << i << "] = 0x" << hex << binData.at(i) << dec;
       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_EXTREME_VERBOSE);      
@@ -83,6 +87,7 @@ BinaryCompiler::MakeReadRegisterBinary(const int regType, vector<unsigned long> 
       ret =  MakeReadRcuRegisterBinary(binData, reg[0], N);
     }
   stringstream log;
+
   for(int i = 0; i < binData.size(); ++i)
     {
       log.str("");

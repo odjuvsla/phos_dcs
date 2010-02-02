@@ -150,6 +150,21 @@ class FeeCardHandler(PHOSHandler):
             # Emitting the card toggled signal together with the returned state of the card
             self.emit(QtCore.SIGNAL("cardToggled"), "cardToggled", self.feeId, state)
 
+            # If the card is 1, 2, 13 or 14 we check the state of the complementary
+            if feeId == 1:
+                feeId = 14
+            elif feeId == 2:
+                feeId = 13
+            elif feeId == 14:
+                feeId = 1
+            elif feeId == 13:
+                feeId = 2
+            self.feeId = self.idConverter.FeeAbsoluteID(moduleId, rcuId, branchId, feeId)
+            state = dcs_interface.UpdateSingleFeeStatus(moduleId, rcuId, branchId, feeId)
+            print "state: " + str(state)
+            # Emitting the card toggled signal together with the returned state of the card
+            self.emit(QtCore.SIGNAL("cardToggled"), "cardToggled", self.feeId, state)
+
             # Release the DcsInterface object
             self.dcs_interface_wrapper.releaseDcsInterface()
             #---------------------------------------------
@@ -306,12 +321,12 @@ class RcuHandler(PHOSHandler):
         def run(self):
             """Run the thread"""
             
-#            for i in range(CARDS_PER_RCU):
-#                feeId = self.rcuId*CARDS_PER_RCU + i
-#                self.feeHandler.toggleOnOff(feeId)
-#             for i in range(CARDS_PER_BRANCH-2):
-#                 feeId = self.rcuId*CARDS_PER_RCU + i
-#                 self.feeHandler.toggleOnOff(feeId)
+            for i in range(CARDS_PER_RCU):
+                feeId = self.rcuId*CARDS_PER_RCU + i
+                self.feeHandler.toggleOnOff(feeId)
+            for i in range(CARDS_PER_BRANCH-2):
+                 feeId = self.rcuId*CARDS_PER_RCU + i
+                 self.feeHandler.toggleOnOff(feeId)
                 
             for j in range(CARDS_PER_BRANCH):
                 feeId = self.rcuId*CARDS_PER_RCU + CARDS_PER_BRANCH + j
@@ -423,6 +438,7 @@ class ModuleHandler(PHOSHandler):
         def run(self):
 
             modId = ModNumber_t(self.moduleId)
+
             dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
             
             dcs_interface.SetReadoutRegion(modId, self.readoutRegion)
@@ -440,8 +456,10 @@ class DetectorHandler(PHOSHandler):
         super(DetectorHandler, self).__init__()
 
         self.dcs_interface = dcs_interface
-        
-        self.fee_servers = vectorfee(PHOS_MODS*RCUS_PER_MODULE)
+        self.fee_servers = vectorfee()
+
+#        self.fee_servers = vectorfee(PHOS_MODS*RCUS_PER_MODULE)
+
         self.fee_servers.clear()
 
     def turnOnOff(self):
@@ -453,14 +471,14 @@ class DetectorHandler(PHOSHandler):
         tmpFeeServer = FeeServer()
         print feeServer
         tmpFeeServer.fName = str(feeServer)
+#        tmpFeeServer.fName = "alidcsdcb1584"
         moduleId, rcuId, x, z = self.idConverter.GetRcuLogicalCoordinatesFromFeeServerId(id)
         tmpFeeServer.fModId = moduleId
         tmpFeeServer.fRcuId = rcuId
         tmpFeeServer.fZ = z
         tmpFeeServer.fX = x
-
         self.fee_servers.push_back(tmpFeeServer)
-        
+
     def startFeeClient(self):
         
         res = self.dcs_interface.getDcsInterface().Init(self.fee_servers)

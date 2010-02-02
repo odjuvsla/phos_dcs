@@ -1,3 +1,4 @@
-CCopy of configuration 289. 
-Module 2: Gain 50
-
+DO NOT use: PHOS-3 Gain50 by Hamamatsu
+at the room temperature
+Created at 20/04/2009/14:00
+Flipped left SU.

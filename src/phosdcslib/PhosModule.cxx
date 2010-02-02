@@ -51,11 +51,11 @@ PhosModule::~PhosModule()
     } 
 }
 
-
 const char*
 PhosModule::GetFeeServerName(const int rcuId) const
 {
-  return fRcuPtr[rcuId]->GetFeeServerName(); 
+  if(fRcuPtr[rcuId]) return fRcuPtr[rcuId]->GetFeeServerName(); 
+  return 0;
 }
 
 
@@ -83,10 +83,10 @@ PhosModule::SetAllApds(const int value) const
   stringstream log;
   log << "PhosModule::SetAllApds: Setting all APDs for MODULE";
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
-
+  
   for(int i = 0; i< RCUS_PER_MODULE; i++)
     {
-      fRcuPtr[i]->SetAllApds(value);
+      if(fRcuPtr[i]) fRcuPtr[i]->SetAllApds(value);
     }
 }
 
@@ -115,7 +115,6 @@ PhosModule::GetRcuPtr(const int id) const
 {
   if(id < RCUS_PER_MODULE && fRcuPtr[id] != 0)
     {
-      printf("");
       return fRcuPtr[id];
     }
   else 
@@ -145,8 +144,7 @@ PhosModule::ArmTrigger(const char *triggerScriptFileName)
     {
       if( fReadoutConfig.GetAltroConfig().GetApplyPattern() == true )
 	{
-
-	  fRcuPtr[i]->ApplyPattern(fReadoutConfig.GetAltroConfig().GetPattern());
+	  if(fRcuPtr[i]) fRcuPtr[i]->ApplyPattern(fReadoutConfig.GetAltroConfig().GetPattern());
 	  //	  printf("\n%s", mbuff);
 	    
 	}
@@ -219,7 +217,7 @@ PhosModule::EnableTrigger_ttcrx() const
 {
    for(int i=0; i<RCUS_PER_MODULE; i++)
     {
-      fRcuPtr[i]->EnableTrigger_ttcrx();
+      if(fRcuPtr[i]) fRcuPtr[i]->EnableTrigger_ttcrx();
     } 
 }
 
@@ -227,7 +225,7 @@ PhosModule::EnableTrigger_ttcrx() const
 void
 PhosModule::DisArmTrigger(const int rcuId) const
 {
-  fRcuPtr[rcuId]->DisArmTrigger();
+  if(fRcuPtr[rcuId]) fRcuPtr[rcuId]->DisArmTrigger();
 }
 
 
@@ -252,7 +250,8 @@ PhosModule::CreateRcu(const char *serverName, const int mId, const int rcuId, co
 void 
 PhosModule::ApplyApdSettings(const int rcuId, const int branch, const int card) const
 {
-  fRcuPtr[rcuId]->ApplyApdSettings(branch, card);
+  if(fRcuPtr[rcuId]) fRcuPtr[rcuId]->ApplyApdSettings(branch, card);
+
 }
 
 
@@ -291,13 +290,45 @@ PhosModule::ApplyReadoutRegisters(const ReadoutRegisters_t readoutRegisters)
 }
 
 int 
+PhosModule::ApplyReadoutRegisters() const
+{
+  stringstream log;
+
+  RcuALTROIF_t altroif(fReadoutSettings.GetNSamples().GetIntValue());
+  RcuRDOMOD_t rdomod(false, fReadoutSettings.IsSparseReadout(), false, fReadoutSettings.GetMEBMode());
+  RcuALTROCFG1_t altrocfg1(fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
+			 fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold());
+  RcuALTROCFG2_t altrocfg2(fReadoutSettings.GetNPreSamples().GetIntValue());
+
+  RcuL1LAT_t tmpLOneLat;
+  RcuL1MSGLAT_t tmpLOneMsgLat;
+
+  ReadoutRegisters_t readoutRegs(altroif, rdomod, altrocfg1, altrocfg2, tmpLOneLat, tmpLOneMsgLat);
+
+  log.str("");
+  readoutRegs.Print(log, string("V"));
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+  
+  int n = 0;
+  int res = 0;
+  for(int n = 0; n < RCUS_PER_MODULE; n++)
+    {
+      if(fRcuPtr[n] != 0)
+	{
+	  res += fRcuPtr[n]->ApplyReadoutRegisters(readoutRegs);
+	}
+    }
+}
+
+int 
 PhosModule::ApplyReadoutRegion(const ReadoutRegion_t readoutRegion)
 {
+  stringstream log;
   int n = 0;
   int res = 0;
   int nTrials = 0;
   SetReadoutRegion(readoutRegion);
-
+  fMapperPtr->InitAltroMapping(0, fModuleId);
   fMapperPtr->GenerateACL(fReadoutRegion, fAclMaps, fAfls);
 
   int status[RCUS_PER_MODULE];
@@ -316,7 +347,48 @@ PhosModule::ApplyReadoutRegion(const ReadoutRegion_t readoutRegion)
 	    }
 	  nTrials =0;
 	}
+      else 
+	{
+	  log.str("");
+	  log << "PhosModule::ApplyReadoutRegion: Module #: " << fModuleId.GetIntValue() << " RCU #: " << i << " is not connected";
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+	  status[i] = 0;
+	}
     }
 }
 
+void
+PhosModule::Reset() 
+{
+  stringstream log;
 
+  for(int i=0; i<RCUS_PER_MODULE; i++)
+    {
+      if(fRcuPtr[i] != 0)
+	{
+	  fRcuPtr[i]->Reset();
+	}
+      else 
+	{
+	  log.str("");
+	  log << "PhosModule::Reset: Module #: " << fModuleId.GetIntValue() << " RCU #: " << i << " is not connected";
+	  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+	}
+    }
+}
+
+int 
+PhosModule::StartFeeClient(int rcuID)
+{
+  stringstream log;  
+  if(fRcuPtr[rcuID] != 0)
+    {
+      fRcuPtr[rcuID]->StartFeeClient();
+    }
+  else 
+    {
+      log.str("");
+      log << "PhosModule::StartFeeServer: Module #: " << fModuleId.GetIntValue() << " RCU #: " << rcuID << " is not connected";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_WARNING);
+    }
+}

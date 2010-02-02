@@ -11,6 +11,10 @@ class RcuRDOMOD_t;
 class RcuALTROCFG1_t;
 class RcuALTROCFG2_t;
 class RcuTRGCONF_t;
+
+class RcuL1LAT_t;
+class RcuL1MSGLAT_t;
+
 class AltroTRCFG_t;
 class AltroZSTHR_t;
 class AltroDPCFG_t;
@@ -32,11 +36,6 @@ public:
   {
   }
   
-//   RcuALTROIF_t& operator=(const RcuALTROIF_t)
-//   {
-//     return *this;
-//   }
- 
   short GetNumberOfSamples() const { return fNSamples; }
   int GetSampleFrequency() const { return fSampleFreq; }
   short GetCstbDelay() const { return fCstbDelay; }
@@ -50,6 +49,8 @@ public:
   void SetInstructionErrorCheck(short val) { fInstructionErrorCheck = val; }
 
   void SetByRegisterValue(int value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const int fRegAddress = RcuRegisterMap::ALTROIF; // 0x5101
 
@@ -86,11 +87,6 @@ public:
     
   }
   
-//   RcuTRGCONF_t& operator=(const RcuTRGCONF_t)
-//   {
-//     return *this;
-//   }
-
   bool IsSoftwareTriggerEnabled() const { return fSoftwareTrigger; }
   bool IsAuxTriggerEnabled() const { return fAuxTrigger; } 
   bool IsTTCrxTriggerEnabled() const { return fTTCrxTrigger; }
@@ -131,6 +127,8 @@ public:
 
   void SetByRegisterValue(int value);
 
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
   static const int fRegAddress = RcuRegisterMap::TRCFG; //0x5102 
 
 private: 
@@ -161,11 +159,6 @@ public:
     fMEBMode(v.GetMEBMode())
   {
   }
-  
-//   RcuRDOMOD_t& operator=(const RcuRDOMOD_t)
-//   {
-//     return *this;
-//   }
 
   bool IsMaskRDYRXEnabled() const { return fMaskRDYRX; }
   bool IsSparseReadoutEnabled() const { return fSparseReadout; }
@@ -180,6 +173,8 @@ public:
   void SetMEBMode(bool value = true) { fMEBMode = value; } 
 
   void SetByRegisterValue(short value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const short fRegAddress = RcuRegisterMap::RDOMOD; //0x5103
 
@@ -212,11 +207,6 @@ public:
   {
   }
   
-//   RcuALTROCFG1_t& operator=(const RcuALTROCFG1_t)
-//   {
-//     return *this;
-//   }
-
   bool IsZeroSuppressionEnabled() const { return fZeroSuppressionEnabled; }
   bool UsingAutomaticBaselineSubtraction() const { return fAutomaticBaselineSubtraction; }
   short GetOffset() const { return fOffset; } 
@@ -231,6 +221,8 @@ public:
   void SetThreshold(short threshold) { fThreshold = threshold; }
 
   void SetByRegisterValue(short value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const short fRegAddress = RcuRegisterMap::ALTROCFG1; // 0x5104
 
@@ -270,11 +262,6 @@ public:
   {
   }
   
-//   RcuALTROCFG2_t& operator=(const RcuALTROCFG2_t)
-//   {
-//     return *this;
-//   }
-
   short GetNPreSamples() const { return fNPreSamples; }
 
   short GetRegisterValue();
@@ -283,6 +270,8 @@ public:
 
   void SetByRegisterValue(short value);
 
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
   static const int fRegAddress = RcuRegisterMap::ALTROCFG2; // 0x5105
 
 private:
@@ -290,6 +279,102 @@ private:
   short fNPreSamples; // 4 bits reserved
  
 };
+
+
+class RcuL1LAT_t
+{
+  
+  // Register contains the L0 - L1 latency and the uncertainty 
+  // given in number of bunch crossings (25 ns). 
+  // Width is 16 bits
+
+public:
+  RcuL1LAT_t():  
+    fLatency(260),
+    fUncertainty(2)
+  { 
+  }
+  
+  RcuL1LAT_t(short latency, short uncertainty = 2) : 
+    fLatency(latency),
+    fUncertainty(uncertainty)
+  {
+  }
+
+  RcuL1LAT_t(const RcuL1LAT_t& v):
+    fLatency(v.GetLatency()),
+    fUncertainty(v.GetUncertainty())
+  {
+  }
+
+  short GetLatency() const { return fLatency; }
+  short GetUncertainty() const { return fUncertainty; }
+
+  short GetRegisterValue() const { return (fUncertainty << 12) | fLatency; }
+
+  float GetLatencyInUs() const { return static_cast<float>(fLatency) * 0.025; }
+
+  void SetByRegisterValue(short value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
+  static const int fRegAddress = RcuRegisterMap::L1_LATENCY;
+
+private: 
+  
+  short fLatency; //12 bits
+  short fUncertainty; //4 bits
+
+}; 
+
+class RcuL1MSGLAT_t
+{
+  
+  // Register contains the L1 message minimum and maximum latency wrt BC0 in
+  // bunch crossings
+  // Width is 32 bits
+
+public:
+  RcuL1MSGLAT_t():  
+    fMinLatency(260),
+    fMaxLatency(3200)
+  { 
+  }
+  
+  RcuL1MSGLAT_t(short min, short max) :
+    fMinLatency(min),
+    fMaxLatency(max)
+  {
+  }
+
+  RcuL1MSGLAT_t(const RcuL1MSGLAT_t& v):
+    fMinLatency(v.GetMinLatency()),
+    fMaxLatency(v.GetMaxLatency())
+  {
+  }
+
+  int GetMinLatency() const { return fMinLatency; }
+
+  int GetMaxLatency() const { return fMaxLatency; }
+
+  int GetRegisterValue() const { return (fMinLatency << 16) | fMaxLatency; }
+
+  float GetMinLatencyInUs() const { return static_cast<float>(fMinLatency) * 0.025; }
+
+  float GetMaxLatencyInUs() const { return static_cast<float>(fMaxLatency) * 0.025; }
+
+  void SetByRegisterValue(int value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
+
+  static const int fRegAddress = RcuRegisterMap::L1_MSG_LATENCY;
+
+private: 
+  
+  short fMaxLatency; // 16 bits
+  short fMinLatency; // 16 bits
+ 
+}; 
 
 
 class AltroZSTHR_t
@@ -318,11 +403,6 @@ public:
   {
   }
   
-//   AltroZSTHR_t& operator=(const AltroZSTHR_t)
-//   {
-//     return *this;
-//   }
-
   short GetThreshold() const { return fThreshold; }
   short GetOffset() const { return fOffset; } 
 
@@ -332,6 +412,8 @@ public:
   void SetOffset(short offset) { fOffset = offset; }
 
   void SetByRegisterValue(int value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const int fRegAddress = AltroRegisterMap::ZSTHR;
   
@@ -376,11 +458,6 @@ public:
   {
   }
   
-//   AltroTRCFG_t& operator=(const AltroTRCFG_t)
-//   {
-//     return *this;
-//   }
-
   short GetStart() const { return fStart; }
   short GetStop() const { return fStop; } 
   short GetNSamples() const { return fStop - fStart; } 
@@ -396,6 +473,8 @@ public:
     }
 
   void SetByRegisterValue(int value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const int fRegAddress = AltroRegisterMap::TRCFG;
   
@@ -442,11 +521,6 @@ public:
   {
   }
   
-//   AltroDPCFG_t& operator=(const AltroDPCFG_t)
-//   {
-//     return *this;
-//   }
-
   short GetFirstBaselineCorrectionMode() const { return fFirstBaselineCorrection; }
   bool IsZeroSuppressed() const { return fZeroSuppression; }
   
@@ -464,6 +538,8 @@ public:
   }
 
   void SetByRegisterValue(int value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const int fRegAddress = AltroRegisterMap::DPCFG;
   
@@ -513,11 +589,6 @@ public:
     fPowerSaveEnabled(v.IsPowerSaveEnabled())
   {
   }
-  
-//   AltroDPCFG2_t& operator=(const AltroDPCFG2_t)
-//   {
-//     return *this;
-//   }
 
   short GetNPreSamples() const { return fNPreTriggerSamples; }
   bool GetMEBMode() const { return fMEBMode; } 
@@ -532,6 +603,8 @@ public:
   void SetPowerSaveEnabled(bool value = true) { fPowerSaveEnabled = value; }
 
   void SetByRegisterValue(short value);
+
+  void Print(std::ostream& stream, std::string level = std::string(""));
 
   static const int fRegAddress = AltroRegisterMap::DPCFG2;
 
@@ -553,13 +626,15 @@ public:
   ReadoutRegisters_t() {}
   
   ReadoutRegisters_t(RcuALTROIF_t altroif, RcuRDOMOD_t rdoMod, RcuALTROCFG1_t altrocfg1, 
-		     RcuALTROCFG2_t altrocfg2);
+		     RcuALTROCFG2_t altrocfg2, RcuL1LAT_t lOneLat, RcuL1MSGLAT_t lOneMsgLat);
 
   ReadoutRegisters_t(const ReadoutRegisters_t& v) :
     fRcuALTROIF(v.GetRcuALTROIF()),
     fRcuRDOMOD(v.GetRcuRDOMOD()),
     fRcuALTROCFG1(v.GetRcuALTROCFG1()),
     fRcuALTROCFG2(v.GetRcuALTROCFG2()),
+    fRcuL1LAT(v.GetRcuL1LAT()),
+    fRcuL1MSGLAT(v.GetRcuL1MSGLAT()),
     fAltroZSTHR(v.GetAltroZSTHR()),
     fAltroTRCFG(v.GetAltroTRCFG()),
     fAltroDPCFG(v.GetAltroDPCFG()),
@@ -567,17 +642,12 @@ public:
   {
   }
 
-//   ReadoutRegisters_t& operator=(const ReadoutRegisters_t)
-//   {
-//     return *this;
-//   }
-
   ~ReadoutRegisters_t() {}
   
   const unsigned long* GetRcuRegisterAddresses() const { return fRcuRegisterAddresses; }
   const unsigned long* GetRcuRegisterValues();
 
-  const int GetNRcuRegisters() const { return 4; }
+  const int GetNRcuRegisters() const { return 6; }
 
   const unsigned long* GetAltroRegisterAddresses() const { return fAltroRegisterAddresses; }
   
@@ -589,12 +659,16 @@ public:
   RcuRDOMOD_t GetRcuRDOMOD() const { return fRcuRDOMOD; }
   RcuALTROCFG1_t GetRcuALTROCFG1() const { return fRcuALTROCFG1; }
   RcuALTROCFG2_t GetRcuALTROCFG2() const { return fRcuALTROCFG2; }
+  RcuL1LAT_t GetRcuL1LAT() const { return fRcuL1LAT; }
+  RcuL1MSGLAT_t GetRcuL1MSGLAT() const { return fRcuL1MSGLAT; }
 
   const bool* GetRcuVerify() const { return fRcuVerify; }
 
   void SetRcuALTROIF(RcuALTROIF_t altroif);
   void SetRcuRDOMOD(RcuRDOMOD_t rdomod);
   void SetRcuALTROCFG(RcuALTROCFG1_t altrocfg1, RcuALTROCFG2_t altrocfg2);
+  void SetRcuL1LAT(RcuL1LAT_t lOneLat) { fRcuL1LAT = lOneLat; }
+  void SetRcuL1MSGLAT(RcuL1MSGLAT_t lOneMsgLat) { fRcuL1MSGLAT = lOneMsgLat; }
 
   AltroZSTHR_t GetAltroZSTHR() const { return fAltroZSTHR; }
   AltroTRCFG_t GetAltroTRCFG() const { return fAltroTRCFG; }
@@ -603,12 +677,12 @@ public:
 
   const bool* GetAltroVerify() const { return fAltroVerify; }
 
-  void SetAltroZSTHR(AltroZSTHR_t zsthr);
-  void SetAltroTRCFG(AltroTRCFG_t trcfg);
-  void SetAltroDPCFG(AltroDPCFG_t dpcfg);
-  void SetAltroDPCFG2(AltroDPCFG2_t dpcfg2);
+/*   void SetAltroZSTHR(AltroZSTHR_t zsthr); */
+/*   void SetAltroTRCFG(AltroTRCFG_t trcfg); */
+/*   void SetAltroDPCFG(AltroDPCFG_t dpcfg); */
+/*   void SetAltroDPCFG2(AltroDPCFG2_t dpcfg2); */
 
-  void Print(std::ostream& stream);
+  void Print(std::ostream& stream, std::string level = std::string(""));
   
 private:
   
@@ -616,6 +690,8 @@ private:
   RcuRDOMOD_t fRcuRDOMOD;
   RcuALTROCFG1_t fRcuALTROCFG1;
   RcuALTROCFG2_t fRcuALTROCFG2;
+  RcuL1LAT_t fRcuL1LAT;
+  RcuL1MSGLAT_t fRcuL1MSGLAT;
 
   AltroZSTHR_t fAltroZSTHR;
   AltroTRCFG_t fAltroTRCFG;
@@ -629,11 +705,12 @@ private:
 
   static const bool fAltroVerify[];
 
-  unsigned long fRcuRegisterValues[4];
+  unsigned long fRcuRegisterValues[6];
 
   unsigned long fAltroRegisterValues[4];
 
 };
+
 
 
 #endif

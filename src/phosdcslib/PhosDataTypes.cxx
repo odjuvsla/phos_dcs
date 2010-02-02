@@ -775,11 +775,16 @@ EndX_t::SetIntValue(const int value)
 /***********************************************/
 /************* ReadoutRegion_t *****************/
 /***********************************************/
-ReadoutRegion_t::ReadoutRegion_t():fStartZ(0), 
-				   fEndZ(0), 
-				   fStartX(0), 
-				   fEndX(0),
-				   fIsTruEnabled(false)
+ReadoutRegion_t::ReadoutRegion_t():fHgStartZ(0), 
+				   fHgEndZ(0), 
+				   fHgStartX(0), 
+				   fHgEndX(0),
+				   fLgStartZ(0), 
+				   fLgEndZ(0), 
+				   fLgStartX(0), 
+				   fLgEndX(0),
+				   fIsTruEnabled(false),
+				   fNTruSamples(0)
 {
   // CheckConsistency(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx );
 
@@ -788,17 +793,32 @@ ReadoutRegion_t::ReadoutRegion_t():fStartZ(0),
 
 
 
-
-ReadoutRegion_t::ReadoutRegion_t(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx, const bool enableTRUFakeAltro):fStartZ(0), 
-																		    fEndZ(0), 
-																		    fStartX(0), 
-																		    fEndX(0),
-																		    fIsTruEnabled(enableTRUFakeAltro)
+ReadoutRegion_t::ReadoutRegion_t(const StartZ_t hgstartz, const EndZ_t hgendz, const StartX_t hgstartx, const EndX_t hgendx,
+		  const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx, const bool enableTRUFakeAltro, const int nTruSamples):fHgStartZ(0), 
+																				    fHgEndZ(0), 
+																				    fHgStartX(0), 
+																				    fHgEndX(0),
+																				    fLgStartZ(0), 
+																				    fLgEndZ(0), 
+																				    fLgStartX(0), 
+																				    fLgEndX(0),
+																				    fIsTruEnabled(enableTRUFakeAltro),
+																				    fNTruSamples(0)
 {
-  if(CheckConsistency(startz, endz, startx, endx) == true )
+  if(CheckConsistency(hgstartz, hgendz, hgstartx, hgendx) == true && CheckConsistency(lgstartz, lgendz, lgstartx, lgendx) == true)
     {
-      SetReadoutRegion(startz, endz, startx, endx); 
+      SetReadoutRegion(hgstartz, hgendz, hgstartx, hgendx, lgstartz, lgendz, lgstartx, lgendx);
     }
+  if(fNTruSamples > 128) 
+    {
+      fNTruSamples = 127;
+    }
+  else 
+    {
+      fNTruSamples = nTruSamples;
+    }
+  fIsTruEnabled = enableTRUFakeAltro;
+
 }
 
 
@@ -810,16 +830,19 @@ ReadoutRegion_t::~ReadoutRegion_t()
 const bool
 ReadoutRegion_t::IsRcuEnabled(const RcuNumber_t rcu) const
 {
-  return fStartX.GetIntValue() >= rcu.GetMinX() && fEndX.GetIntValue() <= rcu.GetMaxX() 
-    && fStartZ.GetIntValue() >= rcu.GetMinZ() && fEndZ.GetIntValue() <= rcu.GetMaxZ();
+  //  return fStartX.GetIntValue() >= rcu.GetMinX() && fEndX.GetIntValue() <= rcu.GetMaxX() 
+  //    && fStartZ.GetIntValue() >= rcu.GetMinZ() && fEndZ.GetIntValue() <= rcu.GetMaxZ();
+  return true;
 }
 
 const bool
 ReadoutRegion_t::IsBranchEnabled(const RcuNumber_t rcu, const BranchNumber_t branch) const
 {
-  return IsRcuEnabled(rcu) 
-    && fStartZ.GetIntValue() >= rcu.GetMinZ() + N_ZROWS_BRANCH*branch.GetIntValue()
-    && fEndZ.GetIntValue() <= rcu.GetMaxZ() + (branch.GetIntValue() - 1)*N_ZROWS_BRANCH;
+//   return IsRcuEnabled(rcu) 
+//     && fStartZ.GetIntValue() >= rcu.GetMinZ() + N_ZROWS_BRANCH*branch.GetIntValue()
+//     && fEndZ.GetIntValue() <= rcu.GetMaxZ() + (branch.GetIntValue() - 1)*N_ZROWS_BRANCH;
+  return true;
+
 }
 
 const bool
@@ -866,29 +889,39 @@ ReadoutRegion_t::PrintInfo(const char *message) const
     }
 
   cout <<  "ReadoutRegion_t printing info"<< endl; 
-  cout <<  "startZ =" << fStartZ.GetIntValue() << endl;
-  cout <<  "endZ =" << fEndZ.GetIntValue() << endl;
-  cout <<  "startX =" << fStartX.GetIntValue() << endl;
-  cout <<  "endX =" << fEndX.GetIntValue() << endl; 
+  cout <<  "startZ =" << fHgStartZ.GetIntValue() << endl;
+  cout <<  "endZ =" << fHgEndZ.GetIntValue() << endl;
+  cout <<  "startX =" << fHgStartX.GetIntValue() << endl;
+  cout <<  "endX =" << fHgEndX.GetIntValue() << endl; 
 }
 
-  
 void 
-ReadoutRegion_t::SetReadoutRegion(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx) 
+ReadoutRegion_t::SetReadoutRegion(const StartZ_t hgstartz, const EndZ_t hgendz, const StartX_t hgstartx, const EndX_t hgendx,
+				  const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx)
 {
-  if(CheckConsistency(startz, endz, startx, endx) == true)
+  if(CheckConsistency(hgstartz, hgendz, hgstartx, hgendx) == true && CheckConsistency(lgstartz, lgendz, lgstartx, lgendx) == true)
     {
-      fStartZ =startz; 
-      fEndZ = endz;
-      fStartX =startx; 
-      fEndX = endx; 
+      fHgStartZ =hgstartz; 
+      fHgEndZ = hgendz;
+      fHgStartX = hgstartx; 
+      fHgEndX = hgendx; 
+
+      fLgStartZ =lgstartz; 
+      fLgEndZ = lgendz;
+      fLgStartX = lgstartx; 
+      fLgEndX = lgendx; 
     }
   else
     {
-      fStartZ.SetIntValue(0); 
-      fEndZ.SetIntValue(0); 
-      fStartX.SetIntValue(0); 
-      fEndX.SetIntValue(0); 
+      fHgStartZ.SetIntValue(0); 
+      fHgEndZ.SetIntValue(0); 
+      fHgStartX.SetIntValue(0); 
+      fHgEndX.SetIntValue(0); 
+
+      fLgStartZ.SetIntValue(0); 
+      fLgEndZ.SetIntValue(0); 
+      fLgStartX.SetIntValue(0); 
+      fLgEndX.SetIntValue(0); 
     }
 }
 

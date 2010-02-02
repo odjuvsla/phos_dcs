@@ -1,1 +1,2 @@
-All APD DAC values to zero
+AAll DAC settings to 0
+

@@ -86,6 +86,7 @@ class DcsInterface : public PhosDcsBase
   void            SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings);
   void            SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) const;
   int             ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters) const;
+  int             ApplyReadoutRegisters(const ModNumber_t modID) const;
   int             ApplyReadoutRegion(const ModNumber_t modID) const; 
   //  unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate,  unsigned int tmpStates[CARDS_PER_RCU]);
   unsigned int    ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate);
@@ -105,6 +106,8 @@ class DcsInterface : public PhosDcsBase
   int             UpdateSingleFeeStatus(const int mod, const int rcu, const int branch, const int fee);
   int             Configure(const ModNumber_t modId);
   int             Reset(const ModNumber_t modId);
+
+  int             ApplyScriptToFeeServer(const char *feeserver, const char* scriptfilename);
 
  private:
   DatabaseDummy   *fDatabasePtr;

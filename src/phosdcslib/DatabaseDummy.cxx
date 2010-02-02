@@ -86,7 +86,7 @@ DatabaseDummy::LoadApdConfig(char *description)
     {
       LoadApdConfig(description, id);
       cout << "DatabaseDummy::LoadApdConfig,   databaseFolderPtr = " <<fDatabaseFolder << endl;
-      cout << "DatabaseDummy::LoadApdConfig,   sanboxFolderPtr = " << fSandboxFolder  << endl;
+      cout << "DatabaseDummy::LoadApdConfig,   sandboxFolderPtr = " << fSandboxFolder  << endl;
     }
   return id;
 }
@@ -114,7 +114,7 @@ DatabaseDummy::LoadApdConfig(ConfigInfo_t &info, int configID)
     }
   else
     {
-      LoadApdConfig(info.fInfo, id);
+      LoadApdConfig(info.fInfo, info.fID);
       info.fID = id;
       log.str("");
       log << "Loading APD settings for ID: " << id;
@@ -150,6 +150,7 @@ DatabaseDummy::LoadApdConfig(char *description, int id)
 
   if(CheckFile(configFilename, "r") == 0)
     {
+
       fpLoad=fopen(configFilename, "r");  
       fscanf(fpLoad, "Module:%d\tRCU:%d\tbranch:%d\tcard:%d\n", &module, &rcu, &branch, &card); 
       do
@@ -166,9 +167,8 @@ DatabaseDummy::LoadApdConfig(char *description, int id)
 		}
 	      fclose(fp);
 	    }
-      }
-       
-      while(fscanf(fpLoad,"Module:%d\tRCU:%d\tbranch:%d\tcard:%d\n", &module, &rcu, &branch, &card) !=EOF);    
+	} while(fscanf(fpLoad,"Module:%d\tRCU:%d\tbranch:%d\tcard:%d\n", &module, &rcu, &branch, &card) !=EOF);    
+
       fclose(fpLoad);
     }  
 
@@ -194,10 +194,10 @@ DatabaseDummy::SaveReadoutConfiguration(const ReadoutConfig_t rdoConfig, const M
       fp = fopen(fileName, "w");
       fprintf(fp, "samples:\t %d\n",  rdoConfig.GetAltroConfig().GetNSamples().GetIntValue());
       fprintf(fp, "presamples:\t %d\n", rdoConfig.GetAltroConfig().GetNPreSamples().GetIntValue());
-      fprintf(fp, "startZ:\t %d\n",  rdoConfig.GetReadoutRegion().GetStartZ().GetIntValue());
-      fprintf(fp, "endZ:\t %d\n",   rdoConfig.GetReadoutRegion().GetEndZ().GetIntValue());
-      fprintf(fp, "startX:\t %d\n",  rdoConfig.GetReadoutRegion().GetStartX().GetIntValue());
-      fprintf(fp, "endX:\t %d\n",   rdoConfig.GetReadoutRegion().GetEndX().GetIntValue());
+      fprintf(fp, "startZ:\t %d\n",  rdoConfig.GetReadoutRegion().GetHGStartZ().GetIntValue());
+      fprintf(fp, "endZ:\t %d\n",   rdoConfig.GetReadoutRegion().GetHGEndZ().GetIntValue());
+      fprintf(fp, "startX:\t %d\n",  rdoConfig.GetReadoutRegion().GetHGStartX().GetIntValue());
+      fprintf(fp, "endX:\t %d\n",   rdoConfig.GetReadoutRegion().GetHGEndX().GetIntValue());
       fprintf(fp, "enableTruReadout:\t %d\n",   rdoConfig.GetReadoutRegion().IsTruReadoutEnabled());
       fclose(fp);
     }
@@ -280,7 +280,7 @@ DatabaseDummy::LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig, const ModNum
       StartX_t *startx = new StartX_t(tmpStartX);
       EndX_t *endx = new EndX_t(tmpEndX);
       
-      ReadoutRegion_t *rdoregion = new ReadoutRegion_t(*startz, *endz, *startx, *endx, tmpTruEnable);
+      ReadoutRegion_t *rdoregion = new ReadoutRegion_t(*startz, *endz, *startx, *endx, *startz, *endz, *startx, *endx, tmpTruEnable);
       rdoConfig->SetReadoutRegion(*rdoregion);
 
       delete  startz;
@@ -347,6 +347,8 @@ DatabaseDummy::SaveApdConfig(char *description)
   char postfix[20];
   int configId=0;
 
+  cout << "SAVE CONFIG!" << endl;
+
   sprintf(IdFilename, "%s/Id.txt", fDatabaseFolder);
   configId=GetLatestConfigId()+1;
   
@@ -406,6 +408,7 @@ DatabaseDummy::SaveApdConfig(char *description)
 			    {
 			      fscanf(fp,"%d\n",&tmpApdValue[i]);
 			      fprintf(fpConf, "%d\n", tmpApdValue[i]);
+			      //			      cout << tmpApdValue[i] << endl;
 			    }
 			  fclose(fp);
 			}
