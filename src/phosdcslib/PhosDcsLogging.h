@@ -22,77 +22,86 @@ const unsigned int LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO;
 
 /**
  * Class used for logging for the PHOS APD GUI
- */ 
+ */
 class PhosDcsLogging
-{
- public:
-  
-  /** Returns pointer to the logging instance. Creates the object if it don't exists */
-  static PhosDcsLogging* Instance();
+  {
+  public:
 
-  /** The function used for logging */
-  void Logging(string logmsg, unsigned int level);
+    /** Returns pointer to the logging instance. Creates the object if it don't exists */
+    static PhosDcsLogging* Instance();
 
-  /** Set the logging level for the file output */
-  void SetFileLoggingLevel(unsigned int level) { fFileLogLevel = level; }
+    /** The function used for logging */
+    void Logging ( string logmsg, unsigned int level );
 
-  /** Set the logging level for the terminal */
-  void SetTerminalOutputLevel(unsigned int level) { fTerminalLogLevel = level; }
-  
-  /** Set the logging level for the log viewer */
-  void SetLogViewerLevel(unsigned int level) { fLogViewerLevel = level; }
+    /** Set the logging level for the file output */
+    void SetFileLoggingLevel ( unsigned int level )
+    {
+      fFileLogLevel = level;
+    }
 
-  /** Get the log viewer string */
-  string GetLogViewerString();
+    /** Set the logging level for the terminal */
+    void SetTerminalOutputLevel ( unsigned int level )
+    {
+      fTerminalLogLevel = level;
+    }
 
-  /** Get the current time/date stamp */
-  void GetTimeStamp(stringstream& timestamp, stringstream& datestamp);
+    /** Set the logging level for the log viewer */
+    void SetLogViewerLevel ( unsigned int level )
+    {
+      fLogViewerLevel = level;
+    }
 
- private:
+    /** Get the log viewer string */
+    string GetLogViewerString();
 
-  /** Default constructor (called by the Instance() function */
-  PhosDcsLogging();
-  
-  /** Default destructor */
-  ~PhosDcsLogging();
-  
-  /** Log message to file */
-  void LogFile(string logmsg);
+    /** Get the current time/date stamp */
+    void GetTimeStamp ( stringstream& timestamp, stringstream& datestamp );
 
-  /** Log message to terminal */
-  void LogTerminal(string logmsg);
+  private:
 
-  /** Log message to log viewer */
-  void LogViewer(string logmsg);
+    /** Default constructor (called by the Instance() function */
+    PhosDcsLogging();
 
-  /** Pointer to the logging instance */
-  static PhosDcsLogging* fInstance;
+    /** Default destructor */
+    ~PhosDcsLogging();
 
-  /** The log level for the log file */
-  unsigned int fFileLogLevel;
+    /** Log message to file */
+    void LogFile ( string logmsg );
 
-  /** The log level for the terminal */
-  unsigned int fTerminalLogLevel;
+    /** Log message to terminal */
+    void LogTerminal ( string logmsg );
 
-  /** The log level for the log viewer */
-  unsigned int fLogViewerLevel;
-  
-  /** The stream to the log file */
-  ofstream fLogFile;
+    /** Log message to log viewer */
+    void LogViewer ( string logmsg );
 
-  /** The log viewer stream */
-  stringstream fLogViewerStringStream;
+    /** Pointer to the logging instance */
+    static PhosDcsLogging* fInstance;
 
-  /** Vector containing strings corresponding to the different log levels */
-  vector<string> fLogLevels;
+    /** The log level for the log file */
+    unsigned int fFileLogLevel;
 
-  /** Copy constructor - not implemented */
-  PhosDcsLogging(const PhosDcsLogging &);
+    /** The log level for the terminal */
+    unsigned int fTerminalLogLevel;
 
-  /** Assignment operator - not implemented */
-  PhosDcsLogging & operator = (const PhosDcsLogging);
+    /** The log level for the log viewer */
+    unsigned int fLogViewerLevel;
 
-}; 
+    /** The stream to the log file */
+    ofstream fLogFile;
+
+    /** The log viewer stream */
+    stringstream fLogViewerStringStream;
+
+    /** Vector containing strings corresponding to the different log levels */
+    vector<string> fLogLevels;
+
+    /** Copy constructor - not implemented */
+    PhosDcsLogging ( const PhosDcsLogging & );
+
+    /** Assignment operator - not implemented */
+    PhosDcsLogging & operator = ( const PhosDcsLogging );
+
+  };
 
 
-#endif 
+#endif

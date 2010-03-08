@@ -2,10 +2,10 @@
  * This file is property of and copyright by the Experimental Nuclear     *
  * Physics Group, Dep. of Physics                                         *
  * University of Oslo, Norway, 2006                                       *
- *                                                                        * 
+ *                                                                        *
  * Author: Per Thomas Hille perthi@fys.uio.no for the ALICE DCS Project.  *
  * Contributors are mentioned in the code where appropriate.              *
- * Please report bugs to perthi@fys.uio.no                                * 
+ * Please report bugs to perthi@fys.uio.no                                *
  *                                                                        *
  * Permission to use, copy, modify and distribute this software and its   *
  * documentation strictly for non-commercial purposes is hereby granted   *
@@ -25,14 +25,14 @@
 #include "PhosDcsLogging.h"
 
 
-PhosDetector::PhosDetector() : PhosDcsBase(), 
-			       fFeeClientPtr(0),
-			       fReadoutConfig() 
+PhosDetector::PhosDetector() : PhosDcsBase(),
+    fFeeClientPtr ( 0 ),
+    fReadoutConfig()
 {
   fFeeClientPtr = new PhosFeeClient();
-  for(int i=0; i<PHOS_MODS; i++)
+  for ( int i=0; i<PHOS_MODS; i++ )
     {
-      phosModulePtr[i]=new PhosModule(fFeeClientPtr, i);
+      phosModulePtr[i]=new PhosModule ( fFeeClientPtr, i );
     }
 }
 
@@ -43,149 +43,149 @@ PhosDetector::~PhosDetector()
 }
 
 
-PhosDetector::PhosDetector(PhosDetector const&): PhosDcsBase(), 
-						 fFeeClientPtr(0), 
-						 fReadoutConfig()  
+PhosDetector::PhosDetector ( PhosDetector const& ) : PhosDcsBase(),
+    fFeeClientPtr ( 0 ),
+    fReadoutConfig()
 {
 
 }
 
 
-void 
-PhosDetector::ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const
-{
-  phosModulePtr[modID]->ApplyApdSettings(rcuId, branch, card);
-}
+void
+PhosDetector::ApplyApdSettings ( const int modID, const int rcuId, const int branch, const int card ) const
+  {
+    phosModulePtr[modID]->ApplyApdSettings ( rcuId, branch, card );
+  }
 
 
-void 
-PhosDetector::DisArmTrigger(const int modId, const int  rcuId) const
-{
-  phosModulePtr[modId]->DisArmTrigger(rcuId);
-  stringstream log;
-  log << "PhosDetector::DisArmTrigger: Disarming trigger for " << phosModulePtr[modId]->GetFeeServerName(rcuId);
-  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
-}
-
-                                 
-const int
-PhosDetector::ArmTrigger() const
-{
-  int iRet = 1;
-  ScriptCompiler::MakeTriggerConfigScript("s_triggerconfig.txt", fReadoutConfig.GetTriggerMode(),  fReadoutConfig.GetAltroConfig());
-
-  for(int i=0; i<PHOS_MODS; i++)
-    {
-      int t = phosModulePtr[i]->ArmTrigger("s_triggerconfig.txt");
-      if( t<0 )
-	{
-	  iRet = -1;
-	}
-    }
-  return iRet;
-}
+void
+PhosDetector::DisArmTrigger ( const int modId, const int  rcuId ) const
+  {
+    phosModulePtr[modId]->DisArmTrigger ( rcuId );
+    stringstream log;
+    log << "PhosDetector::DisArmTrigger: Disarming trigger for " << phosModulePtr[modId]->GetFeeServerName ( rcuId );
+    PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
+  }
 
 
 const int
-PhosDetector::ArmTrigger(const int moduleId) const
-{
-  ScriptCompiler::MakeTriggerConfigScript("s_triggerconfig.txt",fReadoutConfig.GetTriggerMode(), fReadoutConfig.GetAltroConfig());
-  phosModulePtr[moduleId]->ArmTrigger("s_triggerconfig.txt");
-}
+PhosDetector::ArmTrigger() const
+  {
+    int iRet = 1;
+    ScriptCompiler::MakeTriggerConfigScript ( "s_triggerconfig.txt", fReadoutConfig.GetTriggerMode(),  fReadoutConfig.GetAltroConfig() );
+
+    for ( int i=0; i<PHOS_MODS; i++ )
+      {
+        int t = phosModulePtr[i]->ArmTrigger ( "s_triggerconfig.txt" );
+        if ( t<0 )
+          {
+            iRet = -1;
+          }
+      }
+    return iRet;
+  }
 
 
-void 
-PhosDetector::SetReadoutConfig(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig) 
+const int
+PhosDetector::ArmTrigger ( const int moduleId ) const
+  {
+    ScriptCompiler::MakeTriggerConfigScript ( "s_triggerconfig.txt",fReadoutConfig.GetTriggerMode(), fReadoutConfig.GetAltroConfig() );
+    phosModulePtr[moduleId]->ArmTrigger ( "s_triggerconfig.txt" );
+  }
+
+
+void
+PhosDetector::SetReadoutConfig ( const ModNumber_t modID,  const ReadoutConfig_t rdoConfig )
 {
-  phosModulePtr[modID.GetIntValue()]->SetReadoutConfig(rdoConfig);
-  fReadoutConfig = rdoConfig; 
+  phosModulePtr[modID.GetIntValue() ]->SetReadoutConfig ( rdoConfig );
+  fReadoutConfig = rdoConfig;
 }
 
 void
-PhosDetector::SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings)
+PhosDetector::SetReadoutSettings ( const ModNumber_t modId, const ReadoutSettings_t rdoSettings )
 {
-  phosModulePtr[modId.GetIntValue()]->SetReadoutSettings(rdoSettings);
+  phosModulePtr[modId.GetIntValue() ]->SetReadoutSettings ( rdoSettings );
 }
 
 void
-PhosDetector::SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion) 
+PhosDetector::SetReadoutRegion ( const ModNumber_t modId, const ReadoutRegion_t rdoRegion )
 {
   fReadoutRegion = rdoRegion;
-  phosModulePtr[modId.GetIntValue()]->SetReadoutRegion(rdoRegion);
+  phosModulePtr[modId.GetIntValue() ]->SetReadoutRegion ( rdoRegion );
 }
 
 int
-PhosDetector::ApplyReadoutRegisters(const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters)
+PhosDetector::ApplyReadoutRegisters ( const ModNumber_t modID, const ReadoutRegisters_t readoutRegisters )
 {
-  int res = phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegisters(readoutRegisters);
+  int res = phosModulePtr[modID.GetIntValue() ]->ApplyReadoutRegisters ( readoutRegisters );
   fReadoutRegisters = readoutRegisters;
   return res;
 }
 
 int
-PhosDetector::ApplyReadoutRegisters(const ModNumber_t modID) const
-{
-  int res = phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegisters();
-  return res;
-}
+PhosDetector::ApplyReadoutRegisters ( const ModNumber_t modID ) const
+  {
+    int res = phosModulePtr[modID.GetIntValue() ]->ApplyReadoutRegisters();
+    return res;
+  }
 
 int
-PhosDetector::ApplyReadoutRegion(const ModNumber_t modID) const
-{
-  int res = phosModulePtr[modID.GetIntValue()]->ApplyReadoutRegion(fReadoutRegion);
-  return res;
-}
+PhosDetector::ApplyReadoutRegion ( const ModNumber_t modID ) const
+  {
+    int res = phosModulePtr[modID.GetIntValue() ]->ApplyReadoutRegion ( fReadoutRegion );
+    return res;
+  }
 
 int
-PhosDetector::StartFeeClient(const ModNumber_t modID) const
-{
-  //  phosModulePtr[modID.GetIntValue()]->StartFeeClient();
-  return 10; //TODO: fix this value (whatever it should be...)
-}
+PhosDetector::StartFeeClient ( const ModNumber_t modID ) const
+  {
+    //  phosModulePtr[modID.GetIntValue()]->StartFeeClient();
+    return 10; //TODO: fix this value (whatever it should be...)
+  }
 
 int
 PhosDetector::StopFeeClient() const
-{
-  return fFeeClientPtr->stopFeeClient();
-}
+  {
+    return fFeeClientPtr->stopFeeClient();
+  }
 
 void
-PhosDetector::SetPhosBit(const int moduleId) const
-{
-  char tmpFileName[1024];
-  //  sprintf(tmpFileName, "%s/s_setphosbit.txt", fPhosDcsScriptDir);
-  sprintf(tmpFileName, "s_setphosbit.txt");
+PhosDetector::SetPhosBit ( const int moduleId ) const
+  {
+    char tmpFileName[1024];
+    //  sprintf(tmpFileName, "%s/s_setphosbit.txt", fPhosDcsScriptDir);
+    sprintf ( tmpFileName, "s_setphosbit.txt" );
 
-  phosModulePtr[moduleId]->ExecuteScript(tmpFileName);
-}
+    phosModulePtr[moduleId]->ExecuteScript ( tmpFileName );
+  }
 
 
 Rcu*
-PhosDetector::GetRcuPtr(const int module, const int rcu) const
-{
-  if(phosModulePtr[module]->GetRcuPtr(rcu)) return phosModulePtr[module]->GetRcuPtr(rcu);
-  return 0;
-}
+PhosDetector::GetRcuPtr ( const int module, const int rcu ) const
+  {
+    if ( phosModulePtr[module]->GetRcuPtr ( rcu ) ) return phosModulePtr[module]->GetRcuPtr ( rcu );
+    return 0;
+  }
 
 
 PhosFeeClient*
 PhosDetector::GetFeeClientPointer() const
-{
-  return  fFeeClientPtr;
-}
+  {
+    return  fFeeClientPtr;
+  }
 
 
 PhosModule*
-PhosDetector::GetModulePtr(const int i) const
-{
-  return phosModulePtr[i]; 
-}
+PhosDetector::GetModulePtr ( const int i ) const
+  {
+    return phosModulePtr[i];
+  }
 
 
 void
 PhosDetector::LoadApdValues()
 {
-  for(int i = 0; i<PHOS_MODS; i++)
+  for ( int i = 0; i<PHOS_MODS; i++ )
     {
       phosModulePtr[i]->LoadApdValues();
     }
@@ -193,18 +193,18 @@ PhosDetector::LoadApdValues()
 
 
 void
-PhosDetector::SetAllApds(const int Value)
+PhosDetector::SetAllApds ( const int Value )
 {
-  for(int i = 0; i<PHOS_MODS; i++)
+  for ( int i = 0; i<PHOS_MODS; i++ )
     {
-      phosModulePtr[i]->SetAllApds(Value);
+      phosModulePtr[i]->SetAllApds ( Value );
     }
 }
 
-int  
-PhosDetector::Reset(const ModNumber_t modId)
+int
+PhosDetector::Reset ( const ModNumber_t modId )
 {
-  phosModulePtr[modId.GetIntValue()]->Reset();
+  phosModulePtr[modId.GetIntValue() ]->Reset();
   int res = 0;
   return res;
 }

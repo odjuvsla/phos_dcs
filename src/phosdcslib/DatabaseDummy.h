@@ -7,10 +7,10 @@
  * This file is property of and copyright by the Experimental Nuclear     *
  * Physics Group, Dep. of Physics                                         *
  * University of Oslo, Norway, 2006                                       *
- *                                                                        * 
+ *                                                                        *
  * Author: Per Thomas Hille perthi@fys.uio.no for the ALICE DCS Project.  *
  * Contributors are mentioned in the code where appropriate.              *
- * Please report bugs to perthi@fys.uio.no                                * 
+ * Please report bugs to perthi@fys.uio.no                                *
  *                                                                        *
  * Permission to use, copy, modify and distribute this software and its   *
  * documentation strictly for non-commercial purposes is hereby granted   *
@@ -29,27 +29,27 @@ struct ConfigInfo_t;
 
 
 class DatabaseDummy : public PhosDcsBase
-{
+  {
 
- public:
-  DatabaseDummy();
-  virtual ~DatabaseDummy();
+  public:
+    DatabaseDummy();
+    virtual ~DatabaseDummy();
 
-  int LoadApdConfig(ConfigInfo_t &info, int = -1);
-  int LoadApdConfig(char *description);
-  int LoadApdConfig(char *description, int id);
-  int SaveApdConfig(char *description);
-  void SaveReadoutConfiguration(const ReadoutConfig_t rdoConfig, const ModNumber_t modNumber) const;
-  void LoadReadoutConfiguration(ReadoutConfig_t *rdoConfig, const ModNumber_t modnumber_t) const;
+    int LoadApdConfig ( ConfigInfo_t &info, int = -1 );
+    int LoadApdConfig ( char *description );
+    int LoadApdConfig ( char *description, int id );
+    int SaveApdConfig ( char *description );
+    void SaveReadoutConfiguration ( const ReadoutConfig_t rdoConfig, const ModNumber_t modNumber ) const;
+    void LoadReadoutConfiguration ( ReadoutConfig_t *rdoConfig, const ModNumber_t modnumber_t ) const;
 
-  void SaveTruSettings(const TRUSettings_t t) const;
-  void LoadTruSettings(TRUSettings_t *t)const;
+    void SaveTruSettings ( const TRUSettings_t t ) const;
+    void LoadTruSettings ( TRUSettings_t *t ) const;
 
-  bool  GetConfigComment(char *description, int id);
-  std::string GetConfigComment(int id);
-  const int GetLatestConfigId() const;
- private:
-  void SetPostfix(char *postfix, const int id) const;
-};
+    bool  GetConfigComment ( char *description, int id );
+    std::string GetConfigComment ( int id );
+    const int GetLatestConfigId() const;
+  private:
+    void SetPostfix ( char *postfix, const int id ) const;
+  };
 
 #endif

@@ -21,10 +21,10 @@
 
 
 class  PatternGenerator
-{
- public:
-  PatternGenerator();
-  virtual ~PatternGenerator();
-};
+  {
+  public:
+    PatternGenerator();
+    virtual ~PatternGenerator();
+  };
 
 #endif

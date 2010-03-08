@@ -9,8 +9,8 @@
 */
 
 namespace AltroRegisterMap
-{
-                     //name        address         width  access   Broadcast   Description
+  {
+  //name        address         width  access   Broadcast   Description
   /*************************/
   /* Per Channel Registers */
   /*************************/
@@ -26,7 +26,7 @@ namespace AltroRegisterMap
   const unsigned long  VPD        = 10;      //    10     R                    Self calibrated variable pedestal
   const unsigned long  FPD        = 0;       //    10     R/W                  Fixed  pedestal
   /*VFPED end*/
-  
+
   const unsigned long  PMDTA      = 0x7;     //    10     R/W      Y           Ped. Mem. Data for a given address
   const unsigned long  ADEVL      = 0x11;    //    16     R        N/A         Chip Address + Event Length
 
@@ -38,16 +38,16 @@ namespace AltroRegisterMap
   const unsigned long  OFFSET      = 10;     //    10     R/W      Y           Offest to be added to the signal
   const unsigned long  Z_THR       = 0;      //    10     R/W      Y           Zero supression treshold
   /*ZSTHR end*/
-  
-  /*BCTHR*/ 
+
+  /*BCTHR*/
   const unsigned long  BCTHR       = 0x9;    //    20     R/W      Y           Threshold HI + Threshold LO (MAU)
   const unsigned long  THR_LO      = 10;     //    10     R/W      Y           Upper treshold of acceptance window
   const unsigned long  THR_HI      = 0;      //    10     R/W      Y           Upper treshold of acceptance window
-  /*BCTHR end*/ 
+  /*BCTHR end*/
 
   /*  TRCFG  */
   const unsigned long  TRCFG       = 0xA;    //    20     R/W      Y           Trigger Delay + N. Samples/Event
-  const unsigned long  ACQ_START   = 10;     //           R/W      Y           Number of cycles to wait before acquisition starts 
+  const unsigned long  ACQ_START   = 10;     //           R/W      Y           Number of cycles to wait before acquisition starts
   const unsigned long  ACQ_END     = 0;      //           R/W      Y           Number of cycles elapsed from trigger to acquisition end//
   /*  TRCFG end */
 
@@ -59,7 +59,7 @@ namespace AltroRegisterMap
   /*                   of spurious signals from the input-signal values. The subtracted signal can be */
   /*                   fixed (fixed subtraction mode), time-dependent (time-dependent subtraction */
   /*                   mode) or self-calibrated (self-calibrated subtraction mode). */
-  /*                   
+  /*
   /*                   In fixed-subtraction mode, the value to be subtracted from the input */
   /*                   signal is constant and stored in a configuration register. */
   /*
@@ -67,7 +67,7 @@ namespace AltroRegisterMap
   /*                   values to be subtracted are stored in a memory (pedestal memory) that, */
   /*                   in this configuration, is addressed by a time counter started by the */
   /*                   trigger signal. */
-  /* 
+  /*
   /*                   In self-calibrated subtraction mode, the value to be subtracted is */
   /*                   computed as cumulative average (self calibrated pedestal) of the */
   /*                   input signal outside the processing time window: */
@@ -82,12 +82,12 @@ namespace AltroRegisterMap
   /*                   input. The output values yn are stored in the baseline memory addressed, in this */
   /*                   case, by the input values xn. The conversion mode can work concurrently to the */
   /*                   self-calibrated subtraction mode and to the fixed subtraction mode. */
-  /**/ 
+  /**/
   /* Test mode.        The LUT can be used to generate a pattern to be injected into the */
   /*                   processing chain for test purposes. On this test pattern, which is replacing the */
   /*                   input signal samples, can be performed the subtraction of a constant value. In */
   /*                   the latter case the pattern generated is a stream of zeros. */
-  /*                   Finally, the BC1 circuit provide also the possibility of inverting the input signal polarity (1’¡Çs */
+  /*                   Finally, the BC1 circuit provide also the possibility of inverting the input signal polarity (1ï¿½ï¿½ï¿½s */
   /*                   complement). The pedestal memory is accessible, in write and read mode, throughout */
   /*                   three registers. */
   /*************************************************************************************************************************************/
@@ -95,12 +95,12 @@ namespace AltroRegisterMap
   /* Subtraction     |  Fixed           |    X    |         |    X       |             |      X      |        X        |               */
   /* Mode            |  Time-dependent  |         |   X     |            |       X     |             |                 |       X       */
   /*                 |  Self-calibrated |         |         |    X       |       X     |             |        X        |               */
-  /*************************************************************************************************************************************/ 
+  /*************************************************************************************************************************************/
   /*  Conversion Mode|                  |         |         |            |             |      X      |        X        |               */
   /*************************************************************************************************************************************/
   /*  Test Mode      |                  |         |         |            |             |             |                 |       X       */
   /*************************************************************************************************************************************/
-  /*  din     =  data input samples*/ 
+  /*  din     =  data input samples*/
   /*  fpd     =  fixed pedestal data value*/
   /*  f(t)    =  time dependent LUT (Look Up Table) data */
   /*  scp     =  self calibrated pedestal data value */
@@ -131,26 +131,26 @@ namespace AltroRegisterMap
   /*      11      din - f(din - vpd)          */
   /********************************************/
   const unsigned long  DPCFG       = 0xB;    //    20     R/W      Y           ZSU + MAU + BSU configuration
-  const unsigned long  BC1_CFG     = 0;      //     5     R/W      Y           3..0  First Baseline Correction Mode  
- 
-                                            //                                Polarity. When set, the ADC data is inverted (1’¡Çs C)
+  const unsigned long  BC1_CFG     = 0;      //     5     R/W      Y           3..0  First Baseline Correction Mode
+
+  //                                Polarity. When set, the ADC data is inverted (1ï¿½ï¿½ï¿½s C)
   const unsigned long  BC2_CFG     = 5;      //     7                          6..5  Number of Presamples excluded from 2 Baseline Correction
-                                             //                                10..7 Number of Postsamples excluded from 2 Baseline Correction 
-                                             //                                11   Enable Second Baseline Correction                            
-  const unsigned long  ZS_CFG      = 12;     //     8                          13..12 Glitch Filter Configuration for Zero Suppression 
-                                             //                                16..14 Number of Postsamples excluded from suppression              
-                                             //                                18..17 Number of Presamples excluded from suppression              
-                                             //                                19   Enable Zero Suppression                                      
- /* DPCFG end  */
+  //                                10..7 Number of Postsamples excluded from 2 Baseline Correction
+  //                                11   Enable Second Baseline Correction
+  const unsigned long  ZS_CFG      = 12;     //     8                          13..12 Glitch Filter Configuration for Zero Suppression
+  //                                16..14 Number of Postsamples excluded from suppression
+  //                                18..17 Number of Presamples excluded from suppression
+  //                                19   Enable Zero Suppression
+  /* DPCFG end  */
 
   /* BFNPT */
-  const unsigned long  DPCFG2      = 0xC;    //                                Filter Enable + Buffer. N. + Pre-trigger                             
-  const unsigned long  PTRG        = 0;      //                                Number of Pretrigger Samples        
+  const unsigned long  DPCFG2      = 0xC;    //                                Filter Enable + Buffer. N. + Pre-trigger
+  const unsigned long  PTRG        = 0;      //                                Number of Pretrigger Samples
   const unsigned long  NBUF        = 4;      //                                Number of Buffers in Data Memory (4 / 8)
-  const unsigned long  FLT_EN      = 5;      //                                Enable the Digital Filter               
+  const unsigned long  FLT_EN      = 5;      //                                Enable the Digital Filter
   const unsigned long  PWSV        = 6;      //                                Power Save. When set, stops data processing outside trigger windows.
   /* BFNPT DPCFG2 end  */
-  
+
   const unsigned long  ERSTR       = 0x10;   //    20     R        N/A         Error + Status Register
   const unsigned long  TRCNT       = 0x12;   //    16     R        N/A         Trigger Counter
   const unsigned long  PMADD       = 0xD;    //    10     R/W      Y           Pedestal Memory Address

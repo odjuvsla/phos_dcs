@@ -30,53 +30,54 @@ AltroConfiguration::~AltroConfiguration()
 
 }
 
-const unsigned long 
+const unsigned long
 AltroConfiguration::GetNPreSamples() const
-{
+  {
 
-}
+  }
 
-const unsigned long 
-AltroConfiguration:  GetNSamples() const
-{
+const unsigned long
+AltroConfiguration:
+GetNSamples() const
+  {
 
-}
+  }
 
-const unsigned long 
+const unsigned long
 AltroConfiguration::GetZeropSupressionTreshold() const
-{
+  {
 
-}
-  
-const unsigned long 
+  }
+
+const unsigned long
 AltroConfiguration::GetDataPath() const
+  {
+
+  }
+
+void
+AltroConfiguration::SetNPreSamples ( const unsigned long npresamples )
 {
 
 }
-  
-void 
-AltroConfiguration::SetNPreSamples(const unsigned long npresamples)
-{
-
-}
 
 
-void 
+void
 AltroConfiguration::SetNSamples()
 {
 
 }
 
 
-void 
-AltroConfiguration::SetZeropSupressionTreshold(const unsigned long nsamples)
+void
+AltroConfiguration::SetZeropSupressionTreshold ( const unsigned long nsamples )
 {
 
-}  
+}
 
 
-void 
-AltroConfiguration::SetRaedoutMode(const unsigned long mod)
+void
+AltroConfiguration::SetRaedoutMode ( const unsigned long mod )
 {
 
 }

@@ -5,10 +5,10 @@
  * This file is property of and copyright by the Experimental Nuclear     *
  * Physics Group, Dep. of Physics                                         *
  * University of Oslo, Norway, 2006                                       *
- *                                                                        * 
+ *                                                                        *
  * Author: Per Thomas Hille perthi@fys.uio.no for the ALICE DCS Project.  *
  * Contributors are mentioned in the code where appropriate.              *
- * Please report bugs to perthi@fys.uio.no                                * 
+ * Please report bugs to perthi@fys.uio.no                                *
  *                                                                        *
  * Permission to use, copy, modify and distribute this software and its   *
  * documentation strictly for non-commercial purposes is hereby granted   *
@@ -22,13 +22,13 @@
 
 
 /* The mapping between the crystals  and the adress for the
- corresponding CSP on the board controller is given 
+ corresponding CSP on the board controller is given
 below. The crystals is numbered concecutively starting from
-the upper left corner of a 2x16 matrix for convinient handling 
+the upper left corner of a 2x16 matrix for convinient handling
 in ROOT. The numbering is sown below as seen from the front.
-The corresponding CSP and BC adresses matrixes are shown to the 
+The corresponding CSP and BC adresses matrixes are shown to the
 right for convienience. The mapping is done both with respect
-to the CSPs and with respect to the crystals (the latter is in 
+to the CSPs and with respect to the crystals (the latter is in
 principle redundant)
 
 Mapping as seen from the back (from the electronics)
@@ -39,7 +39,7 @@ of crystals   |     CSP/APDs          |   Controller adresses
 0     1       |     CSP 0    CSP 16   |   0x48    0x47
 2     3       |     CSP 1    CSP 17   |   0x49    0x46
 4     5       |     CSP 2    CSP 18   |   0x4A    0x45
-6     7       |     CSP 3    CSP 19   |   0x4B    0x44 
+6     7       |     CSP 3    CSP 19   |   0x4B    0x44
 8     9       |     CSP 4    CSP 20   |   0x4C    0x43
 10    11      |     CSP 5    CSP 21   |   0x4D    0x42
 12    13      |     CSP 6    CSP 22   |   0x4E    0x41
@@ -73,9 +73,9 @@ of crystals   |     CSP/APDs          |   Controller adresses
 //  * Mnemnoics for RCU_FW2
 //  */
 
-// #define FEC_RD   0 
+// #define FEC_RD   0
 
-// //#define FEC_RD   0xf 
+// //#define FEC_RD   0xf
 
 // #define FEC_CMD  1
 // #define FEC_WR   2
@@ -84,13 +84,13 @@ of crystals   |     CSP/APDs          |   Controller adresses
 // #define OTHER_CMD 0xf
 
 
-// #define CMD_TYPE        20   //20=Position of the Commmand type LS bit 
+// #define CMD_TYPE        20   //20=Position of the Commmand type LS bit
 // //#define RW              21   //21=Position of the RW bit, Write=1, Read=0
 // //#define POS             20   //20=Position of the position bit 0=most sign. 20 bit, 1=least sign. 20 bits
 // #define PAR             19   //19=Position of the parity but
-// #define BCAST           18   //18=Position of the broadcast register bit. Broadacst=1, no broadcast=0 (ms 20 bits) 
+// #define BCAST           18   //18=Position of the broadcast register bit. Broadacst=1, no broadcast=0 (ms 20 bits)
 // #define BC_AL           17   //17=Position of command type bit. Boarcontroller=1, Altro=0
-// #define BRANCH          16   //Branch A=0, Branch B=1 
+// #define BRANCH          16   //Branch A=0, Branch B=1
 //#define FAD             12   //Poistion of least significant bit of FEE adress register (most significant 20 bits)
 
 //#define REGAD           9     //Position of least significant bit of CSP adress register (most significant 20 bits)
@@ -98,11 +98,11 @@ of crystals   |     CSP/APDs          |   Controller adresses
 // #define REGAD           8     //Position of least significant bit of CSP adress register (most significant 20 bits)
 
 // #define CAD             5    //Position of least significant bit of CSP adress register (most significant 20 bits)
-// #define CSPVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)  
+// #define CSPVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)
 
 //   //#define REGAD           0    //Position of least significant bit of CSP adress register (most significant 20 bits)
 //   //#define REGAD           9     //Position of least significant bit of CSP adress register (most significant 20 bits)
-// #define REGVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)  
+// #define REGVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)
 
 
 /*
@@ -110,14 +110,14 @@ of crystals   |     CSP/APDs          |   Controller adresses
 #define RW              21   //21=Position of the RW bit, Write=1, Read=0
 #define POS             20   //20=Position of the position bit 0=most sign. 20 bit, 1=least sign. 20 bits
 #define PAR             19   //19=Position of the parity but (most significant 20 bits)
-#define BCAST           18   //18=Position of the broadcast register. Broadacst=1, no broadcast=0 (ms 20 bits) 
+#define BCAST           18   //18=Position of the broadcast register. Broadacst=1, no broadcast=0 (ms 20 bits)
 #define BC_AL           17   //17=Position of command type bit. Boarcontroller=1, Altro=0
-#define BRANCH          16   //Branch A=0, Branch B=1 
+#define BRANCH          16   //Branch A=0, Branch B=1
 #define FAD             12   //Poistion of least significant bit of FEE adress register (most significant 20 bits)
 #define CAD             0    //Position of least significant bit of CSP adress register (most significant 20 bits)
-#define CSPVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)  
+#define CSPVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)
 #define REGAD           0    //Position of least significant bit of CSP adress register (most significant 20 bits)
-#define REGVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)  
+#define REGVAL          0    //Position of least significant bit of CSP value  register (least significant 20 bits)
 */
 
 
@@ -132,76 +132,76 @@ using std::vector;
 
 
 class ScriptCompiler : public PhosDcsBase
-{
- public:
-  ScriptCompiler();
+  {
+  public:
+    ScriptCompiler();
 
-  /** changed for RCU_fw2 (maybe incomplete/incorrect) */
-  static void MakeActivateFeeScript(const char *scriptFilename, const unsigned long activeFeeList, 
-				    const unsigned long branch, const unsigned long card, const int onOff);
+    /** changed for RCU_fw2 (maybe incomplete/incorrect) */
+    static void MakeActivateFeeScript ( const char *scriptFilename, const unsigned long activeFeeList,
+                                        const unsigned long branch, const unsigned long card, const int onOff );
 
-  /** changed for RCU_fw2 (maybe incomplete/incorrect) */
-  static void MakeActivateTruScript(const char *scriptFilename, const unsigned long activeFeeList);
+    /** changed for RCU_fw2 (maybe incomplete/incorrect) */
+    static void MakeActivateTruScript ( const char *scriptFilename, const unsigned long activeFeeList );
 
-  /** changed for RCU_fw2 (maybe incomplete/incorrect) */
-  static void MakeDeActivateTruScript(const char *scriptFilename, const unsigned long activeFeeList);
-
-
-  /** changed for RCU_fw2 (maybe incomplete/incorrect) */
-  static void MakeTriggerConfigScript(const char *filename,  TriggerMode_t triggerMode, const AltroConfig_t altroconfig);   
-
-  void MakeWriteReadRegisterScript(const int registerType, const char *fileName, const unsigned long *reg, 
-				   const unsigned long *value, const bool *verify, const int N, const unsigned long branch = 0, 
-				   const unsigned long card = 0,  const unsigned long chip = 0, const unsigned long channel = 0, const bool setZeroes = true) const;
-
-  void MakeReadRegisterScript(const int registerType, const char *fileName, const unsigned long *reg, 
-			      const int N, const unsigned long branch = 0, const unsigned long card = 0,  
-			      const unsigned long chip = 0, const unsigned long channel = 0) const;
+    /** changed for RCU_fw2 (maybe incomplete/incorrect) */
+    static void MakeDeActivateTruScript ( const char *scriptFilename, const unsigned long activeFeeList );
 
 
-  /*
-   *@param registerType either altro or boradcontroller (BC)
-   *@param read if true its is a read command, if false it is a write command
-   */
+    /** changed for RCU_fw2 (maybe incomplete/incorrect) */
+    static void MakeTriggerConfigScript ( const char *filename,  TriggerMode_t triggerMode, const AltroConfig_t altroconfig );
 
-   /** changed for RCU_fw2 (maybe incomplete/incorrect) */
-  static unsigned long  MakeMS20Instruction(const int registerType, const bool read,
-					    const unsigned long reg, const unsigned long  branch = 0, 
-					    const unsigned long card = 0, const unsigned long chip = 0, const unsigned long channel = 0); 
+    void MakeWriteReadRegisterScript ( const int registerType, const char *fileName, const unsigned long *reg,
+                                       const unsigned long *value, const bool *verify, const int N, const unsigned long branch = 0,
+                                       const unsigned long card = 0,  const unsigned long chip = 0, const unsigned long channel = 0, const bool setZeroes = true ) const;
 
-
-  /*
-   * @param registerValue the value too write
-
-  /** changed for RCU_fw2 (maybe incomplete/incorrect) */
-  static unsigned long  MakeLS20Instruction(const bool read,  const unsigned long registerValue);
-  //static unsigned long  MakeLS20Instruction(const bool rw, const unsigned long pos, const unsigned long registerValue);
-
- private:
-  /** changed for RCU_fw2*/
-  void MakeWriteReadFeeRegisterScript(const int registerType, const char *fileName, const unsigned long *registers, 
-				      const unsigned long *values, const bool *verify, const int N, const unsigned long branch = 0, 
-				      const unsigned long card = 0,  const unsigned long chip = 0, const unsigned long channel = 0, 
-				      const bool setZeroes = true) const;
-
-  void MakeWriteReadRcuRegisterScript(const int registerType, const char *fileName, 
-				      const unsigned long *registers, const unsigned long *values, 
-				      const bool *verify, const int N, const bool setZeroes = true) const ;
-  
-  void MakeReadFeeRegisterScript(const int registerType, const char *fileName, const unsigned long *registers, 
-				 const int N, const unsigned long  branch = 0, const unsigned long card = 0,
-				 const unsigned long chip = 0, const unsigned long channel = 0) const ;
- 
-  void MakeReadRcuRegisterScript(const int registerType, const char *fileName,  unsigned long basAddress, int N) const;
-  
-  
-  void MakeG2PatternScript();
-  void MakeRampPatternScript();
-  void MakeSawtoothPatternScript();
+    void MakeReadRegisterScript ( const int registerType, const char *fileName, const unsigned long *reg,
+                                  const int N, const unsigned long branch = 0, const unsigned long card = 0,
+                                  const unsigned long chip = 0, const unsigned long channel = 0 ) const;
 
 
+    /*
+     *@param registerType either altro or boradcontroller (BC)
+     *@param read if true its is a read command, if false it is a write command
+     */
 
-};
+    /** changed for RCU_fw2 (maybe incomplete/incorrect) */
+    static unsigned long  MakeMS20Instruction ( const int registerType, const bool read,
+        const unsigned long reg, const unsigned long  branch = 0,
+        const unsigned long card = 0, const unsigned long chip = 0, const unsigned long channel = 0 );
+
+
+    /*
+     * @param registerValue the value too write
+
+    /** changed for RCU_fw2 (maybe incomplete/incorrect) */
+    static unsigned long  MakeLS20Instruction ( const bool read,  const unsigned long registerValue );
+    //static unsigned long  MakeLS20Instruction(const bool rw, const unsigned long pos, const unsigned long registerValue);
+
+  private:
+    /** changed for RCU_fw2*/
+    void MakeWriteReadFeeRegisterScript ( const int registerType, const char *fileName, const unsigned long *registers,
+                                          const unsigned long *values, const bool *verify, const int N, const unsigned long branch = 0,
+                                          const unsigned long card = 0,  const unsigned long chip = 0, const unsigned long channel = 0,
+                                          const bool setZeroes = true ) const;
+
+    void MakeWriteReadRcuRegisterScript ( const int registerType, const char *fileName,
+                                          const unsigned long *registers, const unsigned long *values,
+                                          const bool *verify, const int N, const bool setZeroes = true ) const ;
+
+    void MakeReadFeeRegisterScript ( const int registerType, const char *fileName, const unsigned long *registers,
+                                     const int N, const unsigned long  branch = 0, const unsigned long card = 0,
+                                     const unsigned long chip = 0, const unsigned long channel = 0 ) const ;
+
+    void MakeReadRcuRegisterScript ( const int registerType, const char *fileName,  unsigned long basAddress, int N ) const;
+
+
+    void MakeG2PatternScript();
+    void MakeRampPatternScript();
+    void MakeSawtoothPatternScript();
+
+
+
+  };
 
 
 #endif

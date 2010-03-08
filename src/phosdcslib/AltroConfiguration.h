@@ -22,24 +22,24 @@
 
 
 class  AltroConfiguration
-{
- public:
-  AltroConfiguration();
-  virtual ~AltroConfiguration();
-  const unsigned long GetNPreSamples() const;
-  const unsigned long GetNSamples() const; 
-  const unsigned long GetZeropSupressionTreshold() const;  
-  const unsigned long GetDataPath() const;  
-  void SetNPreSamples(const unsigned long npresamples);
-  void SetNSamples(); 
-  void SetZeropSupressionTreshold(const unsigned long nsamples);  
-  void SetRaedoutMode(const unsigned long mod);  
+  {
+  public:
+    AltroConfiguration();
+    virtual ~AltroConfiguration();
+    const unsigned long GetNPreSamples() const;
+    const unsigned long GetNSamples() const;
+    const unsigned long GetZeropSupressionTreshold() const;
+    const unsigned long GetDataPath() const;
+    void SetNPreSamples ( const unsigned long npresamples );
+    void SetNSamples();
+    void SetZeropSupressionTreshold ( const unsigned long nsamples );
+    void SetRaedoutMode ( const unsigned long mod );
 
- private:
-  unsigned long fNPresSamples;
-  unsigned long fNSamples;
-  unsigned long fZeropSupressionTreshold;
-  unsigned long fDataPath;
-};
+  private:
+    unsigned long fNPresSamples;
+    unsigned long fNSamples;
+    unsigned long fZeropSupressionTreshold;
+    unsigned long fDataPath;
+  };
 
 #endif

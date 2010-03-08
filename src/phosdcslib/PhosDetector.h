@@ -5,10 +5,10 @@
  * This file is property of and copyright by the Experimental Nuclear     *
  * Physics Group, Dep. of Physics                                         *
  * University of Oslo, Norway, 2006                                       *
- *                                                                        * 
+ *                                                                        *
  * Author: Per Thomas Hille perthi@fys.uio.no for the ALICE DCS Project.  *
  * Contributors are mentioned in the code where appropriate.              *
- * Please report bugs to perthi@fys.uio.no                                * 
+ * Please report bugs to perthi@fys.uio.no                                *
  *                                                                        *
  * Permission to use, copy, modify and distribute this software and its   *
  * documentation strictly for non-commercial purposes is hereby granted   *
@@ -30,40 +30,43 @@ class PhosFeeClient;
 
 
 class PhosDetector : public PhosDcsBase
-{
- public:
-  PhosDetector();
-  ~PhosDetector();
-  PhosModule *phosModulePtr[PHOS_MODS];
-  PhosFeeClient* GetFeeClientPointer() const;
-  PhosModule* GetModulePtr(const int i) const; 
-  Rcu*  GetRcuPtr(const int modId, const int rcuId) const;
-  void DisArmTrigger(const int modId, const int rcuId) const;
-  void SetPhosBit(const int modId) const; 
-  //  int StartFeeClient() const; 
-  int StartFeeClient(ModNumber_t modID) const; 
-  int StopFeeClient() const; 
-  const int ArmTrigger() const;
-  const int ArmTrigger(const int moduleId) const;
-  void LoadApdValues();
-  void SetAllApds(const int value);
-  void SetReadoutConfig(const ModNumber_t modID, const ReadoutConfig_t rdoConfig);
-  void SetReadoutSettings(const ModNumber_t modId, const ReadoutSettings_t rdoSettings);
-  void SetReadoutRegion(const ModNumber_t modId, const ReadoutRegion_t rdoRegion);
-  int  ApplyReadoutRegisters(const ModNumber_t modID, ReadoutRegisters_t readoutRegisters); 
-  int  ApplyReadoutRegisters(const ModNumber_t modID) const;
-  int  ApplyReadoutRegion(const ModNumber_t modID) const;
-  void ApplyApdSettings(const int modID, const int rcuId, const int branch, const int card) const;
-  PhosFeeClient *fFeeClientPtr;
-  int             Reset(const ModNumber_t modId);
+  {
+  public:
+    PhosDetector();
+    ~PhosDetector();
+    PhosModule *phosModulePtr[PHOS_MODS];
+    PhosFeeClient* GetFeeClientPointer() const;
+    PhosModule* GetModulePtr ( const int i ) const;
+    Rcu*  GetRcuPtr ( const int modId, const int rcuId ) const;
+    void DisArmTrigger ( const int modId, const int rcuId ) const;
+    void SetPhosBit ( const int modId ) const;
+    //  int StartFeeClient() const;
+    int StartFeeClient ( ModNumber_t modID ) const;
+    int StopFeeClient() const;
+    const int ArmTrigger() const;
+    const int ArmTrigger ( const int moduleId ) const;
+    void LoadApdValues();
+    void SetAllApds ( const int value );
+    void SetReadoutConfig ( const ModNumber_t modID, const ReadoutConfig_t rdoConfig );
+    void SetReadoutSettings ( const ModNumber_t modId, const ReadoutSettings_t rdoSettings );
+    void SetReadoutRegion ( const ModNumber_t modId, const ReadoutRegion_t rdoRegion );
+    int  ApplyReadoutRegisters ( const ModNumber_t modID, ReadoutRegisters_t readoutRegisters );
+    int  ApplyReadoutRegisters ( const ModNumber_t modID ) const;
+    int  ApplyReadoutRegion ( const ModNumber_t modID ) const;
+    void ApplyApdSettings ( const int modID, const int rcuId, const int branch, const int card ) const;
+    PhosFeeClient *fFeeClientPtr;
+    int             Reset ( const ModNumber_t modId );
 
- private:
-  PhosDetector(const PhosDetector & );
-  PhosDetector & operator = (const PhosDetector &){return *this;}
-  ReadoutConfig_t fReadoutConfig; 
-  ReadoutRegisters_t fReadoutRegisters;
-  ReadoutRegion_t fReadoutRegion;
-};
+  private:
+    PhosDetector ( const PhosDetector & );
+    PhosDetector & operator = ( const PhosDetector & )
+    {
+      return *this;
+    }
+    ReadoutConfig_t fReadoutConfig;
+    ReadoutRegisters_t fReadoutRegisters;
+    ReadoutRegion_t fReadoutRegion;
+  };
 
 #endif
 
