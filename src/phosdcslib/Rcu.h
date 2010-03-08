@@ -75,7 +75,7 @@ class Rcu : public PhosDcsBase
   Rcu(); 
   Rcu(const Rcu & );
   Rcu & operator = (const Rcu &);
-  bool IsActiveFee(const int branch, const int card) const;
+  bool IsActiveFee(const int branch, const int card);
   void SetFeeServer(const char *name);
   FeeCard *fFeeCardPtr[MAX_CARDS_PER_RCU]; //each RCU has 28 Front end Cards
   char fFeeServerName[100];

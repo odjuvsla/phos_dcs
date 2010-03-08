@@ -647,6 +647,7 @@ Rcu::CheckFeeState(const int branch, const int cardNumber)
   unsigned long int tmpPcmversion;
   int tmpIndex = branch*CARDS_PER_BRANCH + cardNumber -1;
 
+  GetActiveFeeList();
 
   if(IsActiveFee(branch, cardNumber) == false)
     {
@@ -672,7 +673,8 @@ Rcu::CheckFeeState(const int branch, const int cardNumber)
 
 
 bool 
-Rcu::IsActiveFee(const int branch, const int card) const
+//Rcu::IsActiveFee(const int branch, const int card) const //FIXME: Stupid fix to get the correct FEC list
+Rcu::IsActiveFee(const int branch, const int card)
 {
   
   bool tmp;
@@ -681,6 +683,8 @@ Rcu::IsActiveFee(const int branch, const int card) const
   mask = mask << shift;
 
   stringstream log;
+
+  //GetActiveFeeList(); // Stupid fix
 
   log << "Rcu::IsActiveFee: mask = 0x"  << hex << mask << "  -  fActiveFeeList = 0x" << fActiveFeeList << dec;
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERY_VERBOSE);
@@ -707,11 +711,20 @@ Rcu::IsActiveFee(const int branch, const int card) const
 unsigned long 
 Rcu::GetActiveFeeList()
 {
-
+  
   unsigned long tmpAddr = RcuRegisterMap::AFL;
+
+  stringstream log;
 
   fFeeClientPtr->ReadRegisters(REGTYPE_RCU, fFeeServerName, &tmpAddr, &fActiveFeeList, 1); 
   usleep(1000); //FIXME, should put wait command in fee client
+  if(fActiveFeeList > 0x7fff7fff)
+    {
+      log.str("");
+      log << "Rcu::GetActiveFeeList: Bad Active FEE list read: "  << fActiveFeeList << ", retrying...";
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
+      GetActiveFeeList();
+    }
   return fActiveFeeList;
 }
 

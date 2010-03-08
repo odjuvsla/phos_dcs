@@ -277,6 +277,7 @@ public:
 private:
   
   short fNPreSamples; // 4 bits reserved
+  short fBaselineSubtractionMode; // 4 bits reserved
  
 };
 
