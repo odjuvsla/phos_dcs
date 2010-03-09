@@ -2,6 +2,7 @@
 #define PHOSDCSBASE_H
 
 #include "PhosConst.h"
+#include "DatabasePedestals.h"
 #include <typeinfo>
 #include <iostream>
 #include <stdio.h>
@@ -102,7 +103,13 @@ class PhosDcsBase
     // static char fPhosDcsLibDir[1024];
     //  static char fPhosDcsSourceDir[1024];
     //  static char fPhosDcsGuiDir[1024];
-
+    
+   protected:
+	
+	/** SVN database of the pedestal values */
+	DatabasePedestals fPedestalsDatabase;
+	
+	
   };
 
 #endif

@@ -16,6 +16,7 @@
  * provided "as is" without express or implied warranty.                  *
  **************************************************************************/
 
+#include "PedestalValues.h"
 #include "FeeCard.h"
 #include "Rcu.h"
 #include "ScriptCompiler.h"
@@ -838,4 +839,34 @@ int
 Rcu::StartFeeClient()
 {
   fFeeClientPtr->startFeeClient();
+}
+
+int Rcu::WriteFixedPedestalValues()
+{
+   if(fFeeClientPtr)
+   {
+      vector <unsigned long> peds = fPedestalsDatabase.GetPedestals(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
+      vector <unsigned long> hwAdds = fPedestalsDatabase.GetHWAddresses(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
+
+      ModNumber_t mod(fModuleId);
+      RcuNumber_t rcu(fRcuId);
+      PedestalValues pedvalues(mod, rcu);
+
+      pedvalues.SetPedestalValues(peds);
+      pedvalues.SetHWAddresses(hwAdds);
+      
+      vector<unsigned long> vals;
+      vector<unsigned long> addrs;
+      vector<bool> verify(vals.size(), false);
+      
+      pedvalues.GetInstructions(vals, addrs);
+
+      fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU_MEM, fFeeServerName, vals, addrs, verify);
+      
+      //fFeeClientPtr->WriteReadRegisters()
+   }
+   
+//    stringstream log;
+//       log << "Rcu::WriteFixedPedestalValues: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", FEC: #: " << card << " is not initialised";
+//       PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
 }

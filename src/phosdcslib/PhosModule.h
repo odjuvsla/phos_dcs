@@ -58,6 +58,11 @@ class PhosModule : public PhosDcsBase
     int**  fFeeState[RCUS_PER_MODULE];
 
     int StartFeeClient ( int rcuId );
+    /**
+    * Write the fixed pedestal values for this module
+    * @return 0 upon success
+    */
+    int WriteFixedPedestals();
 
   private:
     PhosModule();

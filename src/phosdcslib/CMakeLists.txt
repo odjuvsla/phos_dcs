@@ -7,13 +7,21 @@ FIND_PACKAGE(PythonLibs)
 
 SET(FEECLIENT $ENV{FEECLIENT})
 
-INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH} ${FEECLIENT})
+SET(SVNINC /usr/include/subversion-1/)
+SET(APRINC /usr/include/apr-1/)
+
+FIND_LIBRARY(FEELIB FeeClient FEECLIENT/lib)
+FIND_LIBRARY(DIMLIB dim FEECLIENT/lib)
+FIND_LIBRARY(SVNCPP svncpp)
+
+INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH} ${FEECLIENT} ${SVNINC} ${APRINC})
 
 SET(SRCS PhosDataTypes.cxx DcsInterface.cxx PhosFeeClient.cxx
-  PhosDcsBase.cxx PhosDetector.cxx PhosModule.cxx Rcu.cxx
+  PhosDcsBase.cxx PhosDetector.cxx PhosModule.cxx PedestalValues.cxx Rcu.cxx
   Mapper.cxx DatabaseDummy.cxx ScriptCompiler.cxx 
   BinaryCompiler.cxx FeeCard.cxx InstructionMaker.cxx 
-  PhosDcsLogging.cxx PhosRegisters.cxx)
+  PhosDcsLogging.cxx PhosRegisters.cxx Database.cpp 
+  DatabaseSVN.cxx DatabasePedestals.cpp)
 
 ADD_LIBRARY(PhosDcs SHARED ${SRCS})
 
@@ -25,8 +33,9 @@ SET_TARGET_PROPERTIES(
 
 SET(FEECLIENT $ENV{FEECLIENT})
 
-FIND_LIBRARY(FEELIB FeeClient FEECLIENT/lib)
-FIND_LIBRARY(DIMLIB dim FEECLIENT/lib)
+#FIND_LIBRARY(FEELIB FeeClient FEECLIENT/lib)
+#FIND_LIBRARY(DIMLIB dim FEECLIENT/lib)
+#FIND_LIBRARY(SVNCPP svncpp)
 
 SET(CMAKE_SWIG_FLAGS "")
 

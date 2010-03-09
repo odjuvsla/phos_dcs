@@ -22,6 +22,7 @@
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
 #include "PhosRegisters.h"
+#include "DatabasePedestals.h"
 
 class PhosModule;
 class Rcu;
@@ -57,6 +58,14 @@ class PhosDetector : public PhosDcsBase
     PhosFeeClient *fFeeClientPtr;
     int             Reset ( const ModNumber_t modId );
 
+    /** 
+    * Write fixed pedestal values to the specified module 
+    * @param modId is the module ID, number between 0 - 4
+    * @return 0 upon success
+    */
+    int WriteFixedPedestals(const ModNumber_t modId);
+   
+    
   private:
     PhosDetector ( const PhosDetector & );
     PhosDetector & operator = ( const PhosDetector & )

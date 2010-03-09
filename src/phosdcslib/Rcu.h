@@ -70,7 +70,13 @@ class Rcu : public PhosDcsBase
     FeeCard* GetFeeCardPtr ( const int index ) const;
 
     int StartFeeClient();
-
+    
+    /** 
+    * Write the fixed pedestal values to the ALTRO memory
+    * @return 0 upon success
+    */
+   int WriteFixedPedestalValues();
+   
   private:
     Rcu();
     Rcu ( const Rcu & );

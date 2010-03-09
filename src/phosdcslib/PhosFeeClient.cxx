@@ -67,6 +67,27 @@ PhosFeeClient::PhosFeeClient ( PhosFeeClient const& ) :  FeeSampleClient(), Phos
 }
 
 
+const int PhosFeeClient::WriteReadRegisters ( const int regtype, const char* feeServerName, std::vector< unsigned long > &regs, std::vector< unsigned long > &values, std::vector< bool > &verify, const int branch, const int card )
+{
+   const unsigned long *r = &(regs[0]);
+   const unsigned long *val = &(values[0]);
+
+   bool *tmpver = new bool[values.size()];
+   
+   for(int i = 0; i < values.size(); i++)
+   {
+      tmpver[i] = verify[i];
+   }
+   
+   const bool *ver = tmpver;
+   
+   const int b = branch;
+   const int c = card;
+   
+   WriteReadRegisters(regtype, feeServerName, r, val, ver, branch, card);
+   
+}
+
 const int
 PhosFeeClient::WriteReadRegisters ( const int regType, const char *feeServerName, const unsigned long *regs,
                                     const unsigned long *values, const bool *verify,

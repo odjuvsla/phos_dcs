@@ -299,7 +299,7 @@ PhosModule::ApplyReadoutRegisters() const
     RcuRDOMOD_t rdomod ( false, fReadoutSettings.IsSparseReadout(), false, fReadoutSettings.GetMEBMode() );
     RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
-    RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue() );
+    RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
 
     RcuL1LAT_t tmpLOneLat;
     RcuL1MSGLAT_t tmpLOneMsgLat;
@@ -392,4 +392,27 @@ PhosModule::StartFeeClient ( int rcuID )
       log << "PhosModule::StartFeeServer: Module #: " << fModuleId.GetIntValue() << " RCU #: " << rcuID << " is not connected";
       PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_WARNING );
     }
+}
+
+int PhosModule::WriteFixedPedestals()
+{
+   int res = -1;
+   for(int rcuID = 0; rcuID < RCUS_PER_MODULE; rcuID++)
+   {
+      if(fRcuPtr[rcuID])
+      {
+	 res = fRcuPtr[rcuID]->WriteFixedPedestalValues();
+	 if(res)
+	 {
+	    return res;
+	 }
+      }
+   }
+   if(res)
+   {
+      stringstream log;
+      log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", no RCUs connected";
+      PhosDcsLogging::Instance()->Logging (log.str(), LOG_LEVEL_WARNING );
+   }
+   return res;
 }

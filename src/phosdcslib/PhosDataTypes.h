@@ -688,13 +688,14 @@ class ReadoutSettings_t
         fZeroSuppressionOffset ( 0 ),
         fIsSparseReadout ( false ),
         fIsAutoBaselineSubtracted ( false ),
+        fIsFixedBaselineSubtracted (false),
         fMEBMode ( false )
     {
 
     }
 
     ReadoutSettings_t ( const NPreSamples_t npresamples, NSamples_t nsamples, bool isZS = false, short zsThreshold = 0,
-                        short zsOffset = 0, bool isSparse = false, bool isAutoBS = false, bool mebMode = false ) :
+                        short zsOffset = 0, bool isSparse = false, bool isAutoBS = false, bool isFixedBS = false, bool mebMode = false ) :
         fNPreSamples ( npresamples ),
         fNSamples ( nsamples ),
         fIsZeroSuppressed ( isZS ),
@@ -702,6 +703,7 @@ class ReadoutSettings_t
         fZeroSuppressionOffset ( zsOffset ),
         fIsSparseReadout ( isSparse ),
         fIsAutoBaselineSubtracted ( isAutoBS ),
+        fIsFixedBaselineSubtracted (isFixedBS),
         fMEBMode ( mebMode )
     {}
 
@@ -715,6 +717,7 @@ class ReadoutSettings_t
         fZeroSuppressionOffset ( v.GetZeroSuppressionOffset() ),
         fIsSparseReadout ( v.IsSparseReadout() ),
         fIsAutoBaselineSubtracted ( v.IsAutoBaselineSubtracted() ),
+        fIsFixedBaselineSubtracted ( v.IsFixedBaselineSubtracted() ),
         fMEBMode ( v.GetMEBMode() )
     {}
 
@@ -746,6 +749,10 @@ class ReadoutSettings_t
       {
         return fIsAutoBaselineSubtracted;
       }
+    bool IsFixedBaselineSubtracted() const
+      {
+        return fIsFixedBaselineSubtracted;
+      }
     bool GetMEBMode() const
       {
         return fMEBMode;
@@ -760,6 +767,7 @@ class ReadoutSettings_t
     short fZeroSuppressionOffset;
     bool fIsSparseReadout;
     bool fIsAutoBaselineSubtracted;
+    bool fIsFixedBaselineSubtracted;
     bool fMEBMode;
 
   };
@@ -851,6 +859,12 @@ struct FeeServer
 
 
 //class Pattern_t
+
+struct Register
+{
+   unsigned long int fValue;
+   unsigned long int fAddress;
+};
 
 
 #endif

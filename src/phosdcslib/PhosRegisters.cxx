@@ -69,11 +69,13 @@ void ReadoutRegisters_t::SetRcuALTROCFG ( RcuALTROCFG1_t altrocfg1, RcuALTROCFG2
   fAltroZSTHR.SetOffset ( altrocfg1.GetOffset() );
 
   fAltroDPCFG.SetZeroSuppressed ( altrocfg1.IsZeroSuppressionEnabled() );
-  fAltroDPCFG.SetAutomaticBaselineSubtraction ( altrocfg1.UsingAutomaticBaselineSubtraction() );
+  fAltroDPCFG.SetFirstBaselineCorrectionMode( altrocfg2.GetBaselineSubtractionMode() );
+  //fAltroDPCFG.SetAutomaticBaselineSubtraction ( altrocfg1.UsingAutomaticBaselineSubtraction() );
 
   fRcuALTROCFG2 = altrocfg2;
 
   fAltroDPCFG2.SetNPreSamples ( altrocfg2.GetNPreSamples() );
+  
 
 }
 
@@ -360,12 +362,14 @@ void RcuALTROCFG1_t::Print ( std::ostream& stream, std::string level )
 
 short RcuALTROCFG2_t::GetRegisterValue()
 {
-  return fNPreSamples & 0xf;
+  return (fNPreSamples & 0xf) << 4 |
+		 (fBaselineSubtractionMode & 0xf);
 }
 
 void RcuALTROCFG2_t::SetByRegisterValue ( short value )
 {
-  fNPreSamples = value & 0xf;
+  fNPreSamples = (value >> 4) & 0xf;
+  fBaselineSubtractionMode = value & 0xf;
 }
 
 void RcuALTROCFG2_t::Print ( std::ostream& stream, std::string level )
@@ -374,6 +378,7 @@ void RcuALTROCFG2_t::Print ( std::ostream& stream, std::string level )
   if ( level == std::string ( "V" ) )
     {
       stream << "\t Pre Samples\t: " << GetNPreSamples() << std::endl;
+      stream << "\t Baseline Mode\t: " << GetBaselineSubtractionMode() << std::endl;
     }
 }
 

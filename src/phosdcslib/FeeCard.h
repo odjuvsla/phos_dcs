@@ -46,7 +46,8 @@ class FeeCard : public PhosDcsBase
     int GetBranch();
     int GetCardNumber();
     int GetRcuId();
-
+   
+   
   private:
     FeeCard();
     int fApdBaseAddress;

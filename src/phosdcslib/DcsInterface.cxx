@@ -27,7 +27,7 @@
 #include "PhosDcsLogging.h"
 
 //DcsInterface::DcsInterface() : PhosDcsBase()
-DcsInterface::DcsInterface()
+DcsInterface::DcsInterface() : PhosDcsBase()
 {
   fPhosDetectorPtr = new PhosDetector();
 
@@ -650,6 +650,38 @@ int DcsInterface::ApplyScriptToFeeServer ( const char *feeServerName, const char
   sleep ( 10 );
   return 0;
 }
+
+
+int DcsInterface::WriteFixedPedestals ( const ModNumber_t modID, const int pedestalVersion )
+{
+   if(fPhosDetectorPtr)
+   {
+      fPedestalsDatabase.LoadValuesFromFile();
+      return fPhosDetectorPtr->WriteFixedPedestals(modID);
+   }
+   else
+   {
+      return -1;
+   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // int
 // DcsInterface::ApplyReadoutConfiguration(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig)

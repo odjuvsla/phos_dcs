@@ -294,6 +294,14 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         self.connect(self.apdWidget, QtCore.SIGNAL("loadApdSettings"), self.loadApdSettings)
         self.connect(self.apdWidget, QtCore.SIGNAL("applyApdSettings"), self.applyApdSettings)
 
+    def initFPWidgets(self):
+        
+        self.fpWidget = FixedPedestalsSelectorWidget(self.fpFrame.width() - 30, 200, self.fpFrame)
+
+        self.connect(self.fpWidget, QtCore.SIGNAL("getCommitMessage"), self.getCommitMessage)
+        self.connect(self.fpWidget, QtCore.SIGNAL("loadPFValues"), self.loadPFValues)
+        self.connect(self.fpWidget, QtCore.SIGNAL("applyPFValues"), self.applyPFValues)
+
     def setApdConfig(self, id):
         
         comment = self.databaseHandler.getConfigComment(id)

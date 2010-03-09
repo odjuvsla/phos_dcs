@@ -23,9 +23,11 @@
 #include "PhosDcsBase.h"
 #include "Rcu.h"
 #include "PhosDcsLogging.h"
+#include <string>
 
 
 PhosDetector::PhosDetector() : PhosDcsBase(),
+//    fPedestalsDatabase(std::string("repos/pedestals/"), std::string("data/pedestals/")),
     fFeeClientPtr ( 0 ),
     fReadoutConfig()
 {
@@ -34,6 +36,7 @@ PhosDetector::PhosDetector() : PhosDcsBase(),
     {
       phosModulePtr[i]=new PhosModule ( fFeeClientPtr, i );
     }
+    fPedestalsDatabase.Initialise();
 }
 
 
@@ -207,4 +210,20 @@ PhosDetector::Reset ( const ModNumber_t modId )
   phosModulePtr[modId.GetIntValue() ]->Reset();
   int res = 0;
   return res;
+}
+
+
+
+int PhosDetector::WriteFixedPedestals ( const ModNumber_t modId )
+{
+   int res = 0;
+   if(phosModulePtr[modId.GetIntValue()])
+   {
+      res = phosModulePtr[modId.GetIntValue()]->WriteFixedPedestals();
+   }
+   else
+   {
+      res = -1;
+   }
+   return res;
 }

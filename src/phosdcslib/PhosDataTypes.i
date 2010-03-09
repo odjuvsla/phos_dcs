@@ -7,9 +7,12 @@
 %include "std_string.i"
 //%include "std_vector.i"
 //%include "stl.i"
-%include "/home/phs/build/swig/share/swig/1.3.39/stl.i"
-%include "/home/phs/build/swig/share/swig/1.3.39/std/std_vector.i"
-          
+//%include "/home/phs/build/swig/share/swig/1.3.39/stl.i"
+//%include "/home/phs/build/swig/share/swig/1.3.39/std/std_vector.i"
+   
+%include <stl.i>
+%include <std_vector.i>
+
 %apply const std::string& {std::string* fName};
 
 //namespace std {

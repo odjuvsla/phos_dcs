@@ -40,6 +40,8 @@ class PhosFeeClient :public FeeSampleClient, public PhosDcsBase
 
     const int WriteReadRegisters ( const int regtype, const char *feeServerName, const unsigned long *regs, const unsigned long *values, const bool *verify,
                                    const int N, const int branch = 0, const int card = 0 );
+    const int WriteReadRegisters ( const int regtype, const char *feeServerName, vector<unsigned long> &regs, vector<unsigned long> &values, vector<bool> &verify,
+                                   const int branch = 0, const int card = 0 );
     int ReadRegisters ( const int regtype, const char *feeServerName, const unsigned long *regs, unsigned long *rbValues,  const int N, const int branch = 0, const int card = 0 );
 
     /**

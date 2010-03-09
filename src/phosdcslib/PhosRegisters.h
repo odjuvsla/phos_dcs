@@ -20,6 +20,15 @@ class AltroZSTHR_t;
 class AltroDPCFG_t;
 class AltroDPCFG2_t;
 
+
+class AltroSettings_t
+{
+   public:
+      
+      static const int fBSFixedMode = 0x0;
+      static const int fBSAutomaticMode = 0x4;
+};
+
 class RcuALTROIF_t
   {
 
@@ -338,20 +347,48 @@ class RcuALTROCFG2_t
   public:
 
     RcuALTROCFG2_t() :
-        fNPreSamples ( 11 )
+        fNPreSamples ( 11 ),
+        fBaselineSubtractionMode(0)
     {}
 
-    RcuALTROCFG2_t ( short nPreSamples )
+    RcuALTROCFG2_t ( short nPreSamples, short baselineMode)
     {
       if ( nPreSamples > 0xf )
         {
           fNPreSamples = 0xf;
         }
       else fNPreSamples = nPreSamples;
+
+      if ( baselineMode > 0xf )
+        {
+          fBaselineSubtractionMode = 0x0;
+        }
+      else fBaselineSubtractionMode = baselineMode;
+
+    }
+    RcuALTROCFG2_t ( short nPreSamples, bool isAutoBS, bool isFixedBS )
+    {
+      if ( nPreSamples > 0xf )
+        {
+          fNPreSamples = 0xf;
+        }
+      else fNPreSamples = nPreSamples;
+
+      if ( isAutoBS )
+        {
+          fBaselineSubtractionMode = AltroSettings_t::fBSAutomaticMode;
+        }
+      else if( isFixedBS )
+      {
+	 fBaselineSubtractionMode = AltroSettings_t::fBSFixedMode;
+      }
+      else fBaselineSubtractionMode = AltroSettings_t::fBSAutomaticMode;
+
     }
 
     RcuALTROCFG2_t ( const RcuALTROCFG2_t& v ) :
-        fNPreSamples ( v.GetNPreSamples() )
+        fNPreSamples ( v.GetNPreSamples() ),
+        fBaselineSubtractionMode(v.GetBaselineSubtractionMode())
     {
     }
 
@@ -359,14 +396,34 @@ class RcuALTROCFG2_t
       {
         return fNPreSamples;
       }
+   
+    short GetBaselineSubtractionMode() const
+      {
+        return fBaselineSubtractionMode;
+      }
 
     short GetRegisterValue();
 
-    void SetNPreSamples ( int nPreSamples )
+    void SetNPreSamples ( short nPreSamples )
     {
       fNPreSamples = nPreSamples;
     }
 
+    void SetBaselineSubtractionMode (short mode)
+    {
+      fBaselineSubtractionMode = mode;
+    }
+    
+    void SetFixedPedestalMode(bool v = true)
+    {
+       fBaselineSubtractionMode = AltroSettings_t::fBSFixedMode;
+    }
+    
+    void SetAutomaticPedestalMode(bool v = true)
+    {
+       fBaselineSubtractionMode = AltroSettings_t::fBSAutomaticMode;
+    }
+    
     void SetByRegisterValue ( short value );
 
     void Print ( std::ostream& stream, std::string level = std::string ( "" ) );
@@ -707,21 +764,32 @@ class AltroDPCFG_t
     {
       if ( value )
         {
-          fFirstBaselineCorrection = 0x4;
+          fFirstBaselineCorrection = AltroSettings_t::fBSAutomaticMode;
         }
       else
         {
           fFirstBaselineCorrection = 0;
         }
     }
-
+    void SetFixedBaselineSubtraction ( bool value )
+    {
+      if ( value )
+        {
+          fFirstBaselineCorrection = AltroSettings_t::fBSFixedMode;
+        }
+      else
+        {
+          fFirstBaselineCorrection = 0;
+        }
+    }
+   
     void SetByRegisterValue ( int value );
 
     void Print ( std::ostream& stream, std::string level = std::string ( "" ) );
 
     static const int fRegAddress = AltroRegisterMap::DPCFG;
 
-  private:
+   private:
 
     short fFirstBaselineCorrection; /* First Baseline Correction Mode - 4 bits*/
     bool fPolarity; /* Polarity. When set, the ADC data is inverted - 1 bit */
