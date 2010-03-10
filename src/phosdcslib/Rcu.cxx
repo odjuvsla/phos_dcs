@@ -844,16 +844,28 @@ Rcu::StartFeeClient()
 int Rcu::WriteFixedPedestalValues()
 {
    if(fFeeClientPtr)
-   {
-      vector <unsigned long> peds = fPedestalsDatabase.GetPedestals(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
-      vector <unsigned long> hwAdds = fPedestalsDatabase.GetHWAddresses(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
+     {
+       fPedestalsDatabase.LoadValuesFromFile();
+       vector <unsigned long> peds = fPedestalsDatabase.GetPedestals(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
+       vector <unsigned long> hwAdds = fPedestalsDatabase.GetHWAddresses(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
+      stringstream log;
+      log << "Rcu::WriteFixedPedestalValues 0: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << peds.size();
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
 
       ModNumber_t mod(fModuleId);
       RcuNumber_t rcu(fRcuId);
       PedestalValues pedvalues(mod, rcu);
 
+      log.str("");
+      log << "Rcu::WriteFixedPedestalValues 1: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << peds.size();
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
+
       pedvalues.SetPedestalValues(peds);
       pedvalues.SetHWAddresses(hwAdds);
+
+      log.str("");
+      log << "Rcu::WriteFixedPedestalValues 2: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << peds.size();
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
       
       vector<unsigned long> vals;
       vector<unsigned long> addrs;
@@ -861,12 +873,14 @@ int Rcu::WriteFixedPedestalValues()
       
       pedvalues.GetInstructions(vals, addrs);
 
-      fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU_MEM, fFeeServerName, vals, addrs, verify);
-      
+      log.str("");
+      log << "Rcu::WriteFixedPedestalValues 3: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << vals.size();
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
+  
+      fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU, fFeeServerName, addrs, vals, verify);
+
+      return 0;      
       //fFeeClientPtr->WriteReadRegisters()
    }
-   
-//    stringstream log;
-//       log << "Rcu::WriteFixedPedestalValues: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", FEC: #: " << card << " is not initialised";
-//       PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
+   return -1;
 }

@@ -60,11 +60,11 @@ std::vector< Register> PedestalValues::GetRegisters()
       
       for ( itVal=fPedestalValues.begin(), itAdd = fHWAddresses.begin() ; itVal < fPedestalValues.end(); itVal++, itAdd++ )
       {
-	 tmpReg.fValue = *itAdd << 5 | AltroRegisterMap::VFPED;
+	tmpReg.fValue = *itAdd << 5 | AltroRegisterMap::VFPED | 2 << CMD_TYPE;
 	 tmpReg.fAddress = currentAdd;
 	 tmpVector.push_back(tmpReg);
 	 currentAdd++;
-	 tmpReg.fValue = *itVal;
+	 tmpReg.fValue = *itVal| 2 << CMD_TYPE;
 	 tmpReg.fAddress = currentAdd;
 	 tmpVector.push_back(tmpReg);
 	 currentAdd++;
@@ -83,12 +83,21 @@ std::vector< Register> PedestalValues::GetRegisters()
 
 int PedestalValues::GetInstructions ( std::vector< unsigned long >& values, std::vector< unsigned long >& regAdds )
 {
+  GetRegisters();
    vector<Register>::iterator regsIt;
-   
+      stringstream log;
+      log << "PedestalValues::GetInstructions: Number of entries in register vector: " << fRegisters.size();
+      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
+
+      regAdds.push_back(0);
    for (regsIt = fRegisters.begin(); regsIt < fRegisters.end(); regsIt++)
    {
+
       values.push_back((*regsIt).fValue);
-      regAdds.push_back((*regsIt).fAddress);
+      cout << "GetInstructions: Value (command): " << hex << values.back() << dec << ", reg address: " << regAdds.back() << endl;
+      //regAdds.push_back((*regsIt).fAddress);
+      //      values.push_back((*regsIt).fAddress);
+      //      cout << "GetInstructions: Value (value): " << values.back() << ", reg address: " << regAdds.back() << endl;
    }
    return 0;
 }

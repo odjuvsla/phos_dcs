@@ -186,7 +186,8 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         else:
             autoBs = False
 
-
+        autoBs = False #TODO Fix default value
+        
         MEBMode = self.mebWidget.getMEBMode()
         print "MEBMODE: " + str(MEBMode)
     #triggerMode = self.getTriggerMode()
@@ -197,7 +198,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), StartZ_t(lgzfirst), EndZ_t(lgzlast), StartX_t(lgxfirst), EndX_t(lgxlast), enableFakeAltroReadout, truSamples)
 
         rdoSettings = ReadoutSettings_t(NPreSamples_t(preSamples), NSamples_t(samples), zeroSuppression, zsThreshold, zsOffset, 
-                                        sparseReadout, autoBs, MEBMode)
+                                        sparseReadout, False, MEBMode) #TODO: fix auto/fixed
 
         return rdoRegion, rdoSettings
 

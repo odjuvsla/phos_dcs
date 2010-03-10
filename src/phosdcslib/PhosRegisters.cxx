@@ -71,7 +71,7 @@ void ReadoutRegisters_t::SetRcuALTROCFG ( RcuALTROCFG1_t altrocfg1, RcuALTROCFG2
   fAltroDPCFG.SetZeroSuppressed ( altrocfg1.IsZeroSuppressionEnabled() );
   fAltroDPCFG.SetFirstBaselineCorrectionMode( altrocfg2.GetBaselineSubtractionMode() );
   //fAltroDPCFG.SetAutomaticBaselineSubtraction ( altrocfg1.UsingAutomaticBaselineSubtraction() );
-
+  fAltroDPCFG.SetFixedBaselineSubtraction(true);
   fRcuALTROCFG2 = altrocfg2;
 
   fAltroDPCFG2.SetNPreSamples ( altrocfg2.GetNPreSamples() );

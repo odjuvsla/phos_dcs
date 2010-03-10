@@ -22,4 +22,4 @@ ADD_SUBDIRECTORY(src/scriptmanager)
 INSTALL(DIRECTORY scripts DESTINATION $ENV{PHOS_DCS}/)
 #INSTALL(CODE "FILE(MAKE_DIRECTORY \${ENV}\$ENV{HOME}/phos_dcs/scripts  )")SET(FEECLIENT $ENV{FEECLIENT})
 
-add_subdirectory(test)
+#add_subdirectory(test)

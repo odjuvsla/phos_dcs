@@ -83,9 +83,14 @@ const int PhosFeeClient::WriteReadRegisters ( const int regtype, const char* fee
    
    const int b = branch;
    const int c = card;
-   
-   WriteReadRegisters(regtype, feeServerName, r, val, ver, branch, card);
-   
+   stringstream log;
+      log.str ( "" );
+      log << "PhosFeeClient::WriteReadRegister: (vector) requesting binary with number of entries = " << values.size();
+
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_VERBOSE );
+
+   WriteReadRegisters(regtype, feeServerName, r, val, ver, values.size(), branch, card);
+   ExecuteInstruction ( feeServerName );
 }
 
 const int
@@ -170,7 +175,10 @@ PhosFeeClient::WriteReadRegisters ( const int regType, const char *feeServerName
       vector<unsigned long> binaryData;
 
       unsigned int tmpRegType = REGTYPE_RCU_MEM;
+      log.str ( "" );
+      log << "PhosFeeClient::WriteReadRegister: requesting binary with number of entries = " << N;
 
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_VERBOSE );
       binaryCompilerPtr->MakeWriteReadRegisterBinary ( tmpRegType, binaryData, regs, values, verify, N, branch, card, false );
 
       vector<unsigned long> tmpResultValues;

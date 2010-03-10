@@ -219,7 +219,12 @@ int PhosDetector::WriteFixedPedestals ( const ModNumber_t modId )
    int res = 0;
    if(phosModulePtr[modId.GetIntValue()])
    {
-      res = phosModulePtr[modId.GetIntValue()]->WriteFixedPedestals();
+     stringstream log;
+     log << "PhosDetector::WriteFixedPedestals: for module " << modId.GetIntValue();
+     PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
+
+     res = phosModulePtr[modId.GetIntValue()]->WriteFixedPedestals();
+
    }
    else
    {

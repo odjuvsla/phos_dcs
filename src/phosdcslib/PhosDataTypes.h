@@ -688,7 +688,7 @@ class ReadoutSettings_t
         fZeroSuppressionOffset ( 0 ),
         fIsSparseReadout ( false ),
         fIsAutoBaselineSubtracted ( false ),
-        fIsFixedBaselineSubtracted (false),
+        fIsFixedBaselineSubtracted (true),
         fMEBMode ( false )
     {
 

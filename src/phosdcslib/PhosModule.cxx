@@ -297,9 +297,12 @@ PhosModule::ApplyReadoutRegisters() const
 
     RcuALTROIF_t altroif ( fReadoutSettings.GetNSamples().GetIntValue() );
     RcuRDOMOD_t rdomod ( false, fReadoutSettings.IsSparseReadout(), false, fReadoutSettings.GetMEBMode() );
-    RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
+//     RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
+//                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
+//     RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
+    RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), false,
                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
-    RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
+    RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), false, fReadoutSettings.IsFixedBaselineSubtracted());
 
     RcuL1LAT_t tmpLOneLat;
     RcuL1MSGLAT_t tmpLOneMsgLat;
@@ -401,10 +404,14 @@ int PhosModule::WriteFixedPedestals()
    {
       if(fRcuPtr[rcuID])
       {
+  stringstream log;
+  log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", RCU: " << rcuID;
+   PhosDcsLogging::Instance()->Logging (log.str(), LOG_LEVEL_INFO );
+
 	 res = fRcuPtr[rcuID]->WriteFixedPedestalValues();
 	 if(res)
 	 {
-	    return res;
+	   return res;
 	 }
       }
    }
@@ -414,5 +421,6 @@ int PhosModule::WriteFixedPedestals()
       log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", no RCUs connected";
       PhosDcsLogging::Instance()->Logging (log.str(), LOG_LEVEL_WARNING );
    }
+ 
    return res;
 }

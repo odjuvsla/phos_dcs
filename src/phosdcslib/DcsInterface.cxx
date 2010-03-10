@@ -584,6 +584,8 @@ int
 DcsInterface::Configure ( const ModNumber_t modId )
 {
   stringstream log;
+  
+  WriteFixedPedestals(modId, 0);
 
   int res = ApplyReadoutRegisters ( modId );
 
@@ -664,23 +666,6 @@ int DcsInterface::WriteFixedPedestals ( const ModNumber_t modID, const int pedes
       return -1;
    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // int
