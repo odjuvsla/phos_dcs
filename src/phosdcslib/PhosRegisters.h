@@ -472,6 +472,7 @@ class RcuL1LAT_t
       {
         return fUncertainty;
       }
+<<<<<<< Updated upstream
 
     short GetRegisterValue() const
       {
@@ -515,6 +516,33 @@ class RcuL1MSGLAT_t
         fMaxLatency ( max )
     {
     }
+=======
+    else fNPreSamples = nPreSamples;
+    // if(nSamples > MAX_ALTRO_SAMPLES) //(nSamples > 1008) 
+    //   {
+    // 	fNSamples = 1008;
+    //   }
+  }
+
+  RcuALTROCFG2_t(const RcuALTROCFG2_t& v):
+    fNPreSamples(v.GetNPreSamples())
+    //    fNSamples(v.GetNSamples())
+    
+  {
+  }
+  
+  short GetNPreSamples() const { return fNPreSamples; }
+
+  //  short GetNSamples() const { return fNSamples; }
+
+  short GetRegisterValue();
+  
+  void SetNPreSamples(int nPreSamples) { fNPreSamples = nPreSamples; }
+
+  //  void SetNSamples(int nSamples) { fNPreSamples = nSamples; }
+
+  void SetByRegisterValue(short value);
+>>>>>>> Stashed changes
 
     RcuL1MSGLAT_t ( const RcuL1MSGLAT_t& v ) :
         fMinLatency ( v.GetMinLatency() ),
@@ -527,6 +555,7 @@ class RcuL1MSGLAT_t
         return fMinLatency;
       }
 
+<<<<<<< Updated upstream
     int GetMaxLatency() const
       {
         return fMaxLatency;
@@ -559,6 +588,14 @@ class RcuL1MSGLAT_t
     short fMinLatency; // 16 bits
 
   };
+=======
+private:
+  
+  short fNPreSamples; // 4 bits reserved
+  //  short fNSamples; //10 bits reserved
+
+};
+>>>>>>> Stashed changes
 
 
 class AltroZSTHR_t

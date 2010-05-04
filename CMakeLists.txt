@@ -19,7 +19,7 @@ ADD_SUBDIRECTORY(src/phosdcslib)
 ADD_SUBDIRECTORY(src/phosgui)
 ADD_SUBDIRECTORY(src/scriptmanager)
 
-INSTALL(DIRECTORY scripts DESTINATION $ENV{PHOS_DCS}/)
+INSTALL(DIRECTORY scripts DESTINATION /home/odjuvsla/phos_dcs)
 #INSTALL(CODE "FILE(MAKE_DIRECTORY \${ENV}\$ENV{HOME}/phos_dcs/scripts  )")SET(FEECLIENT $ENV{FEECLIENT})
 
 add_subdirectory(test)

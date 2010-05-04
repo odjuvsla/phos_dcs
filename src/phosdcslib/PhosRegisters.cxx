@@ -53,6 +53,7 @@ void ReadoutRegisters_t::SetRcuALTROIF ( RcuALTROIF_t altroif )
 {
   fRcuALTROIF = altroif;
   fAltroTRCFG.SetNSamples ( altroif.GetNumberOfSamples() );
+
 }
 
 void ReadoutRegisters_t::SetRcuRDOMOD ( RcuRDOMOD_t rdomod )
@@ -76,7 +77,12 @@ void ReadoutRegisters_t::SetRcuALTROCFG ( RcuALTROCFG1_t altrocfg1, RcuALTROCFG2
 
   fAltroDPCFG2.SetNPreSamples ( altrocfg2.GetNPreSamples() );
   
+<<<<<<< Updated upstream
 
+=======
+  fAltroDPCFG2.SetNPreSamples(altrocfg2.GetNPreSamples());
+  
+>>>>>>> Stashed changes
 }
 
 void ReadoutRegisters_t::Print ( std::ostream& stream, std::string level )
