@@ -25,7 +25,7 @@ class DatabasePedestals : public DatabaseSVN
     virtual int Initialise();    
     
     /** Load values from file */
-    virtual int LoadValuesFromFile();
+    virtual int LoadValues(bool loadFromFile = true);
     
     /** Get the values for the given module / RCU */
     vector<unsigned long> GetPedestals(ModNumber_t modId, RcuNumber_t rcuId) 
@@ -37,6 +37,8 @@ class DatabasePedestals : public DatabaseSVN
     
     /** Get the addresses for the given module / RCU */
     vector<unsigned long> GetHWAddresses(ModNumber_t modId, RcuNumber_t rcuId) { return fHWAddressVectors[modId.GetIntValue()][rcuId.GetIntValue()] ; }
+    
+    int LoadZeros();
     
      private:
 	

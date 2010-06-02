@@ -34,6 +34,7 @@ PhosModule::PhosModule ( PhosFeeClient *fClientPtr,  ModNumber_t mid ) : PhosDcs
     fReadoutConfig()
 {
   fMapperPtr = new Mapper();
+  fMapperPtr->ExcludeChannelsFromFile("excludedchannels.txt", mid);
   fFeeClientPtr = fClientPtr;
 
   for ( int i=0; i<RCUS_PER_MODULE; i++ )
@@ -300,9 +301,9 @@ PhosModule::ApplyReadoutRegisters() const
 //     RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
 //                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
 //     RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
-    RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), false,
+    RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
-    RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), false, fReadoutSettings.IsFixedBaselineSubtracted());
+    RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
 
     RcuL1LAT_t tmpLOneLat;
     RcuL1MSGLAT_t tmpLOneMsgLat;
@@ -397,7 +398,7 @@ PhosModule::StartFeeClient ( int rcuID )
     }
 }
 
-int PhosModule::WriteFixedPedestals()
+int PhosModule::WriteFixedPedestals(bool fromFile)
 {
    int res = -1;
    for(int rcuID = 0; rcuID < RCUS_PER_MODULE; rcuID++)
@@ -405,10 +406,10 @@ int PhosModule::WriteFixedPedestals()
       if(fRcuPtr[rcuID])
       {
   stringstream log;
-  log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", RCU: " << rcuID;
+  log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", RCU: " << rcuID << ", from file: " << fromFile;
    PhosDcsLogging::Instance()->Logging (log.str(), LOG_LEVEL_INFO );
 
-	 res = fRcuPtr[rcuID]->WriteFixedPedestalValues();
+	 res = fRcuPtr[rcuID]->WriteFixedPedestalValues(fromFile);
 	 if(res)
 	 {
 	   return res;

@@ -4,6 +4,7 @@ from ReadoutSamplesSettingsWidget import *
 from ReadoutZeroSuppressionWidget import *
 from ReadoutMEBWidget import *
 from APDSettingsSelectorWidget import *
+from FixedPedestalsSelectorWidget import *
 from PhosDataTypes import *
 
 class ConfigureElectronicsDialog(QtGui.QDialog):
@@ -74,6 +75,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         zsThreshold = self.zsWidget.getZSThreshold()
         zsOffset = self.zsWidget.getOffset()
         sparseReadout = self.zsWidget.isSparseReadout()
+        autoBS = self.fpWidget.isAutoSubtracted() and zeroSuppression
         
         
         configLines.append("HGXFIRST " + str(xfirst) + "\n")
@@ -94,6 +96,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         configLines.append("ZEROSUPPRESSION " + str(zeroSuppression) + "\n")
         configLines.append("THRESHOLD " + str(zsThreshold) + "\n")
         configLines.append("OFFSET " + str(zsOffset) + "\n")
+        configLines.append("AUTOBS " + str(autoBS) + "\n")
         configLines.append("SPARSEREADOUT " + str(sparseReadout) + "\n")
         configLines.append("MEBMODE " + str(self.mebWidget.getMEBMode()) + "\n")
         configLines.append("APDCONFIG " + str(self.getApdConfig()) + "\n")
@@ -142,6 +145,13 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
                     self.zsWidget.setZeroSuppression(True)
                 if line.split(" ")[1].strip() == "False":
                     self.zsWidget.setZeroSuppression(False)
+            if valueName == "AUTOBS":
+                if line.split(" ")[1].strip() == "True":
+                    self.fpWidget.setAutoSubtracted(True)
+                    self.fpWidget.fpCheckBox.setChecked(False)
+                if line.split(" ")[1].strip() == "False":
+                    self.fpWidget.setAutoSubtracted(False)
+                    self.fpWidget.fpCheckBox.setChecked(True)
             if valueName == "SPARSEREADOUT":
                 if line.split(" ")[1].strip() == "True":
                     self.zsWidget.setSparseReadout(True)
@@ -178,18 +188,12 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         zsThreshold = self.zsWidget.getZSThreshold()
         zsOffset = self.zsWidget.getOffset()
         sparseReadout = self.zsWidget.isSparseReadout()
+        autoBs = self.fpWidget.isAutoSubtracted()
 
         enableFakeAltroReadout = self.regionWidget.isTruReadoutEnabled()
 
-        if zeroSuppression == True:
-            autoBs = True
-        else:
-            autoBs = False
-
-        autoBs = False #TODO Fix default value
-        
         MEBMode = self.mebWidget.getMEBMode()
-        print "MEBMODE: " + str(MEBMode)
+#        print "MEBMODE: " + str(MEBMode)
     #triggerMode = self.getTriggerMode()
 
         xfirst, xlast, zfirst, zlast, lgxfirst, lgxlast, lgzfirst, lgzlast = self.regionWidget.getReadOutRegion()
@@ -198,7 +202,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), StartZ_t(lgzfirst), EndZ_t(lgzlast), StartX_t(lgxfirst), EndX_t(lgxlast), enableFakeAltroReadout, truSamples)
 
         rdoSettings = ReadoutSettings_t(NPreSamples_t(preSamples), NSamples_t(samples), zeroSuppression, zsThreshold, zsOffset, 
-                                        sparseReadout, False, MEBMode) #TODO: fix auto/fixed
+                                        sparseReadout, autoBs, MEBMode)
 
         return rdoRegion, rdoSettings
 
@@ -226,17 +230,24 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         self.apdFrame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.apdFrame.setFrameShadow(QtGui.QFrame.Raised)
 
-        self.truFrame = QtGui.QFrame(self)
-        self.truFrame.setGeometry(self.width()/2 - 15, self.height()/2 - 15, self.width()/2 - 10, self.height()/2 - 30)
-        self.truFrame.setFixedSize(self.width()/2 + 5, self.height()/2 - 35)
-        self.truFrame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.truFrame.setFrameShadow(QtGui.QFrame.Raised)
+#         self.truFrame = QtGui.QFrame(self)
+#         self.truFrame.setGeometry(self.width()/2 - 15, self.height()/2 - 15, self.width()/2 - 10, self.height()/2 - 30)
+#         self.truFrame.setFixedSize(self.width()/2 + 5, self.height()/2 - 35)
+#         self.truFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+#         self.truFrame.setFrameShadow(QtGui.QFrame.Raised)
+
+        self.fpFrame = QtGui.QFrame(self)
+        self.fpFrame.setGeometry(self.width()/2 - 15, self.height()/2 - 15, self.width()/2 - 10, self.height()/2 - 30)
+        self.fpFrame.setFixedSize(self.width()/2 + 5, self.height()/2 - 35)
+        self.fpFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.fpFrame.setFrameShadow(QtGui.QFrame.Raised)
         
         self.readoutLabel = QtGui.QLabel("READ OUT SETTINGS", self.readoutFrame)
         self.readoutLabel.setGeometry(self.readoutFrame.width()/2 - self.readoutLabel.width()/2 - 15, 10, 130, 20)
 
         self.initReadoutWidgets()
         self.initApdWidgets()
+        self.initFPWidgets()
 
     def initReadoutWidgets(self):
 
@@ -299,9 +310,9 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         
         self.fpWidget = FixedPedestalsSelectorWidget(self.fpFrame.width() - 30, 200, self.fpFrame)
 
-        self.connect(self.fpWidget, QtCore.SIGNAL("getCommitMessage"), self.getCommitMessage)
-        self.connect(self.fpWidget, QtCore.SIGNAL("loadPFValues"), self.loadPFValues)
-        self.connect(self.fpWidget, QtCore.SIGNAL("applyPFValues"), self.applyPFValues)
+#         self.connect(self.fpWidget, QtCore.SIGNAL("getCommitMessage"), self.getCommitMessage)
+#         self.connect(self.fpWidget, QtCore.SIGNAL("loadPFValues"), self.loadPFValues)
+#         self.connect(self.fpWidget, QtCore.SIGNAL("applyPFValues"), self.applyPFValues)
 
     def setApdConfig(self, id):
         

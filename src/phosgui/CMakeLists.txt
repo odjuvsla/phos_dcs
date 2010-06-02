@@ -49,6 +49,7 @@ widgets/ReadoutSamplesSettingsWidget.py
 widgets/PhosTabWidget.py
 widgets/ModulesFrame.py
 widgets/Module.py
+widgets/FixedPedestalsSelectorWidget.py
 DESTINATION $ENV{PHOS_DCS}/gui_files/)
 
 INSTALL(FILES

@@ -841,15 +841,16 @@ Rcu::StartFeeClient()
   fFeeClientPtr->startFeeClient();
 }
 
-int Rcu::WriteFixedPedestalValues()
+int Rcu::WriteFixedPedestalValues(bool loadFromFile)
 {
    if(fFeeClientPtr)
      {
-       fPedestalsDatabase.LoadValuesFromFile();
+       fPedestalsDatabase.LoadValues(loadFromFile);
+
        vector <unsigned long> peds = fPedestalsDatabase.GetPedestals(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
        vector <unsigned long> hwAdds = fPedestalsDatabase.GetHWAddresses(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
       stringstream log;
-      log << "Rcu::WriteFixedPedestalValues 0: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << peds.size();
+      log << "Rcu::WriteFixedPedestalValues 0: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << peds.size() << ", from file: " << loadFromFile;
       PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
 
       ModNumber_t mod(fModuleId);

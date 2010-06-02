@@ -62,7 +62,7 @@ class PhosModule : public PhosDcsBase
     * Write the fixed pedestal values for this module
     * @return 0 upon success
     */
-    int WriteFixedPedestals();
+    int WriteFixedPedestals(bool fromFile = true);
 
   private:
     PhosModule();

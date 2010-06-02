@@ -112,9 +112,7 @@ class DcsInterface : public PhosDcsBase
 
     int             ApplyScriptToFeeServer ( const char *feeserver, const char* scriptfilename );
     
-    int WriteFixedPedestals(const ModNumber_t modID, const int pedestalVersion = 0);
-    
-    
+    int WriteFixedPedestals(const ModNumber_t modID, const int pedestalVersion = 0, bool writeZeros = false);
     
   private:
      
@@ -124,6 +122,5 @@ class DcsInterface : public PhosDcsBase
     PhosDetector    *fPhosDetectorPtr; /**<Pointer to the one and only PHOS detector */
     ReadoutSettings_t fReadoutSettings;
   };
-
 
 #endif

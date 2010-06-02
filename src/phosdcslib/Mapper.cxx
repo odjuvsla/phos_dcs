@@ -22,8 +22,10 @@
 #include <cstring>
 #include <cstdlib>
 #include "PhosDcsLogging.h"
+#include <fstream>
 
 Mapper::Mapper() : PhosDcsBase()
+		 ,fDoExcludeChannelsFromFile(false)
 {
   //  printf("\nCreating new mapper\n");
   InitAltroMapping ( 0, 0 );
@@ -139,6 +141,7 @@ Mapper::GenerateACL ( const ReadoutRegion_t readoutregion,
         for ( int b = 0; b < 2; b++ )
           {
 
+		
             int index = branchIndex[b][i];
 
             if ( index != -1 )
@@ -159,6 +162,29 @@ Mapper::GenerateACL ( const ReadoutRegion_t readoutregion,
                 // altro channel relative to one FEE
 
                 unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
+		
+		bool doExclude = false;
+		
+		if(fDoExcludeChannelsFromFile)
+		  {
+		    for(int n = 0; n < fExcludedChannels.size(); n++)
+		      {
+			unsigned long int ch =  ( branch << 11 )  | ( ( card+1 ) << 7 ) | ( tmpGlobalFeeChannel );
+
+			if(rcu == fExcludedChannels[n].fRcu 
+			   && ch == fExcludedChannels[n].fAddress)
+			  {
+			    doExclude = true;
+			    stringstream log;
+			    log.str("");
+			    log << "Mapper::GenerateACL: Excluding channel: " << hex << ch<< dec << " rcu: " << rcu;
+			    PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+			  }
+		      }
+		  }	    
+		if(doExclude) continue;
+
+
                 acl[rcu][aclIndex[rcu]] = ( branch << 11 )  | ( ( card+1 ) << 7 ) | ( tmpGlobalFeeChannel ) ;
                 //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
                 aclIndex[rcu] ++;
@@ -582,4 +608,34 @@ Mapper::PrintHistMapInfo ( char *objName )
       printf ( "%s attributes:\nhid\tmod\tgain\trow\tcol\trcu\tbran\tfee\tchip\tchan\tcsp\tnum\n",objName );
       printf ( "%06d\t%d\t%d\t%02d\t%02d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",hid,mod,gain,row,col,rcu,bran,fec,chip,chan,csp,num );
     }
+}
+
+
+int
+Mapper::ExcludeChannelsFromFile(std::string filename, ModNumber_t modId)
+{
+  
+  std::ifstream infile;
+  infile.open(filename.c_str(), ifstream::in);
+  if(infile.is_open())
+    {
+      ExcludedChannel channel; 
+      unsigned long int module = 999;
+      while(1)
+	{
+	  infile >> module >> channel.fRcu >> channel.fAddress;
+	  if(modId.GetIntValue() == module)
+	    {
+	      stringstream log;
+	      log.str("");
+	      log << "Mapper::ExcludeChannelsFromFile: Excluding channel: " << hex << channel.fAddress << dec << " from module: " << module << " rcu: " << channel.fRcu;
+	      PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_VERBOSE);
+	      fExcludedChannels.push_back(channel);
+	    }
+	  fDoExcludeChannelsFromFile = true;
+	  if(!infile.good()) break;
+	}
+      return 0;
+    }
+  return -1;
 }

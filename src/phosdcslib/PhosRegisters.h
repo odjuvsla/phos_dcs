@@ -366,7 +366,7 @@ class RcuALTROCFG2_t
       else fBaselineSubtractionMode = baselineMode;
 
     }
-    RcuALTROCFG2_t ( short nPreSamples, bool isAutoBS, bool isFixedBS )
+    RcuALTROCFG2_t ( short nPreSamples, bool isAutoBS, bool isFixedBS)
     {
       if ( nPreSamples > 0xf )
         {
@@ -374,7 +374,7 @@ class RcuALTROCFG2_t
         }
       else fNPreSamples = nPreSamples;
 
-      if ( isAutoBS )
+      if ( isAutoBS)
         {
           fBaselineSubtractionMode = AltroSettings_t::fBSAutomaticMode;
         }
@@ -382,7 +382,7 @@ class RcuALTROCFG2_t
       {
 	 fBaselineSubtractionMode = AltroSettings_t::fBSFixedMode;
       }
-      else fBaselineSubtractionMode = AltroSettings_t::fBSAutomaticMode;
+      else fBaselineSubtractionMode = AltroSettings_t::fBSFixedMode;
 
     }
 
@@ -734,7 +734,7 @@ class AltroDPCFG_t
 
     short GetFirstBaselineCorrectionMode() const
       {
-        return fFirstBaselineCorrection;
+	return fFirstBaselineCorrection;
       }
     bool IsZeroSuppressed() const
       {

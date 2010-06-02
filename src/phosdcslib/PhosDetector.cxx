@@ -214,16 +214,16 @@ PhosDetector::Reset ( const ModNumber_t modId )
 
 
 
-int PhosDetector::WriteFixedPedestals ( const ModNumber_t modId )
+int PhosDetector::WriteFixedPedestals ( const ModNumber_t modId, bool fromFile  )
 {
    int res = 0;
    if(phosModulePtr[modId.GetIntValue()])
    {
      stringstream log;
-     log << "PhosDetector::WriteFixedPedestals: for module " << modId.GetIntValue();
+     log << "PhosDetector::WriteFixedPedestals: for module " << modId.GetIntValue() << ", from file: " << fromFile;
      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
 
-     res = phosModulePtr[modId.GetIntValue()]->WriteFixedPedestals();
+     res = phosModulePtr[modId.GetIntValue()]->WriteFixedPedestals(fromFile);
 
    }
    else

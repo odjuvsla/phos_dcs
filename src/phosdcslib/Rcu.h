@@ -75,7 +75,7 @@ class Rcu : public PhosDcsBase
     * Write the fixed pedestal values to the ALTRO memory
     * @return 0 upon success
     */
-   int WriteFixedPedestalValues();
+   int WriteFixedPedestalValues(bool fromFile = true);
    
   private:
     Rcu();

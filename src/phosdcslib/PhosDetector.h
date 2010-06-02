@@ -63,7 +63,7 @@ class PhosDetector : public PhosDcsBase
     * @param modId is the module ID, number between 0 - 4
     * @return 0 upon success
     */
-    int WriteFixedPedestals(const ModNumber_t modId);
+    int WriteFixedPedestals(const ModNumber_t modId, bool fromFile);
    
     
   private:
