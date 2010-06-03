@@ -83,6 +83,9 @@ class PhosModule : public PhosDcsBase
 
     int fAclMaps[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length];
 
+    int fAclMapsA[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length]; //active channel list for branch A
+    int fAclMapsB[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length]; //active channel list for branch B
+
     unsigned long int fAfls[RCUS_PER_MODULE]; //Active Frontend Card List (afl) for each RCU
 
   };

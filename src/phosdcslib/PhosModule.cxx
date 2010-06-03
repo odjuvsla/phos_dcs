@@ -137,7 +137,8 @@ PhosModule::ArmTrigger ( const char *triggerScriptFileName )
   //  cout << endl << endl;
 
   int iRet = 0;
-  fMapperPtr->GenerateACL ( fReadoutConfig.GetReadoutRegion(), fAclMaps, fAfls );
+  fMapperPtr->GenerateACL ( fReadoutConfig.GetReadoutRegion(), fAclMapsA, fAfls, fModuleId.GetIntValue(), BRANCH_A);
+  fMapperPtr->GenerateACL ( fReadoutConfig.GetReadoutRegion(), fAclMapsB, fAfls, fModuleId.GetIntValue(), BRANCH_B );
   int nTrials =0;
   int status[RCUS_PER_MODULE];
   int initialized = true;
@@ -158,7 +159,7 @@ PhosModule::ArmTrigger ( const char *triggerScriptFileName )
       status[i] = -1;
       if ( fRcuPtr[i] != 0 )
         {
-          fRcuPtr[i]->SetReadoutRegion ( fAfls[i], fAclMaps[i] );
+          fRcuPtr[i]->SetReadoutRegion ( fAfls[i], fAclMapsA[i], fAclMapsB[i] );
           fRcuPtr[i]->ArmTrigger ( triggerScriptFileName );
 
           while ( ( nTrials <= MAX_TRIALS ) && ( status[i] != REG_OK ) )
@@ -334,7 +335,8 @@ PhosModule::ApplyReadoutRegion ( const ReadoutRegion_t readoutRegion )
   int nTrials = 0;
   SetReadoutRegion ( readoutRegion );
   fMapperPtr->InitAltroMapping ( 0, fModuleId );
-  fMapperPtr->GenerateACL ( fReadoutRegion, fAclMaps, fAfls );
+  fMapperPtr->GenerateACL ( fReadoutRegion, fAclMapsA, fAfls, fModuleId.GetIntValue(), BRANCH_A );
+  fMapperPtr->GenerateACL ( fReadoutRegion, fAclMapsB, fAfls, fModuleId.GetIntValue(), BRANCH_B );
 
   int status[RCUS_PER_MODULE];
 
@@ -343,7 +345,7 @@ PhosModule::ApplyReadoutRegion ( const ReadoutRegion_t readoutRegion )
       status[i] = -1;
       if ( fRcuPtr[i] != 0 )
         {
-          fRcuPtr[i]->SetReadoutRegion ( fAfls[i], fAclMaps[i] );
+          fRcuPtr[i]->SetReadoutRegion ( fAfls[i], fAclMapsA[i], fAclMapsB[i] );
 
           while ( ( nTrials <= MAX_TRIALS ) && ( status[i] != REG_OK ) )
             {

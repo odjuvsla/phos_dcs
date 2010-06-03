@@ -36,7 +36,7 @@ Mapper::Mapper() : PhosDcsBase()
 void
 Mapper::GenerateACL ( const ReadoutRegion_t readoutregion,
                       int acl[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length],
-                      unsigned long int afl[RCUS_PER_MODULE], const int modID ) const
+                      unsigned long int afl[RCUS_PER_MODULE], const int modID, const int branchId ) const
   {
     stringstream log;
 
@@ -184,12 +184,14 @@ Mapper::GenerateACL ( const ReadoutRegion_t readoutregion,
 		  }	    
 		if(doExclude) continue;
 
+		if(branch == branchId)
+		  {
+		    acl[rcu][aclIndex[rcu]] = ( branch << 11 )  | ( ( card+1 ) << 7 ) | ( tmpGlobalFeeChannel ) ;
+		    //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
+		    aclIndex[rcu] ++;
 
-                acl[rcu][aclIndex[rcu]] = ( branch << 11 )  | ( ( card+1 ) << 7 ) | ( tmpGlobalFeeChannel ) ;
-                //printf("acl[%d][%d] = 0x%x - Card %d\n", rcu, aclIndex[rcu], acl[rcu][aclIndex[rcu]], card+1);
-                aclIndex[rcu] ++;
-
-                afl[rcu] = ( long int ) afl[rcu] | ( 1<< ( ( long int ) ( card+1 ) + ( long int ) branch*MAX_CARDS_PER_BRANCH ) );
+		    afl[rcu] = ( long int ) afl[rcu] | ( 1<< ( ( long int ) ( card+1 ) + ( long int ) branch*MAX_CARDS_PER_BRANCH ) );
+		  }
               }
           }
       }

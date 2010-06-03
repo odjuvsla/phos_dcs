@@ -64,7 +64,8 @@ class Mapper : public PhosDcsBase
 
     /** changed for RCU_fw2 (maybe incomplete/incorrect) */
     void GenerateACL ( ReadoutRegion_t, int acl[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length],
-                       unsigned long int afl[RCUS_PER_MODULE], const int modId = MODULE_2 ) const;
+		       unsigned long int afl[RCUS_PER_MODULE], const int modId, const int branch ) const;
+
 
     void InitAltroCspMapping ( ModNumber_t modID );
 

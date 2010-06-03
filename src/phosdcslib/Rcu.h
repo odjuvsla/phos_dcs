@@ -38,7 +38,7 @@ class Rcu : public PhosDcsBase
     void ApplyPattern ( const Pattern_t pattern ) const;
     unsigned int CheckFeeState ( const int branch, const int cardNumber );
     void SetPcmVersion ( const unsigned long pcmversion, const int branch, const int card ) const ;
-    void SetReadoutRegion ( const unsigned long int afl, const int aclMaps[RcuRegisterMap::Active_Channel_List_Length] );
+    void SetReadoutRegion ( const unsigned long int afl, const int aclMapsA[RcuRegisterMap::Active_Channel_List_Length], const int aclMapsB[RcuRegisterMap::Active_Channel_List_Length]);
     void SetAllApds ( const int value );
     unsigned int  ActivateFee ( const int branch, const int card );
     unsigned int  DeActivateFee ( const int branch, const int card );
@@ -89,7 +89,8 @@ class Rcu : public PhosDcsBase
     int fTruState[TRUS_PER_RCU];
 
     //  int fActiveChList[256];
-    int fActiveChList[RcuRegisterMap::Active_Channel_List_Length];
+    int fActiveChListA[RcuRegisterMap::Active_Channel_List_Length];
+    int fActiveChListB[RcuRegisterMap::Active_Channel_List_Length];
 
     unsigned long int fActiveFeeList;
     unsigned long int fActiveFeeRdoList;
