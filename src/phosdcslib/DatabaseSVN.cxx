@@ -4,7 +4,7 @@
 DatabaseSVN::DatabaseSVN() : Database()
   //,fSvnClient()
   //,fRepoPath()
-,fRevision(-1)
+  //,fRevision(-1)
   //,fDestinationPath()
 {
    
@@ -13,7 +13,7 @@ DatabaseSVN::DatabaseSVN() : Database()
 DatabaseSVN::DatabaseSVN ( std::string repoPath, std::string destPath ) : Database()
   //,fSvnClient()
   //,fRepoPath(repoPath)
-,fRevision(-1)
+  //,fRevision(-1)
   //,fDestinationPath(destPath)
 {
 
@@ -26,7 +26,8 @@ DatabaseSVN::~DatabaseSVN()
 
 int DatabaseSVN::CheckoutRevision ( long unsigned int rev )
 {
-//    int res = fSvnClient.checkout(fRepoPath.c_str(), fDestinationPath, svn::Revision(rev), true);
+//   //   int res = fSvnClient.checkout(fRepoPath.c_str(), fDestinationPath, svn::Revision(rev), true);
+
 //    if(res == rev)
 //    {
 //       stringstream log;

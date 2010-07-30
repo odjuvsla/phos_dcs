@@ -23,6 +23,7 @@ SET(SRCS PhosDataTypes.cxx DcsInterface.cxx PhosFeeClient.cxx
   PhosDcsLogging.cxx PhosRegisters.cxx Database.cpp 
   DatabaseSVN.cxx DatabasePedestals.cpp)
 
+
 ADD_LIBRARY(PhosDcs SHARED ${SRCS})
 
 SET_TARGET_PROPERTIES(

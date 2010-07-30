@@ -2,12 +2,12 @@
 #include "DatabasePedestals.h"
 #include <fstream>
 #include <cmath>
-// #include <svncpp/status.hpp>
-// #include <svncpp/client.hpp>
-// #include <svncpp/info.hpp>
-// #include <svncpp/context.hpp>
-// #include <svncpp/url.hpp>
-// #include <subversion-1/svn_client.h>
+//#include <svncpp/status.hpp>
+//#include <svncpp/client.hpp>
+//#include <svncpp/info.hpp>
+//#include <svncpp/context.hpp>
+//#include <svncpp/url.hpp>
+//#include <subversion-1/svn_client.h>
 
 DatabasePedestals::DatabasePedestals() : DatabaseSVN()
 ,fPedestalFileName("pedestals.dat")
@@ -41,29 +41,31 @@ DatabasePedestals::~DatabasePedestals()
 
 int DatabasePedestals::Initialise()
 {
-//    int res = -2;
-//    //printf("%d\n", svn::Url::isValid("file:///home/odjuvsla/test/test/	repos/"));
-//    svn::Client cl;
-//    //svn::Path tmpPath("file:///home/odjuvsla/test/test/repos");
-//    //vector<svn::Status> ss = cl.status("/home/odjuvsla/test/repos/pedestals/pedestals.dat");
 
-//    printf("%d\n", cl.getContext());
-// //   printf("%d\n", ss.size());
-// //   cl.info(tmpPath);
+   int res = -2;
+   //printf("%d\n", svn::Url::isValid("file:///home/odjuvsla/test/test/	repos/"));
+   //   svn::Client cl;
+   //svn::Path tmpPath("file:///home/odjuvsla/test/test/repos");
+   //vector<svn::Status> ss = cl.status("/home/odjuvsla/test/repos/pedestals/pedestals.dat");
+
+   //   printf("%d\n", cl.getContext());
+//   printf("%d\n", ss.size());
+//   cl.info(tmpPath);
 
 // //   cl.checkout("/home/odjuvsla/test/test/repos/", svn::Path("."), -1, true);
    
-//    if(fRepoPath.length() > 0 && fDestinationPath.length() > 0)
-//    {
-//       //svn::Status *status  =
-//       printf("%s\n",fRepoPath.c_str());
-//       //fSvnClient.status(fRepoPath.c_str()); 
-//       //if(status->IsVersioned())
-//       {
-// //	   res = CheckoutRevision();
-//       }
-//    }
-//    return res;
+//   if(fRepoPath.length() > 0 && fDestinationPath.length() > 0)
+//   {
+      //svn::Status *status  =
+   //      printf("%s\n",fRepoPath.c_str());
+      //fSvnClient.status(fRepoPath.c_str()); 
+      //if(status->IsVersioned())
+   //      {
+//	   res = CheckoutRevision();
+//      }
+//   }
+   return res;
+
 }
 
 
