@@ -26,6 +26,8 @@
 #include "PhosDcsBase.h"
 #include "PhosDataTypes.h"
 #include "RcuRegisterMap.h"
+#include <string>
+#include <vector>
 
 class Mapper : public PhosDcsBase
   {
@@ -62,7 +64,8 @@ class Mapper : public PhosDcsBase
 
     /** changed for RCU_fw2 (maybe incomplete/incorrect) */
     void GenerateACL ( ReadoutRegion_t, int acl[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length],
-                       unsigned long int afl[RCUS_PER_MODULE], const int modId = MODULE_2 ) const;
+		       unsigned long int afl[RCUS_PER_MODULE], const int modId, const int branch ) const;
+
 
     void InitAltroCspMapping ( ModNumber_t modID );
 
@@ -81,10 +84,18 @@ class Mapper : public PhosDcsBase
     int hdw2geo[ PHOS_MODS][ RCUS_PER_MODULE][  BRANCHES_PER_RCU][ CARDS_PER_BRANCH][ALTROS_PER_FEE][CHANNELS_PER_ALTRO];
     int geo2hdw[ PHOS_MODS][ PHOS_GAINS][ N_XCOLUMNS_MOD][ N_ZROWS_MOD];
 
+    int ExcludeChannelsFromFile(std::string filename, ModNumber_t modId);
+
   private:
 
+    struct ExcludedChannel
+    {
+      unsigned long fAddress;
+      unsigned long fRcu;
+    };
 
-
+    bool fDoExcludeChannelsFromFile;
+    std::vector<ExcludedChannel> fExcludedChannels;
   };
 
 #endif

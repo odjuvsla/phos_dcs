@@ -71,8 +71,8 @@ void ReadoutRegisters_t::SetRcuALTROCFG ( RcuALTROCFG1_t altrocfg1, RcuALTROCFG2
 
   fAltroDPCFG.SetZeroSuppressed ( altrocfg1.IsZeroSuppressionEnabled() );
   fAltroDPCFG.SetFirstBaselineCorrectionMode( altrocfg2.GetBaselineSubtractionMode() );
-  //fAltroDPCFG.SetAutomaticBaselineSubtraction ( altrocfg1.UsingAutomaticBaselineSubtraction() );
-
+  fAltroDPCFG.SetAutomaticBaselineSubtraction ( altrocfg1.UsingAutomaticBaselineSubtraction() );
+  //  fAltroDPCFG.SetFixedBaselineSubtraction(true);
   fRcuALTROCFG2 = altrocfg2;
 
   fAltroDPCFG2.SetNPreSamples ( altrocfg2.GetNPreSamples() );
@@ -433,7 +433,7 @@ void AltroTRCFG_t::Print ( std::ostream& stream, std::string level )
 
 int AltroDPCFG_t::GetRegisterValue() const
   {
-
+    
     return fFirstBaselineCorrection |
            ( fPolarity << 4 ) |
            ( fPreExcluded2 << 5 ) |

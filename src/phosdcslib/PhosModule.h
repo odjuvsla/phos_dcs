@@ -62,7 +62,7 @@ class PhosModule : public PhosDcsBase
     * Write the fixed pedestal values for this module
     * @return 0 upon success
     */
-    int WriteFixedPedestals();
+    int WriteFixedPedestals(bool fromFile = true);
 
   private:
     PhosModule();
@@ -82,6 +82,9 @@ class PhosModule : public PhosDcsBase
     // int fAclMaps[RCUS_PER_MODULE][256];//256x16 active channel list for each RCU
 
     int fAclMaps[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length];
+
+    int fAclMapsA[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length]; //active channel list for branch A
+    int fAclMapsB[RCUS_PER_MODULE][RcuRegisterMap::Active_Channel_List_Length]; //active channel list for branch B
 
     unsigned long int fAfls[RCUS_PER_MODULE]; //Active Frontend Card List (afl) for each RCU
 

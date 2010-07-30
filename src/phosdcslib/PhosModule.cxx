@@ -34,6 +34,7 @@ PhosModule::PhosModule ( PhosFeeClient *fClientPtr,  ModNumber_t mid ) : PhosDcs
     fReadoutConfig()
 {
   fMapperPtr = new Mapper();
+  fMapperPtr->ExcludeChannelsFromFile("excludedchannels.txt", mid);
   fFeeClientPtr = fClientPtr;
 
   for ( int i=0; i<RCUS_PER_MODULE; i++ )
@@ -136,7 +137,8 @@ PhosModule::ArmTrigger ( const char *triggerScriptFileName )
   //  cout << endl << endl;
 
   int iRet = 0;
-  fMapperPtr->GenerateACL ( fReadoutConfig.GetReadoutRegion(), fAclMaps, fAfls );
+  fMapperPtr->GenerateACL ( fReadoutConfig.GetReadoutRegion(), fAclMapsA, fAfls, fModuleId.GetIntValue(), BRANCH_A);
+  fMapperPtr->GenerateACL ( fReadoutConfig.GetReadoutRegion(), fAclMapsB, fAfls, fModuleId.GetIntValue(), BRANCH_B );
   int nTrials =0;
   int status[RCUS_PER_MODULE];
   int initialized = true;
@@ -157,7 +159,7 @@ PhosModule::ArmTrigger ( const char *triggerScriptFileName )
       status[i] = -1;
       if ( fRcuPtr[i] != 0 )
         {
-          fRcuPtr[i]->SetReadoutRegion ( fAfls[i], fAclMaps[i] );
+          fRcuPtr[i]->SetReadoutRegion ( fAfls[i], fAclMapsA[i], fAclMapsB[i] );
           fRcuPtr[i]->ArmTrigger ( triggerScriptFileName );
 
           while ( ( nTrials <= MAX_TRIALS ) && ( status[i] != REG_OK ) )
@@ -297,6 +299,9 @@ PhosModule::ApplyReadoutRegisters() const
 
     RcuALTROIF_t altroif ( fReadoutSettings.GetNSamples().GetIntValue() );
     RcuRDOMOD_t rdomod ( false, fReadoutSettings.IsSparseReadout(), false, fReadoutSettings.GetMEBMode() );
+//     RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
+//                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
+//     RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
     RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
     RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
@@ -330,7 +335,8 @@ PhosModule::ApplyReadoutRegion ( const ReadoutRegion_t readoutRegion )
   int nTrials = 0;
   SetReadoutRegion ( readoutRegion );
   fMapperPtr->InitAltroMapping ( 0, fModuleId );
-  fMapperPtr->GenerateACL ( fReadoutRegion, fAclMaps, fAfls );
+  fMapperPtr->GenerateACL ( fReadoutRegion, fAclMapsA, fAfls, fModuleId.GetIntValue(), BRANCH_A );
+  fMapperPtr->GenerateACL ( fReadoutRegion, fAclMapsB, fAfls, fModuleId.GetIntValue(), BRANCH_B );
 
   int status[RCUS_PER_MODULE];
 
@@ -339,7 +345,7 @@ PhosModule::ApplyReadoutRegion ( const ReadoutRegion_t readoutRegion )
       status[i] = -1;
       if ( fRcuPtr[i] != 0 )
         {
-          fRcuPtr[i]->SetReadoutRegion ( fAfls[i], fAclMaps[i] );
+          fRcuPtr[i]->SetReadoutRegion ( fAfls[i], fAclMapsA[i], fAclMapsB[i] );
 
           while ( ( nTrials <= MAX_TRIALS ) && ( status[i] != REG_OK ) )
             {
@@ -394,17 +400,21 @@ PhosModule::StartFeeClient ( int rcuID )
     }
 }
 
-int PhosModule::WriteFixedPedestals()
+int PhosModule::WriteFixedPedestals(bool fromFile)
 {
    int res = -1;
    for(int rcuID = 0; rcuID < RCUS_PER_MODULE; rcuID++)
    {
       if(fRcuPtr[rcuID])
       {
-	 res = fRcuPtr[rcuID]->WriteFixedPedestalValues();
+  stringstream log;
+  log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", RCU: " << rcuID << ", from file: " << fromFile;
+   PhosDcsLogging::Instance()->Logging (log.str(), LOG_LEVEL_INFO );
+
+	 res = fRcuPtr[rcuID]->WriteFixedPedestalValues(fromFile);
 	 if(res)
 	 {
-	    return res;
+	   return res;
 	 }
       }
    }
@@ -414,5 +424,6 @@ int PhosModule::WriteFixedPedestals()
       log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", no RCUs connected";
       PhosDcsLogging::Instance()->Logging (log.str(), LOG_LEVEL_WARNING );
    }
+ 
    return res;
 }

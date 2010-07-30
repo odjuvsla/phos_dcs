@@ -585,19 +585,27 @@ DcsInterface::Configure ( const ModNumber_t modId )
 {
   stringstream log;
 
+    log.str ( "" );
+
+    log << "DcsInterface::Configure: IsZeroSuppressed: " << fReadoutSettings.IsZeroSuppressed() << ", AUTO BS: " << fReadoutSettings.IsAutoBaselineSubtracted();
+    PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_VERBOSE );
+
+  bool writeZeros = (!fReadoutSettings.IsZeroSuppressed()) || fReadoutSettings.IsAutoBaselineSubtracted();
+
+  WriteFixedPedestals(modId, 0, writeZeros);
+
   int res = ApplyReadoutRegisters ( modId );
 
   res += ApplyReadoutRegion ( modId );
+  log.str("");
+  log << "DcsInterface::Configure: Fixed pedestals: " << !fReadoutSettings.IsAutoBaselineSubtracted();
+  PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 
   if ( res != 0 )
     {
-//       log.str("");
-//       log << "DcsInterface::Configure: Error in configuring module #: " << modId.GetIntValue();
-//       PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_ERROR);
       log.str ( "" );
       log << "DcsInterface::Configure: Successfully configured module #: " << modId.GetIntValue();
       PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
-
     }
   else
     {
@@ -652,35 +660,20 @@ int DcsInterface::ApplyScriptToFeeServer ( const char *feeServerName, const char
 }
 
 
-int DcsInterface::WriteFixedPedestals ( const ModNumber_t modID, const int pedestalVersion )
+int DcsInterface::WriteFixedPedestals ( const ModNumber_t modID, const int pedestalVersion, bool writeZeros )
 {
    if(fPhosDetectorPtr)
    {
-      fPedestalsDatabase.LoadValuesFromFile();
-      return fPhosDetectorPtr->WriteFixedPedestals(modID);
+
+     fPedestalsDatabase.LoadValues(!writeZeros);
+     
+      return fPhosDetectorPtr->WriteFixedPedestals(modID, !writeZeros);
    }
    else
    {
       return -1;
    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // int

@@ -25,13 +25,20 @@ class DatabasePedestals : public DatabaseSVN
     virtual int Initialise();    
     
     /** Load values from file */
-    virtual int LoadValuesFromFile();
+    virtual int LoadValues(bool loadFromFile = true);
     
     /** Get the values for the given module / RCU */
-    vector<unsigned long> GetPedestals(ModNumber_t modId, RcuNumber_t rcuId) { return fPedestalsVectors[modId.GetIntValue()][rcuId.GetIntValue()] ; }
+    vector<unsigned long> GetPedestals(ModNumber_t modId, RcuNumber_t rcuId) 
+      {
+	//	cout << "GetPedestals: Size of pedestals vector for module " << modId.GetIntValue() << ", RCU " << rcuId.GetIntValue() << " : " << fPedestalsVectors[modId.GetIntValue()][rcuId.GetIntValue()].size() << endl;
+	cout << "GetPedestals: Size of pedestals vector for module " << modId.GetIntValue() << ", RCU " << rcuId.GetIntValue() << " : " << fPedestalsVectors[2][0].size() << endl;
+	return fPedestalsVectors[modId.GetIntValue()][rcuId.GetIntValue()] ; 
+      }
     
     /** Get the addresses for the given module / RCU */
     vector<unsigned long> GetHWAddresses(ModNumber_t modId, RcuNumber_t rcuId) { return fHWAddressVectors[modId.GetIntValue()][rcuId.GetIntValue()] ; }
+    
+    int LoadZeros();
     
      private:
 	

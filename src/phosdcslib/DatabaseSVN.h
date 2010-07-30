@@ -4,7 +4,7 @@
 #include "Database.h"
 #include "PhosDcsLogging.h"
 
-#include <svncpp/client.hpp>
+//#include <svncpp/client.hpp>
 #include <string>
 
 class DatabaseSVN : public Database
@@ -27,7 +27,7 @@ class DatabaseSVN : public Database
      void SetRepoPath(std::string path) { fRepoPath = path; }
      
      /** Set the repository path */
-     void SetDestinationPath(std::string path) { fDestinationPath = svn::Path(path); }
+     //   void SetDestinationPath(std::string path) { fDestinationPath = svn::Path(path); }
      
      protected:
 	 
@@ -35,7 +35,7 @@ class DatabaseSVN : public Database
 	int CheckoutRevision(unsigned long rev = -1);
      	
 	/** The svn client */
-	svn::Client fSvnClient;
+	//	svn::Client fSvnClient;
 
 	/** Path to the svn repo */
 	std::string fRepoPath;
@@ -44,7 +44,7 @@ class DatabaseSVN : public Database
 	unsigned long fRevision;
 	
 	/** Path to the destination for the checkout */
-	svn::Path fDestinationPath;
+	//	svn::Path fDestinationPath;
 	
   };
 

@@ -432,18 +432,23 @@ Rcu::TurnOffAllTru()
 }
 
 void
-Rcu::SetReadoutRegion ( const unsigned long int afl, const int acl[RcuRegisterMap::Active_Channel_List_Length] )
+Rcu::SetReadoutRegion ( const unsigned long int afl, const int aclA[RcuRegisterMap::Active_Channel_List_Length], const int aclB[RcuRegisterMap::Active_Channel_List_Length] )
 {
   //  fActiveChList = acl;
 
   stringstream log;
-  for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length; i++ )
+  for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length/2; i++ )
     {
-      fActiveChList[i] = acl[i];
+      fActiveChListA[i] = aclA[i];
+      fActiveChListB[i] = aclB[i];
 
 
       log.str ( "" );
-      log << "Rcu::SetReadoutRegion: fActiveChList[" << i << "] = 0x" << hex << fActiveChList[i] << dec;
+      log << "Rcu::SetReadoutRegion: fActiveChListA[" << i << "] = 0x" << hex << fActiveChListA[i] << dec;
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_EXTREME_VERBOSE );
+
+      log.str ( "" );
+      log << "Rcu::SetReadoutRegion: fActiveChListB[" << i << "] = 0x" << hex << fActiveChListB[i] << dec;
       PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_EXTREME_VERBOSE );
 
     }
@@ -464,26 +469,32 @@ const int
 Rcu::ApplyReadoutRegion() const
   {
     int iRet = -1;
-    unsigned long tmpAfl[ RcuRegisterMap::Active_Channel_List_Length ];
-    unsigned long tmpRegs[ RcuRegisterMap::Active_Channel_List_Length ];
+    unsigned long tmpAflA[ RcuRegisterMap::Active_Channel_List_Length ];
+    unsigned long tmpAflB[ RcuRegisterMap::Active_Channel_List_Length ];
+    unsigned long tmpRegsA[ RcuRegisterMap::Active_Channel_List_Length ];
+    unsigned long tmpRegsB[ RcuRegisterMap::Active_Channel_List_Length ];
     bool tmpVerify[ RcuRegisterMap::Active_Channel_List_Length ];
-    unsigned long tmpAddress = RcuRegisterMap::Active_Channel_List;
+    unsigned long tmpAddressA = RcuRegisterMap::Active_Channel_List_A;
+    unsigned long tmpAddressB = RcuRegisterMap::Active_Channel_List_B;
 
     int n = 0;
 
     for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length ; i++ )
       {
-        tmpAfl[i] = 0;
-        tmpRegs[i] = 0;
+        tmpAflA[i] = 0;
+        tmpAflB[i] = 0;
+        tmpRegsA[i] = 0;
+        tmpRegsB[i] = 0;
         tmpVerify[i] = false;
       }
 
-    for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length ; i++ )
+    for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length/2 ; i++ )
       {
 
-        tmpAfl[i]    = fActiveChList[i] ;
-        tmpRegs[i]   = tmpAddress;
-
+        tmpAflA[i]    = fActiveChListA[i] ;
+        tmpAflB[i]    = fActiveChListB[i] ;
+        tmpRegsA[i]   = tmpAddressA;
+        tmpRegsB[i]   = tmpAddressB;
 //       if(fActiveChList[i] !=0)
 // 	{
 // 	  tmpVerify[i] = false;
@@ -493,7 +504,9 @@ Rcu::ApplyReadoutRegion() const
 // 	  tmpVerify[i] = false;
 // 	}
 
-        tmpAddress ++;
+        tmpAddressA ++;
+        tmpAddressB ++;
+
       }
 
     char tmp[256];
@@ -501,7 +514,8 @@ Rcu::ApplyReadoutRegion() const
 
     //  fFeeClientPtr->SetScripFileName(tmp);
 
-    iRet = fFeeClientPtr->WriteReadRegisters ( REGTYPE_RCU_ACL, fFeeServerName, tmpRegs, tmpAfl, tmpVerify, RcuRegisterMap::Active_Channel_List_Length );
+    iRet = fFeeClientPtr->WriteReadRegisters ( REGTYPE_RCU_ACL, fFeeServerName, tmpRegsA, tmpAflA, tmpVerify, RcuRegisterMap::Active_Channel_List_Length );
+    iRet = fFeeClientPtr->WriteReadRegisters ( REGTYPE_RCU_ACL, fFeeServerName, tmpRegsB, tmpAflB, tmpVerify, RcuRegisterMap::Active_Channel_List_Length );
 
     stringstream log;
     if ( iRet == REG_OK )
@@ -841,19 +855,32 @@ Rcu::StartFeeClient()
   fFeeClientPtr->startFeeClient();
 }
 
-int Rcu::WriteFixedPedestalValues()
+int Rcu::WriteFixedPedestalValues(bool loadFromFile)
 {
    if(fFeeClientPtr)
-   {
-      vector <unsigned long> peds = fPedestalsDatabase.GetPedestals(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
-      vector <unsigned long> hwAdds = fPedestalsDatabase.GetHWAddresses(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
+     {
+       fPedestalsDatabase.LoadValues(loadFromFile);
+
+       vector <unsigned long> peds = fPedestalsDatabase.GetPedestals(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
+       vector <unsigned long> hwAdds = fPedestalsDatabase.GetHWAddresses(ModNumber_t(fModuleId), RcuNumber_t(fRcuId));
+      stringstream log;
+      log << "Rcu::WriteFixedPedestalValues 0: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << peds.size() << ", from file: " << loadFromFile;
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
 
       ModNumber_t mod(fModuleId);
       RcuNumber_t rcu(fRcuId);
       PedestalValues pedvalues(mod, rcu);
 
+      log.str("");
+      log << "Rcu::WriteFixedPedestalValues 1: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << peds.size();
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
+
       pedvalues.SetPedestalValues(peds);
       pedvalues.SetHWAddresses(hwAdds);
+
+      log.str("");
+      log << "Rcu::WriteFixedPedestalValues 2: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << peds.size();
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
       
       vector<unsigned long> vals;
       vector<unsigned long> addrs;
@@ -861,12 +888,14 @@ int Rcu::WriteFixedPedestalValues()
       
       pedvalues.GetInstructions(vals, addrs);
 
-      fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU_MEM, fFeeServerName, vals, addrs, verify);
-      
+      log.str("");
+      log << "Rcu::WriteFixedPedestalValues 3: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << vals.size();
+      PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
+  
+      fFeeClientPtr->WriteReadRegisters(REGTYPE_RCU, fFeeServerName, addrs, vals, verify);
+
+      return 0;      
       //fFeeClientPtr->WriteReadRegisters()
    }
-   
-//    stringstream log;
-//       log << "Rcu::WriteFixedPedestalValues: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", FEC: #: " << card << " is not initialised";
-//       PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
+   return -1;
 }

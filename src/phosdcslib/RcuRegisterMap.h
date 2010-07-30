@@ -105,6 +105,8 @@ namespace RcuRegisterMap
   const unsigned long  Result_MEM_length      = 8191;
 
   const unsigned long  Active_Channel_List    = 0x1000;  //16bit  R/W     // It contains the list, in a per channel basis, of all the
+  const unsigned long  Active_Channel_List_A    = 0x1000;  //16bit  R/W     // It contains the list, in a per channel basis, of all the
+  const unsigned long  Active_Channel_List_B    = 0x1800;  //16bit  R/W     // It contains the list, in a per channel basis, of all the
   // channels that will be readout. Each line corresponds to
   // an ALTRO, and each bit to a channel (16bit x 256).
   const unsigned long  Active_Channel_List_Length    = 4096;
@@ -198,6 +200,9 @@ namespace RcuRegisterMap
   // const unsigned long END                      = 0x390000;
   const unsigned long END                      = 0x380000;
   const unsigned long ENDMEM                   = 0x3f0000;
+
+  const unsigned long BRANCH_A = 0;
+  const unsigned long BRANCH_B = 1;
 
 }
 

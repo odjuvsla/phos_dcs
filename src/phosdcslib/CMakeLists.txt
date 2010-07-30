@@ -8,11 +8,11 @@ FIND_PACKAGE(PythonLibs)
 SET(FEECLIENT $ENV{FEECLIENT})
 
 SET(SVNINC /usr/include/subversion-1/)
-SET(APRINC /usr/include/apr-1/)
+SET(APRINC /usr/include/apr-0/)
 
 FIND_LIBRARY(FEELIB FeeClient FEECLIENT/lib)
 FIND_LIBRARY(DIMLIB dim FEECLIENT/lib)
-FIND_LIBRARY(SVNCPP svncpp)
+#FIND_LIBRARY(SVNCPP svncpp)
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH} ${FEECLIENT} ${SVNINC} ${APRINC})
 
@@ -22,6 +22,7 @@ SET(SRCS PhosDataTypes.cxx DcsInterface.cxx PhosFeeClient.cxx
   BinaryCompiler.cxx FeeCard.cxx InstructionMaker.cxx 
   PhosDcsLogging.cxx PhosRegisters.cxx Database.cpp 
   DatabaseSVN.cxx DatabasePedestals.cpp)
+
 
 ADD_LIBRARY(PhosDcs SHARED ${SRCS})
 
