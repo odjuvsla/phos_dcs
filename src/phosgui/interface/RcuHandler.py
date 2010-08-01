@@ -44,10 +44,52 @@ class RcuHandler(PHOSHandler):
         self.connect(applyApdThread, QtCore.SIGNAL("apdSettingApplied"), self.emit_signal)
         applyApdThread.start()
     
+    def getAltroIf(self, moduleId, rcuId):
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        altroIf = dcs_interface.GetRcuALTROIF(moduleId, rcuId)
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return altroIf
+    
+    def getTrgConf(self, moduleId, rcuId):
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        trgConf = dcs_interface.GetRcuTRGCONF(moduleId, rcuId)
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return trgConf
+    
+    def getRdoMod(self, moduleId, rcuId):
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        rdoMod = dcs_interface.GetRcuRDOMOD(moduleId, rcuId)
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return rdoMod
+    
+    def getAltroCfg1(self, moduleId, rcuId):
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        altroCfg1 = dcs_interface.GetRcuALTROCFG1(moduleId, rcuId)
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return altroCfg1
+    
+    def getAltroCfg2(self, moduleId, rcuId):
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        altroCfg2 = dcs_interface.GetRcuALTROCFG2(moduleId, rcuId)
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return altroCfg2
+    
     def getRcuFwVersion(self, moduleId, rcuId):
         
         dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
         version = dcs_interface.GetRcuFirmwareVersion(moduleId, rcuId)
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return version
+    
+    def getBpVersion(self, moduleId, rcuId):
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        version = dcs_interface.GetRcuBPVersion(moduleId, rcuId)
         self.dcs_interface_wrapper.releaseDcsInterface()
         return version
     

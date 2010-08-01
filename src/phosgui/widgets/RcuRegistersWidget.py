@@ -54,6 +54,16 @@ class RcuRegistersWidget(QtGui.QWidget):
         self.bpVersionTextBox = QtGui.QLineEdit(self.layoutWidget)
         self.widgetLayout.addWidget(self.bpVersionTextBox)
 
-    def getValues(self, rcuHandler, rcuId):
+    def getValues(self, rcuHandler, rcuId, moduleId):
    
-        self.rcuVersionTextBox.setText(str(hex(rcuHandler.getRcuFwVersion(0, rcuId))))
+        self.altroIfTextBox.setText(str(hex(rcuHandler.getAltroIf(moduleId, rcuId))))
+        self.trgConfTextBox.setText(str(hex(rcuHandler.getTrgConf(moduleId, rcuId))))
+        self.rdoModTextBox.setText(str(hex(rcuHandler.getRdoMod(moduleId, rcuId))))
+        self.altroCfg1TextBox.setText(str(hex(rcuHandler.getAltroCfg1(moduleId, rcuId))))
+        self.altroCfg2TextBox.setText(str(hex(rcuHandler.getAltroCfg2(moduleId, rcuId))))
+        self.rcuVersionTextBox.setText(str(hex(rcuHandler.getRcuFwVersion(moduleId, rcuId))))
+        self.bpVersionTextBox.setText(str(hex(rcuHandler.getBpVersion(moduleId, rcuId))))
+                  
+          
+          
+          

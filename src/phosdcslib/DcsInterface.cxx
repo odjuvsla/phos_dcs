@@ -675,9 +675,87 @@ int DcsInterface::WriteFixedPedestals ( const ModNumber_t modID, const int pedes
    }
 }
 
-unsigned long DcsInterface::GetRcuFirmwareVersion ( const int modID, const int rcuId )
+long unsigned int DcsInterface::GetRcuALTROIF ( const int modId, const int rcuId )
 {
-   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modID, rcuId);
+   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modId, rcuId);
+   if(rcu)
+   {
+      return rcu->ReadSingleRegister(RcuRegisterMap::ALTROIF);
+   }
+   else 
+   {
+      return 0;
+   }
+}
+
+long unsigned int DcsInterface::GetRcuTRGCONF ( const int modId, const int rcuId )
+{
+   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modId, rcuId);
+   if(rcu)
+   {
+      return rcu->ReadSingleRegister(RcuRegisterMap::TRCFG);
+   }
+   else 
+   {
+      return 0;
+   }
+}
+
+long unsigned int DcsInterface::GetRcuRDOMOD ( const int modId, const int rcuId )
+{
+   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modId, rcuId);
+   if(rcu)
+   {
+      return rcu->ReadSingleRegister(RcuRegisterMap::RDOMOD);
+   }
+   else 
+   {
+      return 0;
+   }
+}
+
+long unsigned int DcsInterface::GetRcuALTROCFG1 ( const int modId, const int rcuId )
+{
+   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modId, rcuId);
+   if(rcu)
+   {
+      return rcu->ReadSingleRegister(RcuRegisterMap::ALTROCFG1);
+   }
+   else 
+   {
+      return 0;
+   }
+}
+
+long unsigned int DcsInterface::GetRcuALTROCFG2 ( const int modId, const int rcuId )
+{
+   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modId, rcuId);
+   if(rcu)
+   {
+      return rcu->ReadSingleRegister(RcuRegisterMap::ALTROCFG2);
+   }
+   else 
+   {
+      return 0;
+   }
+}
+
+long unsigned int DcsInterface::GetRcuBPVersion ( const int modId, const int rcuId )
+{
+   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modId, rcuId);
+   if(rcu)
+   {
+      return rcu->ReadSingleRegister(RcuRegisterMap::BP_VERSION);
+   }
+   else 
+   {
+      return 0;
+   }
+}
+
+unsigned long DcsInterface::GetRcuFirmwareVersion ( const int modId, const int rcuId )
+{
+   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modId, rcuId);
    if(rcu)
    {
       return rcu->GetFirmwareVersion();
