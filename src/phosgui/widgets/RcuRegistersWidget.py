@@ -1,6 +1,6 @@
 from PyQt4 import QtCore, QtGui
 
-class RcuRegistersWidget(QtGui.QWidget):
+class RcuRegistersWidget(QtGui.QWidget): 
     
     def __init__(self, width, height, parent):
         super(QtGui.QWidget, self).__init__(parent)
@@ -54,6 +54,7 @@ class RcuRegistersWidget(QtGui.QWidget):
         self.bpVersionTextBox = QtGui.QLineEdit(self.layoutWidget)
         self.widgetLayout.addWidget(self.bpVersionTextBox)
 
-def getValues(self):
+def getValues(self, rcuHandler, rcuId):
    
       print "Get Values"
+      print hex(rcuHandler.getRcuFwVersion(0, rcuId))

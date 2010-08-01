@@ -18,8 +18,9 @@ class RcuDialog(QtGui.QDialog):
 
         self.initWidgets()
     
-    def start(self, rcuHandler):
+    def start(self, rcuHandler, rcuId):
         
+        self.rcuId = rcuId
         self.rcuHandler = rcuHandler
         self.getValues()
         self._exec()
@@ -63,6 +64,6 @@ class RcuDialog(QtGui.QDialog):
 
     def getValues(self):
         
-        self.genInfoWidget.getValues(self.rcuHandler)
-        self.regWidget.getValues(self.rcuHandler)
+        self.genInfoWidget.getValues(self.rcuHandler, self.rcuId)
+        self.regWidget.getValues(self.rcuHandler, self.rcuId)
         
