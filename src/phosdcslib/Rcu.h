@@ -76,6 +76,12 @@ class Rcu : public PhosDcsBase
     * @return 0 upon success
     */
    int WriteFixedPedestalValues(bool fromFile = true);
+  
+   /** Read a single register value on the RCU */
+   unsigned long int ReadSingleRegister(unsigned long int regAddr);
+   
+   /** Get RCU fw version */
+   unsigned long GetFirmwareVersion();
    
   private:
     Rcu();
