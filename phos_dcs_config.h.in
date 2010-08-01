@@ -1,0 +1,5 @@
+// the configured options and settings for 
+
+#define phos_dcs_VERSION_MAJOR @phos_dcs_VERSION_MAJOR@
+#define phos_dcs_VERSION_MINOR @phos_dcs_VERSION_MINOR@
+#cmakedefine NEW_RCU_FW
