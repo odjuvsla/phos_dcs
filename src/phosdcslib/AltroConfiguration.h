@@ -32,13 +32,13 @@ class  AltroConfiguration
     const unsigned long GetDataPath() const;
     void SetNPreSamples ( const unsigned long npresamples );
     void SetNSamples();
-    void SetZeropSupressionTreshold ( const unsigned long nsamples );
+    void SetZeroSuppressionTreshold ( const unsigned long nsamples );
     void SetRaedoutMode ( const unsigned long mod );
 
   private:
     unsigned long fNPresSamples;
     unsigned long fNSamples;
-    unsigned long fZeropSupressionTreshold;
+    unsigned long fZeroSuppressionTreshold;
     unsigned long fDataPath;
   };
 
