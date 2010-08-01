@@ -53,3 +53,7 @@ class RcuRegistersWidget(QtGui.QWidget):
 
         self.bpVersionTextBox = QtGui.QLineEdit(self.layoutWidget)
         self.widgetLayout.addWidget(self.bpVersionTextBox)
+
+def getValues(self):
+   
+      print "Get Values"

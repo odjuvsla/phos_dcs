@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PyQt4 import QtCore, QtGui
 from RcuGeneralInfoWidget import *
 from RcuRegistersWidget import *
@@ -16,6 +17,12 @@ class RcuDialog(QtGui.QDialog):
         self.initCloseButton()
 
         self.initWidgets()
+    
+    def start(self, rcuHandler):
+        
+        self.rcuHandler = rcuHandler
+        self.getValues()
+        self._exec()
     
     def initGeneralInfoFrame(self): 
         
@@ -53,3 +60,9 @@ class RcuDialog(QtGui.QDialog):
         self.genInfoWidget = RcuGeneralInfoWidget(self.infoFrame.width() - 10, self.infoFrame.height() - 10, self.infoFrame)
         self.regWidget = RcuRegistersWidget(self.regFrame.width() - 10, self.regFrame.height() - 10, self.regFrame)
 #        self.rdoInfo = RcuRdoInfoWidget()
+
+    def getValues(self):
+        
+        self.genInfoWidget.getValues(self.rcuHandler)
+        self.regWidget.getValues(self.rcuHandler)
+        

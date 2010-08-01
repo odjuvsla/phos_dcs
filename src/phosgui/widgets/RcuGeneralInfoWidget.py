@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 from PyQt4 import QtCore, QtGui
+from RcuHandler import *
 
 class RcuGeneralInfoWidget(QtGui.QWidget):
     
@@ -23,3 +25,8 @@ class RcuGeneralInfoWidget(QtGui.QWidget):
 
         self.rcuFwVersionTextBox = QtGui.QLineEdit(self.layoutWidget)
         self.widgetLayout.addWidget(self.rcuFwVersionTextBox)
+    
+    def getValues(self, rcuHandler):
+	
+	version = rcuHandler.GetRcuFwVersion(0,0)
+	

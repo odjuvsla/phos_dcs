@@ -44,6 +44,13 @@ class RcuHandler(PHOSHandler):
         self.connect(applyApdThread, QtCore.SIGNAL("apdSettingApplied"), self.emit_signal)
         applyApdThread.start()
     
+    def getRcuFwVersion(self, moduleId, rcuId):
+        
+        dcs_interface = self.dcs_interface_wrapper.getDcsInterface()
+        version = dcs_interface.GetRcuFirmwareVersion(moduleId, rcuId)
+        self.dcs_interface_wrapper.releaseDcsInterface()
+        return version
+    
     class __ToggleOnOffThread(Thread, PHOSHandler):
         """Member threading class for toggle on/off all cards on RCU"""
         
