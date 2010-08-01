@@ -69,6 +69,7 @@ Mapper::GenerateACL ( const ReadoutRegion_t readoutregion,
     int channel = 99;
     int csp = 99;
 
+    // If the RCU fw is new enough the ACL is different for the two branches
     int branchIndex[2][N_XCOLUMNS_MOD*N_ZROWS_MOD];
 
     for ( int i = 0; i < N_XCOLUMNS_MOD*N_ZROWS_MOD; i++ )
@@ -77,8 +78,8 @@ Mapper::GenerateACL ( const ReadoutRegion_t readoutregion,
         branchIndex[1][i] = -1;
       }
 
-    int ttA = 0;
-    int ttB = 0;
+    int ttA = 0; // counter for  branch A
+    int ttB = 0; // counter for branch B
 
 //   for(int mod = 2; mod<3; mod++)
 //     {
