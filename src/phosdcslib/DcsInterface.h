@@ -114,6 +114,8 @@ class DcsInterface : public PhosDcsBase
     
     int WriteFixedPedestals(const ModNumber_t modID, const int pedestalVersion = 0, bool writeZeros = false);
     
+    unsigned long GetRcuFirmwareVersion(const int modID, const int rcuId);
+    
   private:
      
     int LoadPedestalValues(const int pedestalVersion);

@@ -675,6 +675,18 @@ int DcsInterface::WriteFixedPedestals ( const ModNumber_t modID, const int pedes
    }
 }
 
+unsigned long DcsInterface::GetRcuFirmwareVersion ( const int modID, const int rcuId )
+{
+   Rcu *rcu = fPhosDetectorPtr->GetRcuPtr(modID, rcuId);
+   if(rcu)
+   {
+      return rcu->GetFirmwareVersion();
+   }
+   else 
+   {
+      return 0;
+   }
+}
 
 // int
 // DcsInterface::ApplyReadoutConfiguration(const ModNumber_t modID,  const ReadoutConfig_t rdoConfig)
