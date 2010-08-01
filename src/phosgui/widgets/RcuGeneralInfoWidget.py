@@ -27,6 +27,6 @@ class RcuGeneralInfoWidget(QtGui.QWidget):
         self.widgetLayout.addWidget(self.rcuFwVersionTextBox)
     
     def getValues(self, rcuHandler, rcuId):
-	
-	version = rcuHandler.GetRcuFwVersion(0,0)
+	print "getValues"
+#	version = rcuHandler.GetRcuFwVersion(0,0)
 	

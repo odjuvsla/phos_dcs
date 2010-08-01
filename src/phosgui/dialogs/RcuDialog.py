@@ -23,7 +23,7 @@ class RcuDialog(QtGui.QDialog):
         self.rcuId = rcuId
         self.rcuHandler = rcuHandler
         self.getValues()
-        self._exec()
+        self.exec_()
     
     def initGeneralInfoFrame(self): 
         
