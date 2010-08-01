@@ -4,6 +4,7 @@
 //#define ALTROREGISTERMAP_H
 #define RCUREGISTERMAP_H
 
+
 /**** Regsiter Access ****
  * R = Read
  * W = Write
@@ -107,7 +108,8 @@ namespace RcuRegisterMap
   const unsigned long  Active_Channel_List    = 0x1000;  //16bit  R/W     // It contains the list, in a per channel basis, of all the
   const unsigned long  Active_Channel_List_A    = 0x1000;  //16bit  R/W     // It contains the list, in a per channel basis, of all the
   const unsigned long  Active_Channel_List_B    = 0x1800;  //16bit  R/W     // It contains the list, in a per channel basis, of all the
-  // channels that will be readout. Each line corresponds to
+
+// channels that will be readout. Each line corresponds to
   // an ALTRO, and each bit to a channel (16bit x 256).
   const unsigned long  Active_Channel_List_Length    = 4096;
 
@@ -204,7 +206,12 @@ namespace RcuRegisterMap
   const unsigned long BRANCH_A = 0;
   const unsigned long BRANCH_B = 1;
 
+  const unsigned long FW_VERSION = 0x5106;
+  const unsigned long BP_VERSION = 0x5107;
+  
 }
+
+
 
 
 #endif
