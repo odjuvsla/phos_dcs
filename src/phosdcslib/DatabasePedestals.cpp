@@ -2,6 +2,7 @@
 #include "DatabasePedestals.h"
 #include <fstream>
 #include <cmath>
+#include <cstdlib>
 //#include <svncpp/status.hpp>
 //#include <svncpp/client.hpp>
 //#include <svncpp/info.hpp>
