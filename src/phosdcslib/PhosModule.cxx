@@ -23,6 +23,7 @@
 #include "Rcu.h"
 #include "PhosDcsLogging.h"
 #include "PhosRegisters.h"
+#include "phos_dcs_config.h"
 
 using namespace std;
 
@@ -137,6 +138,7 @@ PhosModule::ArmTrigger ( const char *triggerScriptFileName )
   //  cout << endl << endl;
 
   int iRet = 0;
+  
   fMapperPtr->GenerateACL ( fReadoutConfig.GetReadoutRegion(), fAclMapsA, fAfls, fModuleId.GetIntValue(), BRANCH_A);
   fMapperPtr->GenerateACL ( fReadoutConfig.GetReadoutRegion(), fAclMapsB, fAfls, fModuleId.GetIntValue(), BRANCH_B );
   int nTrials =0;
@@ -304,7 +306,10 @@ PhosModule::ApplyReadoutRegisters() const
 //     RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
     RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
-    RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
+    //RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
+    int sampleFreq = 10000000;
+    RcuALTROCFG2_t altrocfg2( fReadoutSettings.GetMEBMode(), fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.GetNSamples().GetIntValue(),
+				 fReadoutSettings.IsSparseReadout(), sampleFreq);
 
     RcuL1LAT_t tmpLOneLat;
     RcuL1MSGLAT_t tmpLOneMsgLat;
@@ -336,6 +341,8 @@ PhosModule::ApplyReadoutRegion ( const ReadoutRegion_t readoutRegion )
   SetReadoutRegion ( readoutRegion );
   fMapperPtr->InitAltroMapping ( 0, fModuleId );
   fMapperPtr->GenerateACL ( fReadoutRegion, fAclMapsA, fAfls, fModuleId.GetIntValue(), BRANCH_A );
+  
+  
   fMapperPtr->GenerateACL ( fReadoutRegion, fAclMapsB, fAfls, fModuleId.GetIntValue(), BRANCH_B );
 
   int status[RCUS_PER_MODULE];
