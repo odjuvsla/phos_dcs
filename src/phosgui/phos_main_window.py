@@ -189,7 +189,8 @@ class PhosGui(QtGui.QMainWindow):
         print 'Dialog not yet made...'
 
     def showRcuDialog(self, rcuId):
-        self.rcuDialog.start(self.rcuHandler, rcuId)
+        moduleId = 0
+        self.rcuDialog.start(self.rcuHandler, rcuId, moduleId)
 
     def showModulePropertiesDialog(self, moduleId):
         
