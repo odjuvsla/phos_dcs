@@ -505,7 +505,7 @@ Rcu::ApplyReadoutRegion() const
     
 #else // If the address space isn't seperate we pretend everything is branch A
     const int *tmpAcl = fActiveChListA;
-    int index = 0;n
+    int index = 0;
     for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length ; i++ )
     {
         if (fActiveChListA[i] == 0) // No more active channels on branch A
