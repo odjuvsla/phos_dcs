@@ -72,7 +72,8 @@ void ReadoutRegisters_t::SetRcuALTROCFG ( RcuALTROCFG1_t altrocfg1, RcuALTROCFG2
     fAltroDPCFG.SetZeroSuppressed ( altrocfg1.IsZeroSuppressionEnabled() );
     //fAltroDPCFG.SetFirstBaselineCorrectionMode( altrocfg2.GetBaselineSubtractionMode() );
     fAltroDPCFG.SetAutomaticBaselineSubtraction ( altrocfg1.UsingAutomaticBaselineSubtraction() );
-    fAltroDPCFG.SetFixedBaselineSubtraction(!altrocfg1.UsingAutomaticBaselineSubtraction() && altrocfg1.IsZeroSuppressionEnabled());
+    //    fAltroDPCFG.SetFixedBaselineSubtraction(!altrocfg1.UsingAutomaticBaselineSubtraction() && altrocfg1.IsZeroSuppressionEnabled());
+    //    fAltroDPCFG.SetFixedBaselineSubtraction(
     fRcuALTROCFG2 = altrocfg2;
 
     fAltroDPCFG2.SetNPreSamples ( altrocfg2.GetNPreSamples() );
@@ -390,7 +391,7 @@ short RcuALTROCFG2_t::GetRegisterValue()
         sampleSetting = 0x3;
         break;
     default:
-        return 0;
+      break;
     }
    
     return ((fNAltroBuffers == 4 ? 0 : 1) & 0x1) << 24 |

@@ -362,7 +362,11 @@ public:
     RcuALTROCFG2_t ( short nAltroBuffers, short nPreSamples, short nSamples, bool sparseReadout, int sampleFreq);
 
     RcuALTROCFG2_t ( const RcuALTROCFG2_t& v ) :
-    fNAltroBuffers()
+    fNAltroBuffers(v.GetNAltroBuffers())
+      ,fNPreSamples(v.GetNPreSamples())
+      ,fNSamples(v.GetNSamples())
+      ,fSparseReadout(v.IsSparseReadoutEnabled())
+      ,fSampleFreq(v.GetSampleFrequency())
     {
     }
 
@@ -375,6 +379,11 @@ public:
     {
         return fNPreSamples;
     }
+
+    short GetNSamples() const 
+      {
+	return fNSamples;
+      }
     
     short IsSparseReadoutEnabled() const 
     {
