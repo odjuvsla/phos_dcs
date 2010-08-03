@@ -767,9 +767,10 @@ public:
         }
         else
         {
-            fFirstBaselineCorrection = 0;
-        }
+            fFirstBaselineCorrection = AltroSettings_t::fBSFixedMode;
+	}
     }
+    
     void SetFixedBaselineSubtraction ( bool value )
     {
         if ( value )
@@ -778,7 +779,7 @@ public:
         }
         else
         {
-            fFirstBaselineCorrection = 0;
+            fFirstBaselineCorrection = AltroSettings_t::fBSAutomaticMode;
         }
     }
 
