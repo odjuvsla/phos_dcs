@@ -276,22 +276,22 @@ Mapper::GenerateACL ( const ReadoutRegion_t readoutregion,
         //TRU // TODO: need to configure region for TRUs as well
         for ( int rcu = 0; rcu < RCUS_PER_MODULE; rcu++ )
           {
-            for ( int tru = 0; tru < 2; tru++ ) //TODO: don't use hardcoded values
-              {
+	    //            for ( int tru = 0; tru < 2; tru++ ) //TODO: don't use hardcoded values
+	    //              {
                 for ( int altro = 0; altro < 8; altro++ )
                   {
                     for ( int channel = 0; channel < readoutregion.GetNumberOfTRUSamples() /8; channel++ )
                       {
                         unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
-                        acl[rcu][aclIndex[rcu]] = ( tru << 11 )  | ( tmpGlobalFeeChannel ) ;
+                        acl[rcu][aclIndex[rcu]] = ( branchId << 11 )  | ( tmpGlobalFeeChannel ) ;
                         cout << acl[rcu][aclIndex[rcu]] << " " << aclIndex[rcu] << endl;;
 
                         aclIndex[rcu] ++;
-                        afl[rcu] = ( long int ) afl[rcu] | ( 1<< ( ( long int ) ( tru* ( MAX_CARDS_PER_BRANCH-1 ) ) + ( long int ) tru*MAX_CARDS_PER_BRANCH ) );
+                        afl[rcu] = ( long int ) afl[rcu] | ( 1<< ( ( long int ) ( branchId* ( MAX_CARDS_PER_BRANCH-1 ) ) + ( long int ) branchId*MAX_CARDS_PER_BRANCH ) );
                       }
                   }
                 //	  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(0) +(long int)branch*MAX_CARDS_PER_BRANCH));
-              }
+		//              }
           }
       }
   }

@@ -437,6 +437,12 @@ Rcu::SetReadoutRegion ( const unsigned long int afl, const int aclA[RcuRegisterM
     //  fActiveChList = acl;
 
     stringstream log;
+
+    for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length; i++ )
+    {
+      fActiveChListA[i] = 0xfff;
+      fActiveChListB[i] = 0xfff;
+    }
     for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length/2; i++ )
     {
         fActiveChListA[i] = aclA[i];
@@ -506,16 +512,38 @@ Rcu::ApplyReadoutRegion() const
 #else // If the address space isn't seperate we pretend everything is branch A
     const int *tmpAcl = fActiveChListA;
     int index = 0;
-    for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length ; i++ )
+//     for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length ; i++ )
+//     {
+//         if (tmpAcl[i] == 0xfff && tmpAcl == fActiveChListA) // No more active channels on branch A
+//         {
+//             index = 0;
+//             tmpAcl = fActiveChListB;
+//         }
+//         tmpAflA[i] = tmpAcl[index];
+// 	tmpRegsA[i] = tmpAddressA;
+//         tmpAddressA++;
+// 	index++;
+// 	stringstream log;
+// 	log << "Rcu::ApplyReadoutRegion: tmpAflA[" << i << "] = 0x" << hex << tmpAflA[i] << dec;
+// 	//        PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_ERROR );
+//     }
+    int j = 0; // incrementer
+    for ( int i=0; i< RcuRegisterMap::Active_Channel_List_Length/2 ; i++ )
     {
-        if (fActiveChListA[i] == 0) // No more active channels on branch A
-        {
-            index = 0;
-            tmpAcl = fActiveChListB;
-        }
-        tmpAflA[i] = tmpAcl[index];
-        tmpAddressA++;
+
+      tmpAflA[j] = fActiveChListA[i];
+      tmpRegsA[j] = tmpAddressA;
+      tmpAddressA++;
+      j++;
+      tmpAflA[j] = fActiveChListB[i];
+      tmpRegsA[j] = tmpAddressA;
+      tmpAddressA++;
+      j++;
+      stringstream log;
+      log << "Rcu::ApplyReadoutRegion: tmpAflA[" << i << "] = 0x" << hex << tmpAflA[i] << dec;
+	        PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_ERROR );
     }
+
 #endif
 
    // Even if we have seperate address space for the branches we can always safely write to branch A (we pretend everything is branch A if the address space is not seperated)
