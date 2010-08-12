@@ -363,7 +363,7 @@ void RcuALTROCFG1_t::Print ( std::ostream& stream, std::string level )
 
 RcuALTROCFG2_t::RcuALTROCFG2_t ( short nAltroBuffers, short nPreSamples, short nSamples, bool sparseReadout, int sampleFreq) :
         fNAltroBuffers(4)
-        ,fNPreSamples(nSamples)
+        ,fNPreSamples(nPreSamples)
         ,fNSamples(nSamples)
         ,fSparseReadout(sparseReadout)
         ,fSampleFreq(10000000)
