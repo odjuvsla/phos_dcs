@@ -38,7 +38,7 @@ BinaryCompiler::MakeWriteReadRegisterBinary ( const unsigned int regType, vector
     const bool writeZeroes )
 {
   int ret = 0;
-  if ( regType == REGTYPE_RCU_MEM )
+  if ( regType == REGTYPE_RCU_MEM || regType == REGTYPE_RCU_ACL)
     {
       ret = MakeWriteReadRcuMemoryBlockBinary ( binData, reg[0], value, N );
     }
