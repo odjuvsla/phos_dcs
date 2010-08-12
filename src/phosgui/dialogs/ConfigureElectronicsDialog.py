@@ -75,7 +75,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         zsThreshold = self.zsWidget.getZSThreshold()
         zsOffset = self.zsWidget.getOffset()
         sparseReadout = self.zsWidget.isSparseReadout()
-        autoBS = self.fpWidget.isAutoSubtracted() and zeroSuppression
+        autoBS = self.fpWidget.isAutoSubtracted()
         
         
         configLines.append("HGXFIRST " + str(xfirst) + "\n")
