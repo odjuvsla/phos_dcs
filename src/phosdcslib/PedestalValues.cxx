@@ -94,7 +94,7 @@ int PedestalValues::GetInstructions ( std::vector< unsigned long >& values, std:
    {
 
       values.push_back((*regsIt).fValue);
-      cout << "GetInstructions: Value (command): " << hex << values.back() << dec << ", reg address: " << regAdds.back() << endl;
+      //      cout << "GetInstructions: Value (command): " << hex << values.back() << dec << ", reg address: " << regAdds.back() << endl;
       //regAdds.push_back((*regsIt).fAddress);
       //      values.push_back((*regsIt).fAddress);
       //      cout << "GetInstructions: Value (value): " << values.back() << ", reg address: " << regAdds.back() << endl;
