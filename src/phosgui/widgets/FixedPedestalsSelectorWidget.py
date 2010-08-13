@@ -96,3 +96,11 @@ class FixedPedestalsSelectorWidget(QtGui.QWidget):
     def setAutoSubtracted(self, status):
 
         self.fpCheckBox.setChecked(status)
+
+    def isFixedSubtracted(self):
+
+        return self.fpCheckBox.isChecked() == True
+
+    def setFixedSubtracted(self, status):
+
+        self.fpCheckBox.setChecked(status)
