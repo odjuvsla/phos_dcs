@@ -920,9 +920,10 @@ int Rcu::WriteFixedPedestalValues(bool loadFromFile)
 
         vector<unsigned long> vals;
         vector<unsigned long> addrs;
-        vector<bool> verify(vals.size(), false);
 
         pedvalues.GetInstructions(vals, addrs);
+
+        vector<bool> verify(vals.size(), false);
 
         log.str("");
         log << "Rcu::WriteFixedPedestalValues 3: Module: #: " << fModuleId << ", RCU #: " << fRcuId << ", number of pedestal values: " << vals.size();
