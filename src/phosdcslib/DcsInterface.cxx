@@ -590,15 +590,15 @@ DcsInterface::Configure ( const ModNumber_t modId )
     log << "DcsInterface::Configure: IsZeroSuppressed: " << fReadoutSettings.IsZeroSuppressed() << ", AUTO BS: " << fReadoutSettings.IsAutoBaselineSubtracted();
     PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_VERBOSE );
 
-  bool writeZeros = (!fReadoutSettings.IsZeroSuppressed()) || fReadoutSettings.IsAutoBaselineSubtracted();
-
+    bool writeZeros = ((!fReadoutSettings.IsZeroSuppressed() && !fReadoutSettings.IsFixedBaselineSubtracted()) || fReadoutSettings.IsAutoBaselineSubtracted());
+    
   WriteFixedPedestals(modId, 0, writeZeros);
 
   int res = ApplyReadoutRegisters ( modId );
 
   res += ApplyReadoutRegion ( modId );
   log.str("");
-  log << "DcsInterface::Configure: Fixed pedestals: " << !fReadoutSettings.IsAutoBaselineSubtracted();
+  log << "DcsInterface::Configure: Fixed pedestals: " << fReadoutSettings.IsFixedBaselineSubtracted() << ", write zeros: " << writeZeros;
   PhosDcsLogging::Instance()->Logging(log.str(), LOG_LEVEL_INFO);
 
   if ( res != 0 )
