@@ -300,7 +300,7 @@ PhosModule::ApplyReadoutRegisters() const
     stringstream log;
 
     RcuALTROIF_t altroif ( fReadoutSettings.GetNSamples().GetIntValue() );
-    RcuRDOMOD_t rdomod ( false, fReadoutSettings.IsSparseReadout(), false, fReadoutSettings.GetMEBMode() );
+    RcuRDOMOD_t rdomod ( false, fReadoutSettings.IsSparseReadout(),  fReadoutSettings.IsSparseReadoutRcu(), false, fReadoutSettings.GetMEBMode() );
 //     RcuALTROCFG1_t altrocfg1 ( fReadoutSettings.IsZeroSuppressed(), fReadoutSettings.IsAutoBaselineSubtracted(),
 //                                fReadoutSettings.GetZeroSuppressionOffset(), fReadoutSettings.GetZeroSuppressionThreshold() );
 //     RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());

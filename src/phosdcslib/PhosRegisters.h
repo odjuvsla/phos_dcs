@@ -204,11 +204,12 @@ class RcuRDOMOD_t
 public:
 
     RcuRDOMOD_t();
-    RcuRDOMOD_t ( bool maskRDYRX, bool sparseReadoutEnabled, bool executeSequencer, bool mebMode );
+    RcuRDOMOD_t ( bool maskRDYRX, bool sparseReadoutEnabled, bool sparseReadoutEnabledRcu, bool executeSequencer, bool mebMode );
 
     RcuRDOMOD_t ( const RcuRDOMOD_t& v ) :
             fMaskRDYRX ( v.IsMaskRDYRXEnabled() ),
             fSparseReadout ( v.IsSparseReadoutEnabled() ),
+            fSparseReadoutRcu ( v.IsSparseReadoutRcuEnabled() ),
             fExecuteSequencer ( v.IsExecuteSequencerEnabled() ),
             fMEBMode ( v.GetMEBMode() )
     {
@@ -221,6 +222,10 @@ public:
     bool IsSparseReadoutEnabled() const
     {
         return fSparseReadout;
+    }
+    bool IsSparseReadoutRcuEnabled() const 
+    {
+       return fSparseReadoutRcu;
     }
     bool IsExecuteSequencerEnabled() const
     {
@@ -241,6 +246,10 @@ public:
     {
         fSparseReadout = value;
     }
+    void SetSparseReadoutRcu ( bool value = true )
+    {
+       fSparseReadoutRcu = value;
+    }
     void SetExecuteSeqencer ( bool value = true )
     {
         fExecuteSequencer = value;
@@ -260,6 +269,7 @@ private:
 
     bool fMaskRDYRX;
     bool fSparseReadout;
+    bool fSparseReadoutRcu;
     bool fExecuteSequencer;
     bool fMEBMode;
 

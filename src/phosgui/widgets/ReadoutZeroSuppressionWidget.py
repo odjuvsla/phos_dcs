@@ -40,18 +40,33 @@ class ReadoutZeroSuppressionWidget(QtGui.QWidget):
         self.zsCheckBox.setText("Enable Zero Suppression")
         self.zsCheckBox.setGeometry(self.thresholdSpinbox.x(), self.thresholdSpinbox.y() + self.thresholdSpinbox.height() + 8, 200, 20)
 
+        self.sparseLabel = QtGui.QLabel("Sparse Readout:", self)
+        self.sparseLabel.setGeometry(self.thresholdSpinbox.x(), self.zsCheckBox.y() + self.zsCheckBox.height() + 8, 95, 20)
+
+        self.sparseDropMenu = QtGui.QComboBox(self)
+        self.sparseDropMenu.setGeometry(self.sparseLabel.x() + self.sparseLabel.width(), self.sparseLabel.y(), 130, 20)
+        self.noSparseReadoutIndex = 0
+        self.sparseReadoutIndex = 1
+        self.sparseReadoutRcuIndex = 2
+        self.sparseDropMenu.addItem("No Sparse Readout")
+        self.sparseDropMenu.addItem("FEC Sparse Readout")
+        self.sparseDropMenu.addItem("RCU Sparse Readout")
         self.sparseCheckBox = QtGui.QCheckBox(self)
-        self.sparseCheckBox.setText("Enable Sparse Readout")
-        self.sparseCheckBox.setGeometry(self.thresholdSpinbox.x(), self.zsCheckBox.y() + self.zsCheckBox.height() + 8, 200, 20)
+#        self.sparseCheckBox.setText("Enable Sparse Readout")
+#        self.sparseCheckBox.setGeometry(self.thresholdSpinbox.x(), self.zsCheckBox.y() + self.zsCheckBox.height() + 8, 200, 20)
 
     def isZeroSuppressionOn(self):
         
         return self.zsCheckBox.isChecked()
 
     def isSparseReadout(self):
-        
-        return self.sparseCheckBox.isChecked()
 
+        return self.sparseDropMenu.currentIndex() == self.sparseReadoutIndex        
+
+    def isSparseReadoutRcu(self):
+        
+        return self.sparseDropMenu.currentIndex() == self.sparseReadoutRcuIndex
+        
     def getZSThreshold(self):
         
         return self.thresholdSpinbox.value()
@@ -65,9 +80,21 @@ class ReadoutZeroSuppressionWidget(QtGui.QWidget):
         self.zsCheckBox.setChecked(status)
 
     def setSparseReadout(self, status):
-
-        self.sparseCheckBox.setChecked(status)
-
+                
+        if status == True:
+            self.sparseDropMenu.setCurrentIndex(self.sparseReadoutIndex)
+        else:
+            if self.isSparseReadoutRcu() == False:
+                self.sparseDropMenu.setCurrentIndex(self.noSparseReadoutIndex)
+            
+    def setSparseReadoutRcu(self, status):
+                
+        if status == True:
+            self.sparseDropMenu.setCurrentIndex(self.sparseReadoutRcuIndex)
+        else:
+            if self.isSparseReadout() == False:
+                self.sparseDropMenu.setCurrentIndex(self.noSparseReadoutIndex)
+        
     def setZSThreshold(self, threshold):
 
         self.thresholdSpinbox.setValue(threshold)

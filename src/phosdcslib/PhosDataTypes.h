@@ -687,6 +687,7 @@ class ReadoutSettings_t
         fZeroSuppressionThreshold ( 0 ),
         fZeroSuppressionOffset ( 0 ),
         fIsSparseReadout ( false ),
+        fIsSparseReadoutRcu ( false ),
         fIsAutoBaselineSubtracted ( false ),
         fIsFixedBaselineSubtracted (true),
         fMEBMode ( false )
@@ -695,13 +696,14 @@ class ReadoutSettings_t
     }
 
     ReadoutSettings_t ( const NPreSamples_t npresamples, NSamples_t nsamples, bool isZS = false, short zsThreshold = 0,
-                        short zsOffset = 0, bool isSparse = false, bool isAutoBS = false, bool isFixedBS = false, bool mebMode = false ) :
+                        short zsOffset = 0, bool isSparse = false, bool isSparseRcu = false, bool isAutoBS = false, bool isFixedBS = false, bool mebMode = false ) :
         fNPreSamples ( npresamples ),
         fNSamples ( nsamples ),
         fIsZeroSuppressed ( isZS ),
         fZeroSuppressionThreshold ( zsThreshold ),
         fZeroSuppressionOffset ( zsOffset ),
         fIsSparseReadout ( isSparse ),
+        fIsSparseReadoutRcu ( isSparseRcu ),
         fIsAutoBaselineSubtracted ( isAutoBS ),
         fIsFixedBaselineSubtracted (isFixedBS),
         fMEBMode ( mebMode )
@@ -716,6 +718,7 @@ class ReadoutSettings_t
         fZeroSuppressionThreshold ( v.GetZeroSuppressionThreshold() ),
         fZeroSuppressionOffset ( v.GetZeroSuppressionOffset() ),
         fIsSparseReadout ( v.IsSparseReadout() ),
+        fIsSparseReadoutRcu ( v.IsSparseReadoutRcu() ),
         fIsAutoBaselineSubtracted ( v.IsAutoBaselineSubtracted() ),
         fIsFixedBaselineSubtracted ( v.IsFixedBaselineSubtracted() ),
         fMEBMode ( v.GetMEBMode() )
@@ -745,6 +748,10 @@ class ReadoutSettings_t
       {
         return fIsSparseReadout;
       }
+    bool IsSparseReadoutRcu() const
+      {
+        return fIsSparseReadoutRcu;
+      }
     bool IsAutoBaselineSubtracted() const
       {
         return fIsAutoBaselineSubtracted;
@@ -766,6 +773,7 @@ class ReadoutSettings_t
     short fZeroSuppressionThreshold;
     short fZeroSuppressionOffset;
     bool fIsSparseReadout;
+    bool fIsSparseReadoutRcu;
     bool fIsAutoBaselineSubtracted;
     bool fIsFixedBaselineSubtracted;
     bool fMEBMode;

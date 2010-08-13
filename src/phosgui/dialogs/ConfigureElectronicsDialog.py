@@ -75,6 +75,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         zsThreshold = self.zsWidget.getZSThreshold()
         zsOffset = self.zsWidget.getOffset()
         sparseReadout = self.zsWidget.isSparseReadout()
+        sparseReadoutRcu = self.zsWidget.isSparseReadoutRcu()
         autoBS = self.fpWidget.isAutoSubtracted()
         
         
@@ -98,6 +99,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         configLines.append("OFFSET " + str(zsOffset) + "\n")
         configLines.append("AUTOBS " + str(autoBS) + "\n")
         configLines.append("SPARSEREADOUT " + str(sparseReadout) + "\n")
+        configLines.append("SPARSEREADOUTRCU " + str(sparseReadoutRcu) + "\n")
         configLines.append("MEBMODE " + str(self.mebWidget.getMEBMode()) + "\n")
         configLines.append("APDCONFIG " + str(self.getApdConfig()) + "\n")
        
@@ -157,6 +159,11 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
                     self.zsWidget.setSparseReadout(True)
                 if line.split(" ")[1].strip() == "False":
                     self.zsWidget.setSparseReadout(False)
+            if valueName == "SPARSEREADOUTRCU":
+                if line.split(" ")[1].strip() == "True":
+                    self.zsWidget.setSparseReadoutRcu(True)
+                if line.split(" ")[1].strip() == "False":
+                    self.zsWidget.setSparseReadoutRcu(False)
             if valueName == "THRESHOLD":
                 self.zsWidget.setZSThreshold(int(line.split(" ")[1]))
             if valueName == "OFFSET":
@@ -188,6 +195,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         zsThreshold = self.zsWidget.getZSThreshold()
         zsOffset = self.zsWidget.getOffset()
         sparseReadout = self.zsWidget.isSparseReadout()
+        sparseReadoutRcu = self.zsWidget.isSparseReadoutRcu()
         autoBs = self.fpWidget.isAutoSubtracted()
 
         enableFakeAltroReadout = self.regionWidget.isTruReadoutEnabled()
@@ -202,7 +210,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
         rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), StartZ_t(lgzfirst), EndZ_t(lgzlast), StartX_t(lgxfirst), EndX_t(lgxlast), enableFakeAltroReadout, truSamples)
 
         rdoSettings = ReadoutSettings_t(NPreSamples_t(preSamples), NSamples_t(samples), zeroSuppression, zsThreshold, zsOffset, 
-                                        sparseReadout, autoBs, MEBMode)
+                                        sparseReadout, sparseReadoutRcu, autoBs, MEBMode)
 
         return rdoRegion, rdoSettings
 

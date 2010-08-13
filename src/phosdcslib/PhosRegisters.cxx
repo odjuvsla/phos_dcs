@@ -59,6 +59,7 @@ void ReadoutRegisters_t::SetRcuALTROIF ( RcuALTROIF_t altroif )
 void ReadoutRegisters_t::SetRcuRDOMOD ( RcuRDOMOD_t rdomod )
 {
     fRcuRDOMOD = rdomod;
+    
     fAltroDPCFG2.SetMEBMode ( rdomod.GetMEBMode() );
 }
 
@@ -272,15 +273,17 @@ void RcuTRGCONF_t::Print ( std::ostream& stream, std::string level )
 RcuRDOMOD_t::RcuRDOMOD_t() :
         fMaskRDYRX ( false ),
         fSparseReadout ( false ),
+        fSparseReadoutRcu( false),
         fExecuteSequencer ( false ),
         fMEBMode ( false )
 {
 
 }
 
-RcuRDOMOD_t::RcuRDOMOD_t ( bool maskRDYRX, bool sparseReadoutEnabled, bool executeSequencer, bool mebMode ) :
+RcuRDOMOD_t::RcuRDOMOD_t ( bool maskRDYRX, bool sparseReadoutEnabled, bool sparseReadoutRcuEnabled, bool executeSequencer, bool mebMode ) :
         fMaskRDYRX ( maskRDYRX ),
         fSparseReadout ( sparseReadoutEnabled ),
+        fSparseReadoutRcu( sparseReadoutRcuEnabled),
         fExecuteSequencer ( executeSequencer ),
         fMEBMode ( mebMode )
 {
@@ -288,9 +291,14 @@ RcuRDOMOD_t::RcuRDOMOD_t ( bool maskRDYRX, bool sparseReadoutEnabled, bool execu
 
 short RcuRDOMOD_t::GetRegisterValue()
 {
+   
+   if(fSparseReadout && fSparseReadoutRcu)
+   {
+      return 0;
+   }
     return fMaskRDYRX << 3 |
-           fSparseReadout << 6 |
-           //    fSparseReadout << 2 |
+           fSparseReadoutRcu << 6 |
+           fSparseReadout << 2 |
            fExecuteSequencer << 1 |
            fMEBMode;
 }
@@ -298,8 +306,8 @@ short RcuRDOMOD_t::GetRegisterValue()
 void RcuRDOMOD_t::SetByRegisterValue ( short value )
 {
     fMaskRDYRX = ( value >> 3 ) & 0x1;
-    //fSparseReadout = (value >> 2) & 0x1;
-    fSparseReadout = ( value >> 7 ) & 0x1;
+    fSparseReadout = (value >> 2) & 0x1;
+    fSparseReadoutRcu = ( value >> 6 ) & 0x1;
     fExecuteSequencer = ( value >> 1 ) & 0x1;
     fMEBMode = value & 0x1;
 }
@@ -311,6 +319,7 @@ void RcuRDOMOD_t::Print ( std::ostream& stream, std::string level )
     {
         stream << "\t Mask RDYRX\t: " << IsMaskRDYRXEnabled() << std::endl
         << "\t Sparse rdo\t: " << IsSparseReadoutEnabled() << std::endl
+        << "\t Sparse rdo RCU: " << IsSparseReadoutRcuEnabled() << std::endl
         << "\t Exec seq.\t: " << IsExecuteSequencerEnabled() << std::endl
         << "\t MEB mode\t: " << GetMEBMode() << std::endl;
     }
