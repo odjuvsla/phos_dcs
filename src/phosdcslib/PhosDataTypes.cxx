@@ -784,7 +784,8 @@ ReadoutRegion_t::ReadoutRegion_t() :fHgStartZ ( 0 ),
     fLgStartX ( 0 ),
     fLgEndX ( 0 ),
     fIsTruEnabled ( false ),
-    fNTruSamples ( 0 )
+    fTruSamplesMin ( 0 ),
+    fTruSamplesMax(127)
 {
   // CheckConsistency(const StartZ_t startz, const EndZ_t endz, const StartX_t startx, const EndX_t endx );
 
@@ -794,7 +795,7 @@ ReadoutRegion_t::ReadoutRegion_t() :fHgStartZ ( 0 ),
 
 
 ReadoutRegion_t::ReadoutRegion_t ( const StartZ_t hgstartz, const EndZ_t hgendz, const StartX_t hgstartx, const EndX_t hgendx,
-                                   const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx, const bool enableTRUFakeAltro, const int nTruSamples ) :fHgStartZ ( 0 ),
+                                   const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx, const bool enableTRUFakeAltro, const int truSamplesMin, const int truSamplesMax ) :fHgStartZ ( 0 ),
     fHgEndZ ( 0 ),
     fHgStartX ( 0 ),
     fHgEndX ( 0 ),
@@ -803,22 +804,32 @@ ReadoutRegion_t::ReadoutRegion_t ( const StartZ_t hgstartz, const EndZ_t hgendz,
     fLgStartX ( 0 ),
     fLgEndX ( 0 ),
     fIsTruEnabled ( enableTRUFakeAltro ),
-    fNTruSamples ( 0 )
+    fTruSamplesMin ( 0 ),
+    fTruSamplesMax( 0 )
+  
 {
   if ( CheckConsistency ( hgstartz, hgendz, hgstartx, hgendx ) == true && CheckConsistency ( lgstartz, lgendz, lgstartx, lgendx ) == true )
     {
       SetReadoutRegion ( hgstartz, hgendz, hgstartx, hgendx, lgstartz, lgendz, lgstartx, lgendx );
     }
-  if ( fNTruSamples > 128 )
+  //  if ( fNTruSamples > 128 )
+  //    {
+  //      fNTruSamples = 127;
+  //    }
+  //  else
+  //    {
+  //      fNTruSamples = nTruSamples;
+  //    }
+  if( fTruSamplesMin > fTruSamplesMax)
     {
-      fNTruSamples = 127;
+      fTruSamplesMin = fTruSamplesMax = 0;
     }
   else
     {
-      fNTruSamples = nTruSamples;
+      fTruSamplesMax = truSamplesMax;
+      fTruSamplesMin = truSamplesMin;
     }
   fIsTruEnabled = enableTRUFakeAltro;
-
 }
 
 

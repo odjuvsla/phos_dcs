@@ -501,15 +501,16 @@ class ReadoutRegion_t
   public:
     ReadoutRegion_t();
     ReadoutRegion_t ( const StartZ_t hgstartz, const EndZ_t hgendz, const StartX_t hgstartx, const EndX_t hgendx,
-                      const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx, const bool enableTRUFakeAltro, const int nTruSamples = 0 );
+                      const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx, const bool enableTRUFakeAltro, const int truSamplesMin = 0,  const int truSamplesMax = 127);
     ~ReadoutRegion_t();
     void PrintInfo ( const char *message = 0 ) const ;
     void SetReadoutRegion ( const StartZ_t hgstartz, const EndZ_t hgendz, const StartX_t hgstartx, const EndX_t hgendx,
                             const StartZ_t lgstartz, const EndZ_t lgendz, const StartX_t lgstartx, const EndX_t lgendx );
 
-    void SetNumberOfTruSamples ( const int nTruSamples )
+    void SetTruSamples ( const int truSamplesMin, const int truSamplesMax )
     {
-      fNTruSamples = nTruSamples;
+      fTruSamplesMin = truSamplesMin;
+      fTruSamplesMax = truSamplesMax;
     }
 
     const StartZ_t  GetHGStartZ() const
@@ -546,9 +547,14 @@ class ReadoutRegion_t
         return fLgEndX;
       };
 
-    const int GetNumberOfTRUSamples() const
+    const int GetTRUSamplesMin() const
       {
-        return fNTruSamples;
+        return fTruSamplesMin;
+      }
+
+    const int GetTRUSamplesMax() const
+      {
+        return fTruSamplesMax;
       }
 
     const bool IsRcuEnabled ( const RcuNumber_t rcu ) const;
@@ -575,7 +581,9 @@ class ReadoutRegion_t
     EndX_t    fLgEndX;
 
     bool      fIsTruEnabled;
-    int     fNTruSamples; // In the readout region class due to being set by ALTRO mapping
+
+    int     fTruSamplesMin; // In the readout region class due to being set by ALTRO mapping
+    int     fTruSamplesMax; // In the readout region class due to being set by ALTRO mapping
 
   };
 

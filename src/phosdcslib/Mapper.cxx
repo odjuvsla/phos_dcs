@@ -280,14 +280,18 @@ Mapper::GenerateACL ( const ReadoutRegion_t readoutregion,
 	    //              {
                 for ( int altro = 0; altro < 8; altro++ )
                   {
-                    for ( int channel = 0; channel < readoutregion.GetNumberOfTRUSamples() /8; channel++ )
+                    for ( int channel = 0; channel < MAX_TRU_SAMPLES/8; channel++ )
                       {
-                        unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
-                        acl[rcu][aclIndex[rcu]] = ( branchId << 11 )  | ( tmpGlobalFeeChannel ) ;
-                        cout << acl[rcu][aclIndex[rcu]] << " " << aclIndex[rcu] << endl;;
+			int sample = altro*CHANNELS_PER_ALTRO + channel;
+			if(sample >= readoutregion.GetTRUSamplesMin() && sample <= readoutregion.GetTRUSamplesMax())
+			  {
+			    unsigned long tmpGlobalFeeChannel = altro*CHANNELS_PER_ALTRO + channel;
+			    acl[rcu][aclIndex[rcu]] = ( branchId << 11 )  | ( tmpGlobalFeeChannel ) ;
+			    //    cout << acl[rcu][aclIndex[rcu]] << " " << aclIndex[rcu] << endl;;
 
-                        aclIndex[rcu] ++;
-                        afl[rcu] = ( long int ) afl[rcu] | ( 1<< ( ( long int ) ( branchId* ( MAX_CARDS_PER_BRANCH-1 ) ) + ( long int ) branchId*MAX_CARDS_PER_BRANCH ) );
+			    aclIndex[rcu] ++;
+			    afl[rcu] = ( long int ) afl[rcu] | ( 1<< ( ( long int ) ( branchId* ( MAX_CARDS_PER_BRANCH-1 ) ) + ( long int ) branchId*MAX_CARDS_PER_BRANCH ) );
+			  }
                       }
                   }
                 //	  afl[rcu] = (long int)afl[rcu] | (1<< ((long int)(0) +(long int)branch*MAX_CARDS_PER_BRANCH));
