@@ -69,7 +69,7 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
         truRoEnabled = self.regionWidget.isTruReadoutEnabled()
 
-        preSamples, samples, truSamples= self.samplesWidget.getSamplesSettings()
+        preSamples, samples, truSamplesMin, truSamplesMax = self.samplesWidget.getSamplesSettings()
 
         zeroSuppression = self.zsWidget.isZeroSuppressionOn()
         zsThreshold = self.zsWidget.getZSThreshold()
@@ -93,7 +93,8 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
         configLines.append("PRESAMPLES " + str(preSamples) + "\n")
         configLines.append("SAMPLES " + str(samples) + "\n")
-        configLines.append("TRUSAMPLES " + str(truSamples) + "\n")
+        configLines.append("TRUSAMPLESMIN " + str(truSamplesMin) + "\n")
+        configLines.append("TRUSAMPLESMAX " + str(truSamplesMax) + "\n")
         configLines.append("ZEROSUPPRESSION " + str(zeroSuppression) + "\n")
         configLines.append("THRESHOLD " + str(zsThreshold) + "\n")
         configLines.append("OFFSET " + str(zsOffset) + "\n")
@@ -140,8 +141,10 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
                 self.samplesWidget.setPreSamples(int(line.split(" ")[1]))
             if valueName == "SAMPLES":
                 self.samplesWidget.setSamples(int(line.split(" ")[1]))
-            if valueName == "TRUSAMPLES":
-                self.samplesWidget.setTruSamples(int(line.split(" ")[1]))
+            if valueName == "TRUSAMPLESMIN":
+                self.samplesWidget.setTruSamplesMin(int(line.split(" ")[1]))
+            if valueName == "TRUSAMPLESMAX":
+                self.samplesWidget.setTruSamplesMax(int(line.split(" ")[1]))
             if valueName == "ZEROSUPPRESSION":
                 if line.split(" ")[1].strip() == "True":
                     self.zsWidget.setZeroSuppression(True)
@@ -189,14 +192,15 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
     def getReadoutConfig(self):
 
-        preSamples, samples, truSamples = self.samplesWidget.getSamplesSettings()
+        preSamples, samples, truSamplesMin, truSamplesMax = self.samplesWidget.getSamplesSettings()
 
         zeroSuppression = self.zsWidget.isZeroSuppressionOn()
         zsThreshold = self.zsWidget.getZSThreshold()
         zsOffset = self.zsWidget.getOffset()
         sparseReadout = self.zsWidget.isSparseReadout()
         sparseReadoutRcu = self.zsWidget.isSparseReadoutRcu()
-        autoBs = self.fpWidget.isAutoSubtracted()
+        autoBs = self.fpWidget.isAutoSubtracted() and self.zsWidget.isZeroSuppressionOn()
+        fixedBS = self.fpWidget.isFixedSubtracted()
 
         enableFakeAltroReadout = self.regionWidget.isTruReadoutEnabled()
 
@@ -206,11 +210,10 @@ class ConfigureElectronicsDialog(QtGui.QDialog):
 
         xfirst, xlast, zfirst, zlast, lgxfirst, lgxlast, lgzfirst, lgzlast = self.regionWidget.getReadOutRegion()
 
-
-        rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), StartZ_t(lgzfirst), EndZ_t(lgzlast), StartX_t(lgxfirst), EndX_t(lgxlast), enableFakeAltroReadout, truSamples)
+        rdoRegion = ReadoutRegion_t(StartZ_t(zfirst), EndZ_t(zlast), StartX_t(xfirst), EndX_t(xlast), StartZ_t(lgzfirst), EndZ_t(lgzlast), StartX_t(lgxfirst), EndX_t(lgxlast), enableFakeAltroReadout, truSamplesMin, truSamplesMax)
 
         rdoSettings = ReadoutSettings_t(NPreSamples_t(preSamples), NSamples_t(samples), zeroSuppression, zsThreshold, zsOffset, 
-                                        sparseReadout, sparseReadoutRcu, autoBs, MEBMode)
+                                        sparseReadout, sparseReadoutRcu, autoBs, fixedBS, MEBMode)
 
         return rdoRegion, rdoSettings
 
