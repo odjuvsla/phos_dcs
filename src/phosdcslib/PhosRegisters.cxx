@@ -73,7 +73,7 @@ void ReadoutRegisters_t::SetRcuALTROCFG ( RcuALTROCFG1_t altrocfg1, RcuALTROCFG2
     fAltroDPCFG.SetZeroSuppressed ( altrocfg1.IsZeroSuppressionEnabled() );
     //fAltroDPCFG.SetFirstBaselineCorrectionMode( altrocfg2.GetBaselineSubtractionMode() );
     fAltroDPCFG.SetAutomaticBaselineSubtraction ( altrocfg1.UsingAutomaticBaselineSubtraction() );
-    fAltroDPCFG.SetFixedBaselineSubtraction(!altrocfg1.UsingAutomaticBaselineSubtraction() && altrocfg1.IsZeroSuppressionEnabled());
+    fAltroDPCFG.SetFixedBaselineSubtraction(!altrocfg1.IsZeroSuppressionEnabled() || (altrocfg1.IsZeroSuppressionEnabled() && !altrocfg1.UsingAutomaticBaselineSubtraction()));
     //    fAltroDPCFG.SetFixedBaselineSubtraction(
     fRcuALTROCFG2 = altrocfg2;
 

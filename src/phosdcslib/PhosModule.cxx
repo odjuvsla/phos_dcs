@@ -309,7 +309,7 @@ PhosModule::ApplyReadoutRegisters() const
     //RcuALTROCFG2_t altrocfg2 ( fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.IsAutoBaselineSubtracted(), fReadoutSettings.IsFixedBaselineSubtracted());
     int sampleFreq = 10000000;
     RcuALTROCFG2_t altrocfg2( fReadoutSettings.GetMEBMode(), fReadoutSettings.GetNPreSamples().GetIntValue(), fReadoutSettings.GetNSamples().GetIntValue(),
-				 fReadoutSettings.IsSparseReadout(), sampleFreq);
+				 fReadoutSettings.IsSparseReadout() || fReadoutSettings.IsSparseReadoutRcu(), sampleFreq);
 
     RcuL1LAT_t tmpLOneLat;
     RcuL1MSGLAT_t tmpLOneMsgLat;
@@ -414,10 +414,10 @@ int PhosModule::WriteFixedPedestals(bool fromFile)
    {
       if(fRcuPtr[rcuID])
       {
-  stringstream log;
-  log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", RCU: " << rcuID << ", from file: " << fromFile;
-   PhosDcsLogging::Instance()->Logging (log.str(), LOG_LEVEL_INFO );
-
+	stringstream log;
+	log << "PhosModule::WriteFixedPedestals: Module #: " << fModuleId.GetIntValue() << ", RCU: " << rcuID << ", from file: " << fromFile;
+	PhosDcsLogging::Instance()->Logging (log.str(), LOG_LEVEL_INFO );
+   
 	 res = fRcuPtr[rcuID]->WriteFixedPedestalValues(fromFile);
 	 if(res)
 	 {
