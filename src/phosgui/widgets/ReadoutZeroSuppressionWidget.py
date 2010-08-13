@@ -51,7 +51,7 @@ class ReadoutZeroSuppressionWidget(QtGui.QWidget):
         self.sparseDropMenu.addItem("No Sparse Readout")
         self.sparseDropMenu.addItem("FEC Sparse Readout")
         self.sparseDropMenu.addItem("RCU Sparse Readout")
-        self.sparseCheckBox = QtGui.QCheckBox(self)
+#        self.sparseCheckBox = QtGui.QCheckBox(self)
 #        self.sparseCheckBox.setText("Enable Sparse Readout")
 #        self.sparseCheckBox.setGeometry(self.thresholdSpinbox.x(), self.zsCheckBox.y() + self.zsCheckBox.height() + 8, 200, 20)
 
