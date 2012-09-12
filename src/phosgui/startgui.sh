@@ -6,7 +6,7 @@ export PYTHONPATH=$PYTHONPATH:$PHOS_DCS/interface/
 export PYTHONPATH=$PYTHONPATH:$PHOS_DCS/utilities/
 export PYTHONPATH=$PYTHONPATH:$PHOS_DCS/widgets/
 
-source /home/phs/setupPhosGui.sh
+#source /home/phs/setupPhosGui.sh
 
 python ../gui_files/phos_gui.py
 

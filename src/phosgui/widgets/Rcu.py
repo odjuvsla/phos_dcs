@@ -14,7 +14,7 @@ class Rcu(QtGui.QWidget):
     def __init__(self, moduleId, rcuId, parent=None):
         
         super(QtGui.QWidget, self).__init__(parent)
-
+	print parent
         self.idConverter = PhosIdConverter()
         
         self.moduleId = moduleId
@@ -77,8 +77,7 @@ class Rcu(QtGui.QWidget):
         
 
         self.feeButtons = [None]*CARDS_PER_BRANCH*2
-
-
+	
         for i in range(CARDS_PER_BRANCH):
             n = i + CARDS_PER_BRANCH
             
@@ -95,9 +94,11 @@ class Rcu(QtGui.QWidget):
             index = feeId - self.rcuId*CARDS_PER_BRANCH*2 - self.moduleId*112
 
             self.feeButtons[index] = FeePushButton(self, feeId)
+            
 #            self.feeButtons[n] = FeePushButton(self, n)
-            self.feeButtons[index].geometry().setX(50 + i*(self.feeButtons[index].geometry().width()-4))
-            self.feeButtons[index].geometry().setWidth(16)
+	    self.feeButtons[index].setGeometry(50 + i*(self.feeButtons[index].geometry().width()-4), 0, 16, 110)
+            #self.feeButtons[index].geometry().setLeft(50 + i*(self.feeButtons[index].geometry().width()-4))
+            #self.feeButtons[index].geometry().setWidth(16)
 
         for i in range(CARDS_PER_BRANCH):
             
@@ -105,8 +106,10 @@ class Rcu(QtGui.QWidget):
             n = i
             feeId = self.idConverter.FeeAbsoluteID(self.moduleId, self.rcuId, BRANCH_A, i+1)
             self.feeButtons[n] = FeePushButton(self, feeId)
-            self.feeButtons[n].geometry().setX(240 + i*(self.feeButtons[i].geometry().width()-4))
-            self.feeButtons[n].geometry().setWidth(16)
+            
+            self.feeButtons[n].setGeometry(240 + i*(self.feeButtons[i].geometry().width()-4), 0, 16, 110)
+#            self.feeButtons[n].geometry().setX(240 + i*(self.feeButtons[i].geometry().width()-4))
+#            self.feeButtons[n].geometry().setWidth(16)
 
     def initTruButtons(self):
         
@@ -115,29 +118,30 @@ class Rcu(QtGui.QWidget):
             
             truId = self.idConverter.TruAbsoluteID(self.moduleId, self.rcuId, i)
             self.truButtons[i] = TruPushButton(self,truId)
-            self.truButtons[i].geometry().setX(435 + i*25)
+            self.truButtons[i].setGeometry(435 + i*25, 0, 16, 110)
+#            self.truButtons[i].geometry().setX(435 + i*25)
 
         
     def initActionButtons(self):
         
         self.rcuUpdateStatusButton = RcuUpdateStatusPushButton(self, self.moduleId, self.rcuId)
+        buttonWidth = self.rcuUpdateStatusButton.geometry().width()
+        buttonHeight = self.rcuUpdateStatusButton.geometry().height()
+        self.rcuUpdateStatusButton.setGeometry(510, 10, buttonWidth, buttonHeight)
         
-        self.rcuUpdateStatusButton.geometry().setX(510)
-        self.rcuUpdateStatusButton.geometry().setY(10)
+       # self.rcuUpdateStatusButton.geometry().setX(510)
+       # self.rcuUpdateStatusButton.geometry().setY(10)
 
         self.rcuToggleButtonOn = RcuToggleOnOffPushButton(self, self.moduleId, self.rcuId, True)
         self.rcuToggleButtonOff = RcuToggleOnOffPushButton(self, self.moduleId, self.rcuId, False)
 
-        self.rcuToggleButtonOn.geometry().setX(510)
-        self.rcuToggleButtonOn.geometry().setY(40)
-
-        self.rcuToggleButtonOff.geometry().setX(567)
-        self.rcuToggleButtonOff.geometry().setY(40)
+	self.rcuToggleButtonOn.setGeometry(510, 40, buttonWidth/2, buttonHeight)
+	self.rcuToggleButtonOff.setGeometry(567, 40, buttonWidth/2, buttonHeight)
         
-        self.rcuViewButton = RcuViewPushButton(self, self.moduleId, self.rcuId)
+        #self.rcuViewButton = RcuViewPushButton(self, self.moduleId, self.rcuId)
         
-        self.rcuViewButton.geometry().setX(510)
-        self.rcuViewButton.geometry().setY(70)
+        #self.rcuViewButton.geometry().setX(510)
+        #self.rcuViewButton.geometry().setY(70)
 
     def initRcuLabel(self):
         
@@ -147,10 +151,10 @@ class Rcu(QtGui.QWidget):
         
         self.rcuLabel.setWordWrap(1)
 
-        self.rcuLabel.setFixedSize(30, 90)
+        self.rcuLabel.setFixedSize(10, 90)
         
-        self.rcuLabel.geometry().setX(20)
-        self.rcuLabel.geometry().setY(10)
+        self.rcuLabel.setGeometry(20, 10, 10, 90)
+        self.rcuLabel.setFixedSize(10, 90)
 
     def initConnections(self):
         
@@ -164,7 +168,7 @@ class Rcu(QtGui.QWidget):
         self.connect(self.rcuUpdateStatusButton, QtCore.SIGNAL("rcuUpdateStatus"), self.emit_signal)
         self.connect(self.rcuToggleButtonOn, QtCore.SIGNAL("rcuToggleOnOff"), self.emit_signal)
         self.connect(self.rcuToggleButtonOff, QtCore.SIGNAL("rcuToggleOnOff"), self.emit_signal)
-        self.connect(self.rcuViewButton, QtCore.SIGNAL("viewRcu"), self.emit_signal)
+      #  self.connect(self.rcuViewButton, QtCore.SIGNAL("viewRcu"), self.emit_signal)
 
     def updateFeeCard(self, branchId, feeId, state):
         
@@ -189,7 +193,7 @@ class Rcu(QtGui.QWidget):
         self.rcuUpdateStatusButton.setEnabled(enable)
         self.rcuToggleButtonOn.setEnabled(enable)
         self.rcuToggleButtonOff.setEnabled(enable)
-        self.rcuViewButton.setEnabled(enable)
+       # self.rcuViewButton.setEnabled(enable)
 
 
 class LogViewer(QtGui.QTextBrowser):
@@ -198,6 +202,5 @@ class LogViewer(QtGui.QTextBrowser):
         
         super(QtGui.QTextBrowser, self).__init__(parent)
 
-        self.geometry().setX(20)
-        self.geometry().setY(500)
+	self.setGeometry(20, 500, 1070, 300)
         self.setFixedSize(1070, 300)

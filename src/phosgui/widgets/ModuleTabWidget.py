@@ -14,7 +14,6 @@ class ModuleTabWidget(QtGui.QWidget):
     def __init__(self, moduleId, parent=None):
         
         super(QtGui.QWidget, self).__init__(parent)
-
         self.moduleId = moduleId
         self.idConverter = PhosIdConverter()
         
@@ -32,7 +31,7 @@ class ModuleTabWidget(QtGui.QWidget):
         self.emit(QtCore.SIGNAL(args[0]), *args)
         
     def initRcus(self):
-
+	print 'init RCUs'
         self.rcuTopFrame = RcuTopFrame(self)
         self.rcuTopFrame.setGeometry(20, 0, 650, 40)
         self.rcus = [None]*RCUS_PER_MODULE
@@ -40,8 +39,9 @@ class ModuleTabWidget(QtGui.QWidget):
         for i in range(RCUS_PER_MODULE):
             
             self.rcus[i] = Rcu(self.moduleId, i, self)
-            self.rcus[i].geometry().setX(20)
-            self.rcus[i].geometry().setY(i*self.rcus[i].geometry().height() + self.rcuTopFrame.geometry().y() + self.rcuTopFrame.geometry().height())
+            y = i*self.rcus[i].geometry().height() + self.rcuTopFrame.geometry().y() + self.rcuTopFrame.geometry().height()
+            self.rcus[i].setGeometry(20, y, 700, self.rcus[i].height())
+            print self.rcus[i].width()
 #            self.rcus[i].setEnabled(0)
 
     def initLogViewer(self):

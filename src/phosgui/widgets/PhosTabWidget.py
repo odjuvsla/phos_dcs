@@ -9,7 +9,7 @@ class PhosTabWidget(QtGui.QWidget):
     def __init__(self, parent=None):
 
         super(QtGui.QWidget, self).__init__(parent)
-        self.initModules()
+       # self.initModules()
 
     def initModules(self):
 

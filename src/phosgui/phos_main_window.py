@@ -23,17 +23,18 @@ class PhosGui(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(QtGui.QMainWindow, self).__init__(parent)
         
+        print 'init phos gui'
         self.resize(1120, 880)
         self.initTabs()
-        self.initMenuBar()
-        self.initDialogs()
+        #self.initMenuBar()
+        #self.initDialogs()
 
         self.setCentralWidget(self.tabControls)
 
-        self.initConnections()
+        #self.initConnections()
 
-        self.rcuDialog = RcuDialog()
-        self.configureElectronicsDialog = ConfigureElectronicsDialog()
+        #self.rcuDialog = RcuDialog()
+        #self.configureElectronicsDialog = ConfigureElectronicsDialog()
 
     def initTabs(self):
         
@@ -43,10 +44,10 @@ class PhosGui(QtGui.QMainWindow):
 
         for i in range(PHOS_MODS):
             
-            self.moduleTabs[i] = ModuleTabWidget(i)
+            self.moduleTabs[i] = ModuleTabWidget(i,self)
             self.tabControls.addTab(self.moduleTabs[i], "Module " + str(i))
             self.moduleTabs[i].setEnabled(0)
-        self.phosTab = PhosTabWidget()
+        self.phosTab = PhosTabWidget(self)
         self.tabControls.addTab(self.phosTab, "PHOS Detector")
         
     def initMenuBar(self):
