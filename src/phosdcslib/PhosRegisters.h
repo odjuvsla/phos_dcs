@@ -405,7 +405,7 @@ public:
       return fSampleFreq;
    }
 
-    short GetRegisterValue();
+    long int GetRegisterValue();
 
     void SetNAltroBuffers(short nAltroBuffers);
     

@@ -26,15 +26,15 @@ class PhosGui(QtGui.QMainWindow):
         print 'init phos gui'
         self.resize(1120, 880)
         self.initTabs()
-        #self.initMenuBar()
-        #self.initDialogs()
+        self.initMenuBar()
+        self.initDialogs()
 
         self.setCentralWidget(self.tabControls)
 
-        #self.initConnections()
+        self.initConnections()
 
-        #self.rcuDialog = RcuDialog()
-        #self.configureElectronicsDialog = ConfigureElectronicsDialog()
+        self.rcuDialog = RcuDialog()
+        self.configureElectronicsDialog = ConfigureElectronicsDialog()
 
     def initTabs(self):
         

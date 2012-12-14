@@ -160,14 +160,14 @@ class RcuHandler(PHOSHandler):
             moduleId, rcuId = self.idConverter.GetRcuLogicalIDs(self.rcuId)
 
             dcs_interface.UpdateAFL(moduleId, rcuId)
-
+            time.sleep(0.15)
             for i in range(CARDS_PER_BRANCH):
                 
                 status = dcs_interface.UpdateSingleFeeStatus(moduleId, rcuId, BRANCH_A, i+1)
                 feeId = self.idConverter.FeeAbsoluteID(self.moduleId, rcuId, BRANCH_A, i+1)
                 self.emit(QtCore.SIGNAL("feeStateUpdated"), "feeStateUpdated", feeId, status)
                 self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
-                time.sleep(0.05)
+                time.sleep(0.15)
                 
             for j in range(CARDS_PER_BRANCH):
                 
@@ -175,7 +175,7 @@ class RcuHandler(PHOSHandler):
                 feeId = self.idConverter.FeeAbsoluteID(self.moduleId, rcuId, BRANCH_B, j+1)
                 self.emit(QtCore.SIGNAL("feeStateUpdated"), "feeStateUpdated", feeId, status)
                 self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
-                time.sleep(0.05)
+                time.sleep(0.15)
                 
             self.dcs_interface_wrapper.releaseDcsInterface()
 #             status = dcs_interface.UpdateFeeStatus(moduleId, rcuId)

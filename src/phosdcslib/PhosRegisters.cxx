@@ -381,7 +381,7 @@ RcuALTROCFG2_t::RcuALTROCFG2_t ( short nAltroBuffers, short nPreSamples, short n
     SetSampleFrequency(sampleFreq);
 
 }
-short RcuALTROCFG2_t::GetRegisterValue()
+long int RcuALTROCFG2_t::GetRegisterValue()
 {
     int sampleSetting = 0x1;
 
@@ -403,11 +403,11 @@ short RcuALTROCFG2_t::GetRegisterValue()
       break;
     }
    
-    return ((fNAltroBuffers == 4 ? 0 : 1) & 0x1) << 24 |
+    return (((fNAltroBuffers == 4 ? 0 : 1) & 0x1) << 24 |
 		     (fNPreSamples & 0xf) << 20 |
 		     (fNSamples & 0x3ff) << 10 |
 		     (fSparseReadout & 0x1) << 9 |
-		     (sampleSetting & 0xf) << 5 ;
+		     (sampleSetting & 0xf) << 5) & 0x1ffffff ;
 }
 
 void RcuALTROCFG2_t::SetNAltroBuffers(short int nAltroBuffers)
