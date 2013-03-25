@@ -1,5 +1,6 @@
 from PHOSHandler import *
 from threading import *
+import time
 
 class FeeCardHandler(PHOSHandler):
     """Class taking care of the FEE card commands"""
@@ -91,7 +92,7 @@ class FeeCardHandler(PHOSHandler):
                 #state = 1
 #            print 'state is ' + str(state)
             # Emitting signal for fetching log information
-
+	    time.sleep(0.15)
             self.emit(QtCore.SIGNAL("fetchLog"), "fetchLog", moduleId)
 
             # Emitting the card toggled signal together with the returned state of the card

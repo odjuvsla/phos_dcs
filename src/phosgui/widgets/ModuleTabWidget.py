@@ -134,7 +134,7 @@ class ModuleTabWidget(QtGui.QWidget):
         
     def updateFeeCard(self, feeId, state):
         
-        print 'update card ' + str(feeId) + ' with state ' + str(state)
+        print 'updateFeeCard: update card ' + str(feeId) + ' with state ' + str(state)
         module, rcu, branch, fee = self.idConverter.GetFeeLogicalIDs(feeId)
         self.rcus[rcu].updateFeeCard(branch, fee, state)
   #       if fee == 13:

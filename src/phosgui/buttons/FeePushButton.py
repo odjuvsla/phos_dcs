@@ -35,14 +35,20 @@ class FeePushButton(PhosPushButton):
         self.emit(QtCore.SIGNAL("viewFee"), "viewFee", self.feeId)
 
     def setState(self, state):
-
+	print 'Setting colors for ' + str(self.feeId)
         self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(0, 0, 0))
+        self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(0, 0, 255))
         if state == FEE_STATE_ON:
+	    self.setStyleSheet('QPushButton { background : rgb(0, 255, 0) }' )
             self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(0, 255, 0))
         if state == FEE_STATE_OFF:
             self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(255, 255, 255))
+	    self.setStyleSheet('QPushButton { background : blue }' )
         if state == FEE_STATE_WARNING: 
             self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(255, 255, 0))
+	    self.setStyleSheet('QPushButton { background : yellow }' )
         if state == FEE_STATE_ERROR: 
             self.palette().setColor(QtGui.QPalette.Button, QtGui.QColor(255, 0, 0))
+	    self.setStyleSheet('QPushButton { background : red }' )
+        self.update()
 

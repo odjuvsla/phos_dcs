@@ -169,7 +169,7 @@ Rcu::ActivateFee ( const int branch, const int cardIndex )
         }
 
         log.str ( "" );
-        log << "Rcu::ActivateFee: Result: State = " << state;
+        log << "Rcu::ActivateFee: Result: pcm version: " << pcmversion << ", State = " << state;
         PhosDcsLogging::Instance()->Logging ( log.str(), LOG_LEVEL_INFO );
 
         return state;
@@ -215,7 +215,7 @@ Rcu::UpdateAFL()
 int
 Rcu::ToggleFeeOnOff ( const int branch, const int cardNumber )
 {
-
+    PhosDcsLogging::Instance()->Logging("Toggling", LOG_LEVEL_VERBOSE);
     int state=0;
     char resBuffer[100];
     int cardIndex = cardNumber - 1;
@@ -228,21 +228,23 @@ Rcu::ToggleFeeOnOff ( const int branch, const int cardNumber )
     {
         ToggleFeeOnOff ( branch, 2 );
     }
-
     else
     {
-        if ( ( ( *fFeeState[branch*14 + cardIndex] ) &0x3f == FEE_STATE_ON ) || ( *fFeeState[branch*14 + cardIndex]== FEE_STATE_WARNING ) || ( *fFeeState[branch*14 + cardIndex] == FEE_STATE_ERROR ) )
+	bool isOn = IsActiveFee(branch, cardNumber);
+        if (isOn)
         {
             *fFeeState[branch*14+cardIndex] = DeActivateFee ( branch, cardNumber );
+	    PhosDcsLogging::Instance()->Logging("Card is on", LOG_LEVEL_VERBOSE);
         }
         else
         {
             *fFeeState[branch*14+cardIndex] = ActivateFee ( branch, cardNumber );
+	    PhosDcsLogging::Instance()->Logging("Card is off", LOG_LEVEL_VERBOSE);
         }
 
         if ( cardIndex == 0 )
         {
-            if ( ( ( *fFeeState[branch*14 + 13] ) &0x3f == FEE_STATE_ON ) || ( *fFeeState[branch*14 + 13] == FEE_STATE_WARNING ) || ( *fFeeState[branch*14 + 13] == FEE_STATE_ERROR ) )
+            if (isOn)
             {
                 *fFeeState[branch*14 + 13] = DeActivateFee ( branch, 14 );
             }
@@ -255,7 +257,7 @@ Rcu::ToggleFeeOnOff ( const int branch, const int cardNumber )
 
         if ( cardIndex == 1 )
         {
-            if ( ( ( *fFeeState[branch*14+12] ) &0x3f == FEE_STATE_ON ) || ( *fFeeState[branch*14+12] == FEE_STATE_WARNING ) || ( *fFeeState[branch*14+12] == FEE_STATE_ERROR ) )
+            if (isOn)
             {
                 *fFeeState[branch*14+12] = DeActivateFee ( branch, 13 );
             }

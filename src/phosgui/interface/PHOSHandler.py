@@ -15,6 +15,10 @@ class PHOSHandler(QtCore.QObject):
         """Function for forwarding the signals from the thread"""      
 	if len(args) > 0:
         	print 'Emitting ' + args[0]
+        	out = 'Arguments: '
+        	for i in range(len(args)-1):
+		  out += str(args[i+1])
+		print out
         	self.emit(QtCore.SIGNAL(args[0]), *args)
     #-----------------------------------------------------
 

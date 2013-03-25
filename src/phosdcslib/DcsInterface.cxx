@@ -471,10 +471,13 @@ unsigned int
 //DcsInterface::ToggleOnOffFee(const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate, unsigned int tmpStates[CARDS_PER_RCU])
 DcsInterface::ToggleOnOffFee ( const int mod,  const int rcu , const int branch , const int cardId, const unsigned int currentstate )
 {
+  PhosDcsLogging::Instance()->Logging("Toggling", LOG_LEVEL_VERBOSE);
   Rcu *tmpRcuPtr =  fPhosDetectorPtr->GetRcuPtr ( mod, rcu );
+  
   int state = tmpRcuPtr->ToggleFeeOnOff ( branch, cardId );
   int **tmp = tmpRcuPtr->GetFeeStatus();
 
+  
   for ( int i=0; i < CARDS_PER_RCU; i++ )
     {
       //      tmpStates[i] = *tmp[i];
